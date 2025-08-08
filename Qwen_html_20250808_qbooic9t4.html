@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Диагностика зрелых отношений</title>
+  <meta name="description" content="Пройдите тест на зрелость отношений и получите персональные рекомендации">
+  <style>
+    :root {
+      --primary: #4a6b8a;
+      --success: #418e73;
+      --warning: #d68a4e;
+      --danger: #c45252;
+      --light: #f8f9fa;
+      --dark: #2b323a;
+      --gray: #6c757d;
+      --light-gray: #adb5bd;
+      --radius: 14px;
+      --card-radius: 10px;
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --transition: all 0.3s ease;
+      --border: 1px solid #dee2e6;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    body {
+      background-color: #f4f6f9;
+      color: var(--dark);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 1rem auto;
+      padding: 1.2rem;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 1.4rem;
+      padding: 1rem;
+      background: #f0f4f8;
+      border-radius: var(--card-radius);
+      border: var(--border);
+    }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    header p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+    .progress {
+      height: 6px;
+      background: #e9ecef;
+      border-radius: 3px;
+      margin: 1rem 0 0.7rem;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--light-gray);
+      margin-bottom: 0.5rem;
+    }
+    .block-title {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin: 1.2rem 0 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #edf0f3;
+      font-weight: 550;
+    }
+    .block-desc {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+      background: #f8fafc;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      border: var(--border);
+    }
+    .question {
+      margin-bottom: 1.2rem;
+      padding: 0.9rem;
+      background: var(--light);
+      border-radius: var(--card-radius);
+      border-left: 4px solid var(--primary);
+    }
+    .question p {
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      color: var(--dark);
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 0.5rem 0.7rem;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+    .option:hover {
+      background: #eef4f7;
+    }
+    .option input {
+      margin-right: 0.5rem;
+      accent-color: var(--primary);
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.4rem;
+      font-size: 0.98rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 0.8rem;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #3a5870;
+    }
+    .btn-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.4rem;
+    }
+    .btn-secondary {
+      background: var(--light);
+      color: var(--dark);
+      border: 1px solid #dde2e6;
+    }
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+    .results {
+      display: none;
+      margin-top: 1.4rem;
+      padding: 1.4rem;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .results h2 {
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.2rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 0.6rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #edf0f3;
+    }
+    th {
+      background: #f1f5f9;
+      color: var(--dark);
+      font-weight: 550;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.3rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .badge-success {
+      background: #d8e8e1;
+      color: var(--success);
+    }
+    .badge-warning {
+      background: #f9e9db;
+      color: var(--warning);
+    }
+    .badge-danger {
+      background: #f5dada;
+      color: var(--danger);
+    }
+    .summary {
+      margin: 1.2rem 0;
+      padding: 1rem;
+      background: #f9fbfc;
+      border-radius: var(--card-radius);
+      border-left: 4px solid var(--primary);
+      font-size: 0.95rem;
+    }
+    .priority {
+      font-weight: 600;
+      color: var(--danger);
+    }
+    .recommendation {
+      margin-bottom: 1.4rem;
+      padding: 0.9rem 0;
+    }
+    .recommendation h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .checklist {
+      list-style: none;
+      margin-top: 0.5rem;
+    }
+    .checklist li::before {
+      content: "✓";
+      color: var(--success);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    .checklist li {
+      margin: 0.3rem 0;
+      color: var(--gray);
+      font-size: 0.92rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.6rem;
+      justify-content: center;
+    }
+    .actions button {
+      font-size: 0.9rem;
+      padding: 0.6rem 1rem;
+    }
+    .links {
+      margin-top: 2.2rem;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--light-gray);
+      line-height: 1.6;
+    }
+    .links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    .explanation {
+      margin-top: 0.7rem;
+      padding: 0.7rem;
+      background: #f1f5f9;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: var(--gray);
+      border: var(--border);
+      line-height: 1.5;
+      display: none;
+    }
+    .toggle-btn {
+      font-size: 0.85rem;
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+    .toggle-btn::after {
+      content: ' ▶ Развернуть пояснение';
+      font-size: 0.8rem;
+    }
+    .toggle-btn.active::after {
+      content: ' ▼ Свернуть пояснение';
+      font-size: 0.8rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #edf0f3;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--light-gray);
+    }
+    .footer a {
+      color: var(--light-gray);
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+      color: var(--primary);
+    }
+
+    /* Мобильная оптимизация */
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+      }
+      .block-title {
+        font-size: 1.15rem;
+      }
+      .question {
+        padding: 0.8rem;
+      }
+      .options {
+        gap: 0.3rem;
+      }
+      .option {
+        padding: 0.45rem 0.6rem;
+      }
+      .option input {
+        margin-right: 0.4rem;
+      }
+      button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Диагностика зрелых отношений</h1>
+      <p>Честный тест для понимания сильных и слабых сторон вашей пары</p>
+    </header>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="step-indicator">
+      <span>Начало</span>
+      <span>Блок 1</span>
+      <span>Блок 2</span>
+      <span>Блок 3</span>
+      <span>Блок 4</span>
+      <span>Результат</span>
+    </div>
+
+    <form id="loveForm">
+      <!-- Блок 1 -->
+      <div class="block" id="block1">
+        <h2 class="block-title">🔹 Безопасность и границы</h2>
+        <p class="block-desc">Оценка чувства безопасности и уважения личных границ.</p>
+
+        <div class="question">
+          <p>1. Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q1" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q1" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q1" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q1" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Если вы отказываете в близости, помощи или планах — сталкиваетесь ли с обидой, молчанием или шантажом?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>2. Уважает ли партнёр моё личное пространство, когда я прошу об этом?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q2" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q2" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q2" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q2" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Можете ли вы побыть одному, не отчитываясь? Партнёр уважает это или обвиняет в отстранении?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>3. Чувствую ли я, что могу быть собой рядом с партнёром?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q3" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q3" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q3" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Можете ли вы плакать, молчать, быть не в духе — и при этом не бояться осуждения?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>4. Испытываю ли я уважение к своим эмоциям со стороны партнёра?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q4" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q4" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q4" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q4" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Когда вы говорите: «Мне грустно», «Я злюсь» — партнёр поддерживает или обесценивает?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>5. Есть ли в отношениях давление: крики, молчание, шантаж?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q5" value="0" required> Да</label>
+            <label class="option"><input type="radio" name="q5" value="1"> Скорее да</label>
+            <label class="option"><input type="radio" name="q5" value="2"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q5" value="3"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Крики, игнор, угрозы, манипуляции — даже редкие случаи — сигнал тревоги.
+          </div>
+        </div>
+
+        <div class="btn-nav">
+          <button type="button" disabled>Назад</button>
+          <button type="button" onclick="nextBlock(1)">Далее</button>
+        </div>
+      </div>
+
+      <!-- Блок 2 -->
+      <div class="block" id="block2" style="display:none;">
+        <h2 class="block-title">🔹 Надёжность и партнёрство</h2>
+        <p class="block-desc">Оценка стабильности, доверия и совместной ответственности.</p>
+
+        <div class="question">
+          <p>6. Выполняет ли партнёр свои обещания, даже мелкие?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q6" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q6" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q6" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Если говорит: «куплю хлеб», «приду вовремя» — выполняет ли? Забывчивость снижает доверие.
+          </div>
+        </div>
+
+        <div class="question">
+          <p>7. Чувствую ли я, что мы в одной команде в трудные моменты?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q7" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q7" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q7" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q7" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            В кризисе (болезнь, потеря работы) вы чувствуете поддержку или одиночество?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>8. Разделены ли обязанности честно и понятно?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q8" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q8" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q8" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q8" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Деление не обязательно 50/50, но должно быть справедливым и обсуждаемым.
+          </div>
+        </div>
+
+        <div class="question">
+          <p>9. Можем ли мы говорить о деньгах без скандалов?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q9" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q9" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q9" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q9" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Обсуждение бюджета не должно вызывать крики. Зрелый диалог: «Давай сократим расходы».
+          </div>
+        </div>
+
+        <div class="question">
+          <p>10. Является ли партнёр предсказуемым?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q10" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q10" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q10" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q10" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Вы знаете, чего ожидать? Частые срывы планов создают тревожность.
+          </div>
+        </div>
+
+        <div class="btn-nav">
+          <button type="button" onclick="prevBlock(2)">Назад</button>
+          <button type="button" onclick="nextBlock(2)">Далее</button>
+        </div>
+      </div>
+
+      <!-- Блок 3 -->
+      <div class="block" id="block3" style="display:none;">
+        <h2 class="block-title">🔹 Связь и эмоции</h2>
+        <p class="block-desc">Оценка близости, заботы и способности слышать друг друга.</p>
+
+        <div class="question">
+          <p>11. Есть ли ежедневные ритуалы внимания?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q11" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q11" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q11" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q11" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Утреннее «доброе утро», вечернее «как день прошёл?», объятие — поддерживают связь.
+          </div>
+        </div>
+
+        <div class="question">
+          <p>12. Можем ли мы делиться чувствами, а не только делами?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q12" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q12" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q12" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q12" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Разговоры о чувствах: «мне было обидно», а не только «надо купить молоко».
+          </div>
+        </div>
+
+        <div class="question">
+          <p>13. Чувствую ли я, что партнёр меня слышит и понимает?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q13" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q13" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q13" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q13" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Он не перебивает, не спешит с советами, не обесценивает: «Тебе было тяжело, я понимаю».
+          </div>
+        </div>
+
+        <div class="question">
+          <p>14. Умеем ли мы мириться и признавать ошибки?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q14" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q14" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q14" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q14" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            После конфликта идёт диалог и извинение? Или молчание и обида?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>15. Комфортно ли нам быть вдвоём без отвлечений?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q15" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q15" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q15" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q15" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Можете ли провести время вдвоём, не включая ТВ, не проверяя телефоны?
+          </div>
+        </div>
+
+        <div class="btn-nav">
+          <button type="button" onclick="prevBlock(3)">Назад</button>
+          <button type="button" onclick="nextBlock(3)">Далее</button>
+        </div>
+      </div>
+
+      <!-- Блок 4 -->
+      <div class="block" id="block4" style="display:none;">
+        <h2 class="block-title">🔹 Рост и ценности</h2>
+        <p class="block-desc">Оценка развития личности, ценностей и совместного будущего.</p>
+
+        <div class="question">
+          <p>16. Обсуждали ли мы ключевые темы: деньги, дети, верность?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q16" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q16" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q16" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q16" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Если эти темы не обсуждались — риск столкновения взглядов в будущем.
+          </div>
+        </div>
+
+        <div class="question">
+          <p>17. Есть ли у нас общие цели на будущее?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q17" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q17" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q17" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q17" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            «Через год поедем в Италию», «купим дом» — важно обсуждать это вместе.
+          </div>
+        </div>
+
+        <div class="question">
+          <p>18. Эти отношения помогают мне становиться лучше?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q18" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q18" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q18" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q18" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Вы становитесь добрее, увереннее? Или чувствуете, что «теряете себя»?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>19. Чувствую ли я, что могу развиваться, а не только адаптироваться?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q19" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q19" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q19" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q19" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Вы можете учиться, меняться? Или «притворяетесь, чтобы не конфликтовать»?
+          </div>
+        </div>
+
+        <div class="question">
+          <p>20. Уважаю ли я партнёра, даже в конфликте?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q20" value="3" required> Да</label>
+            <label class="option"><input type="radio" name="q20" value="2"> Скорее да</label>
+            <label class="option"><input type="radio" name="q20" value="1"> Скорее нет</label>
+            <label class="option"><input type="radio" name="q20" value="0"> Нет</label>
+          </div>
+          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
+          <div class="explanation">
+            Вы можете спорить, но не переходить на личности, не обесценивать.
+          </div>
+        </div>
+
+        <div class="btn-nav">
+          <button type="button" onclick="prevBlock(4)">Назад</button>
+          <button type="submit">Получить результаты</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Результаты -->
+    <div class="results" id="results">
+      <h2>📊 Ваши результаты</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Блок</th>
+            <th>Баллы</th>
+            <th>Зона</th>
+          </tr>
+        </thead>
+        <tbody id="resultTableBody"></tbody>
+      </table>
+
+      <div class="summary">
+        <p><strong>Состояние:</strong> <span id="overallStatus"></span></p>
+        <p><strong>Приоритет:</strong> <span class="priority" id="priorityBlock"></span></p>
+      </div>
+
+      <div id="recommendations"></div>
+
+      <div class="actions">
+        <button onclick="downloadPDF()">Скачать PDF</button>
+        <button onclick="sendEmail()">Отправить на Email</button>
+        <button onclick="shareWithPartner()">Поделиться с партнёром</button>
+        <button onclick="restart()">Пройти снова</button>
+      </div>
+
+      <div class="links">
+        <p>
+          <a href="https://www.gottman.com" target="_blank">Сайт Готтмана — научный подход к отношениям</a><br>
+          <a href="https://www.relate.org.uk" target="_blank">Relate UK — помощь парам и семьям</a><br>
+          <a href="https://www.psychologytoday.com" target="_blank">Psychology Today — статьи о психологии отношений</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Подвал -->
+    <div class="footer">
+      Разработано Евгений Климов, 2025
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Инициализация jsPDF
+    const { jsPDF } = window.jspdf;
+
+    // === [НАСТРОЙКА] Укажите вашу ссылку на размещённый тест (для статистики) ===
+    // Например: https://yourusername.github.io/love-test/?source=newsletter
+    const TEST_URL = "https://yourusername.github.io/love-test/"; // ← Замените на ваш URL
+    // ===================================================================
+
+    // Получение идентификатора из URL (например, ?source=telegram)
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source') || 'unknown';
+
+    // Сохранение данных в localStorage (для простой статистики)
+    function saveResult(data) {
+      const id = new Date().toISOString() + "_" + Math.random().toString(36).substr(2, 9);
+      const record = { id, source, timestamp: new Date().toISOString(), ...data };
+      const history = JSON.parse(localStorage.getItem('loveTestResults') || '[]');
+      history.push(record);
+      localStorage.setItem('loveTestResults', JSON.stringify(history));
+      // Можно отправить на сервер через fetch, если нужно
+      // fetch('https://your-api.com/save', { method: 'POST', body: JSON.stringify(record) });
+    }
+
+    const blocks = ['block1', 'block2', 'block3', 'block4'];
+    let currentBlock = 0;
+
+    function updateProgress() {
+      document.getElementById('progressBar').style.width = `${(currentBlock / 4) * 100}%`;
+    }
+
+    function nextBlock(n) {
+      const form = document.getElementById(`block${n}`);
+      const inputs = form.querySelectorAll('input[required]');
+      let valid = true;
+      inputs.forEach(input => {
+        const name = input.name;
+        const checked = form.querySelector(`input[name="${name}"]:checked`);
+        if (!checked) valid = false;
+      });
+      if (!valid) {
+        alert("Пожалуйста, ответьте на все вопросы.");
+        return;
+      }
+      document.getElementById(blocks[currentBlock]).style.display = 'none';
+      currentBlock++;
+      const nextBlockElement = document.getElementById(blocks[currentBlock]);
+      nextBlockElement.style.display = 'block';
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function prevBlock(n) {
+      document.getElementById(blocks[currentBlock]).style.display = 'none';
+      currentBlock--;
+      const prevBlockElement = document.getElementById(blocks[currentBlock]);
+      prevBlockElement.style.display = 'block';
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleExplanation(btn) {
+      const explanation = btn.nextElementSibling;
+      const isVisible = explanation.style.display === 'block';
+      explanation.style.display = isVisible ? 'none' : 'block';
+      btn.classList.toggle('active', !isVisible);
+    }
+
+    document.getElementById('loveForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const answers = {};
+      for (let [key, value] of formData) {
+        answers[key] = parseInt(value);
+      }
+
+      const blockData = [
+        { name: 'Безопасность', start: 1, end: 5 },
+        { name: 'Надёжность', start: 6, end: 10 },
+        { name: 'Связь', start: 11, end: 15 },
+        { name: 'Рост', start: 16, end: 20 }
+      ];
+
+      const results = blockData.map(block => {
+        let sum = 0;
+        for (let i = block.start; i <= block.end; i++) {
+          sum += answers[`q${i}`] || 0;
+        }
+        let zone, className;
+        if (sum >= 11) {
+          zone = '✅ Зона силы';
+          className = 'badge-success';
+        } else if (sum >= 6) {
+          zone = '⚠️ Риск';
+          className = 'badge-warning';
+        } else {
+          zone = '❗ Тревога';
+          className = 'badge-danger';
+        }
+        return { ...block, sum, zone, className };
+      });
+
+      const tableBody = document.getElementById('resultTableBody');
+      tableBody.innerHTML = '';
+      results.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.name}</td>
+          <td>${r.sum}</td>
+          <td><span class="badge ${r.className}">${r.zone}</span></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      const avg = results.reduce((a, b) => a + b.sum, 0) / 4;
+      let overall = 'зрелые';
+      if (avg < 8) overall = 'разрушительные';
+      else if (avg < 11) overall = 'шаткие';
+      document.getElementById('overallStatus').textContent = overall;
+
+      const lowest = results.reduce((a, b) => a.sum < b.sum ? a : b);
+      document.getElementById('priorityBlock').textContent = lowest.name;
+
+      const recContainer = document.getElementById('recommendations');
+      recContainer.innerHTML = '';
+      results.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'recommendation';
+        let actions = '';
+        if (r.sum >= 11) {
+          actions = `<p>Сильные стороны: высокий уровень доверия. Поддерживайте ритуалы заботы.</p>`;
+        } else if (r.sum >= 6) {
+          actions = `<p>Требует внимания. Сделайте 3 шага: 1) обсудите чувства, 2) назначьте разговор, 3) запишите 3 плюса в отношениях.</p>`;
+        } else {
+          actions = `<p>Важно восстановить. Проведите честный диалог, составьте план, при необходимости обратитесь к психологу.</p>`;
+        }
+        div.innerHTML = `
+          <h4>${r.name}</h4>
+          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zone}</span></p>
+          ${actions}
+        `;
+        recContainer.appendChild(div);
+      });
+
+      // Сохранение статистики
+      saveResult({ results, overall, priority: lowest.name });
+
+      document.getElementById('loveForm').style.display = 'none';
+      document.getElementById('results').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    function downloadPDF() {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("Ваши результаты", 10, 20);
+
+      const tableRows = [];
+      document.querySelectorAll('#resultTableBody tr').forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        tableRows.push([cells[0].innerText, cells[1].innerText, cells[2].innerText]);
+      });
+
+      doc.autoTable({
+        head: [['Блок', 'Баллы', 'Зона']],
+        body: tableRows,
+        startY: 30
+      });
+
+      doc.setFontSize(12);
+      const finalY = doc.lastAutoTable.finalY || 30;
+      doc.text("Рекомендации:", 10, finalY + 10);
+      document.querySelectorAll('.recommendation').forEach((rec, i) => {
+        doc.text(`${rec.querySelector('h4').innerText}: ${rec.innerText.replace(rec.querySelector('h4').innerText, '').trim()}`, 10, finalY + 20 + i * 10);
+      });
+
+      doc.save("результаты_теста_отношения.pdf");
+    }
+
+    function sendEmail() {
+      const subject = 'Мои результаты теста на зрелость отношений';
+      const body = `Привет!\n\nЯ прошёл тест на зрелость отношений.\nРезультаты можно посмотреть здесь: ${window.location.href}\n\nТест разработан Евгением Климовым.\n\nP.S. Ты тоже можешь пройти: ${TEST_URL}`;
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function shareWithPartner() {
+      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
+      const encodedText = encodeURIComponent(text);
+      // === [НАСТРОЙКА] Замените ссылку на актуальную после публикации на GitHub ===
+      const shareUrl = `https://t.me/share/url?url=${encodedText}`;
+      const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+      // Можно открыть выбор
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        // На мобильных — предлагаем оба варианта
+        if (confirm('Открыть в WhatsApp?')) {
+          window.open(whatsappUrl, '_blank');
+        } else {
+          window.open(shareUrl, '_blank');
+        }
+      } else {
+        window.open(shareUrl, '_blank'); // Telegram на десктопе
+      }
+    }
+
+    function restart() {
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('loveForm').style.display = 'block';
+      document.getElementById('loveForm').reset();
+      currentBlock = 0;
+      document.getElementById(blocks[0]).style.display = 'block';
+      for (let i = 1; i < 4; i++) {
+        document.getElementById(blocks[i]).style.display = 'none';
+      }
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>
