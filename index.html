@@ -314,7 +314,6 @@
       color: var(--primary);
     }
 
-    /* Мобильная оптимизация */
     @media (max-width: 480px) {
       .container {
         padding: 1rem;
@@ -689,7 +688,7 @@
     <!-- Результаты -->
     <div class="results" id="results">
       <h2>📊 Ваши результаты</h2>
-      <table>
+      <table id="resultTable">
         <thead>
           <tr>
             <th>Блок</th>
@@ -729,7 +728,10 @@
     </div>
   </div>
 
+  <!-- Подключаем jsPDF и плагин для таблиц -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
   <script>
     // Инициализация jsPDF
     const { jsPDF } = window.jspdf;
@@ -743,15 +745,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const source = urlParams.get('source') || 'unknown';
 
-    // Сохранение данных в localStorage (для простой статистики)
+    // Сохранение данных в localStorage
     function saveResult(data) {
       const id = new Date().toISOString() + "_" + Math.random().toString(36).substr(2, 9);
       const record = { id, source, timestamp: new Date().toISOString(), ...data };
       const history = JSON.parse(localStorage.getItem('loveTestResults') || '[]');
       history.push(record);
       localStorage.setItem('loveTestResults', JSON.stringify(history));
-      // Можно отправить на сервер через fetch, если нужно
-      // fetch('https://your-api.com/save', { method: 'POST', body: JSON.stringify(record) });
     }
 
     const blocks = ['block1', 'block2', 'block3', 'block4'];
@@ -839,7 +839,7 @@
         tr.innerHTML = `
           <td>${r.name}</td>
           <td>${r.sum}</td>
-          <td><span class="badge ${r.className}">${r.zone}</span></td>
+          <td>${r.zone}</td>
         `;
         tableBody.appendChild(tr);
       });
@@ -884,26 +884,43 @@
 
     function downloadPDF() {
       const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text("Ваши результаты", 10, 20);
+      doc.setFontSize(18);
+      doc.text("Результаты теста: Зрелые отношения", 10, 20);
+      doc.setFontSize(12);
+      doc.text("Дата: " + new Date().toLocaleDateString("ru-RU"), 10, 30);
 
-      const tableRows = [];
+      // Таблица результатов
+      const tableData = [];
       document.querySelectorAll('#resultTableBody tr').forEach(tr => {
         const cells = tr.querySelectorAll('td');
-        tableRows.push([cells[0].innerText, cells[1].innerText, cells[2].innerText]);
+        tableData.push([cells[0].innerText, cells[1].innerText, cells[2].innerText]);
       });
 
       doc.autoTable({
         head: [['Блок', 'Баллы', 'Зона']],
-        body: tableRows,
-        startY: 30
+        body: tableData,
+        startY: 40
       });
 
-      doc.setFontSize(12);
-      const finalY = doc.lastAutoTable.finalY || 30;
-      doc.text("Рекомендации:", 10, finalY + 10);
-      document.querySelectorAll('.recommendation').forEach((rec, i) => {
-        doc.text(`${rec.querySelector('h4').innerText}: ${rec.innerText.replace(rec.querySelector('h4').innerText, '').trim()}`, 10, finalY + 20 + i * 10);
+      // Рекомендации
+      const finalY = doc.lastAutoTable.finalY || 40;
+      doc.setFontSize(14);
+      doc.text("Рекомендации", 10, finalY + 10);
+
+      let yPos = finalY + 20;
+      document.querySelectorAll('#recommendations .recommendation').forEach(rec => {
+        const title = rec.querySelector('h4').innerText;
+        const text = Array.from(rec.querySelectorAll('p')).map(p => p.innerText).join(' ');
+        doc.setFontSize(12);
+        doc.text(title + ":", 10, yPos);
+        yPos += 8;
+        const lines = doc.splitTextToSize(text, 180);
+        doc.text(lines, 12, yPos);
+        yPos += lines.length * 6 + 10;
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
       });
 
       doc.save("результаты_теста_отношения.pdf");
@@ -918,19 +935,17 @@
     function shareWithPartner() {
       const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
       const encodedText = encodeURIComponent(text);
-      // === [НАСТРОЙКА] Замените ссылку на актуальную после публикации на GitHub ===
       const shareUrl = `https://t.me/share/url?url=${encodedText}`;
       const whatsappUrl = `https://wa.me/?text=${encodedText}`;
-      // Можно открыть выбор
+
       if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        // На мобильных — предлагаем оба варианта
         if (confirm('Открыть в WhatsApp?')) {
           window.open(whatsappUrl, '_blank');
         } else {
           window.open(shareUrl, '_blank');
         }
       } else {
-        window.open(shareUrl, '_blank'); // Telegram на десктопе
+        window.open(shareUrl, '_blank');
       }
     }
 
