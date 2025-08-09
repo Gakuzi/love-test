@@ -45,6 +45,13 @@ window.addEventListener('DOMContentLoaded', () => {
     progressBar.setAttribute('aria-valuemax', '100');
   }
 
+  // Dynamic years in footers
+  const year = new Date().getFullYear();
+  const yearSpan = document.getElementById('currentYear');
+  if (yearSpan) yearSpan.textContent = String(year);
+  const pdfYear = document.getElementById('pdfYear');
+  if (pdfYear) pdfYear.textContent = String(year);
+
   loadState();
   updateProgress();
 
@@ -303,15 +310,62 @@ function downloadPDF() {
   });
 }
 
+// Build plain text report and download as UTF-8 BOM .txt
+function downloadTXT() {
+  const blockNames = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
+  const lines = [];
+  lines.push('Результаты теста: Зрелые отношения');
+  lines.push(`Дата: ${new Date().toLocaleDateString('ru-RU')}`);
+  lines.push('');
+
+  // Ensure we have latest overall
+  calculateOverallResult();
+  const overall = document.getElementById('overallStatus')?.textContent || '';
+  const priority = document.getElementById('priorityBlock')?.textContent || '';
+  lines.push(`Общее состояние: ${overall}`);
+  lines.push(`Приоритетный блок: ${priority}`);
+  lines.push('');
+  lines.push('Блоки:');
+
+  Object.entries(currentState.blockResults).forEach(([i, block]) => {
+    if (!block) return;
+    const name = blockNames[Number(i)];
+    const zoneLabel = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone];
+    lines.push(`- ${name}: ${block.sum}/15 (${zoneLabel})`);
+  });
+
+  lines.push('');
+  lines.push('Рекомендации:');
+  lines.push('1) Работа с границами — установите одну четкую границу и обсудите её.');
+  lines.push('2) Укрепление связи — ежедневный ритуал 10 минут без телефонов.');
+  lines.push('3) Личностный рост — обсудите, что хотите развивать.');
+
+  const text = lines.join('\n');
+  const bom = new Uint8Array([0xef, 0xbb, 0xbf]); // UTF-8 BOM
+  const blob = new Blob([bom, text], { type: 'text/plain;charset=utf-8' });
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'результаты_теста_отношения.txt';
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
+}
+
 function safeOpen(url) {
   const newWin = window.open(url, '_blank');
   if (newWin) newWin.opener = null;
 }
 
 function shareToTelegram() {
-  const text = 'Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова:';
-  const encodedText = encodeURIComponent(text);
-  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${encodedText}`;
+  // Use share URL with both text and URL encoded; include newlines
+  const message = [
+    'Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны.',
+    'Тест от Евгения Климова:',
+    TEST_URL
+  ].join('\n');
+  const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
   safeOpen(shareUrl);
 }
 
@@ -339,6 +393,7 @@ window.reviewBlock = reviewBlock;
 window.continueToBlock = continueToBlock;
 window.showFinalResults = showFinalResults;
 window.downloadPDF = downloadPDF;
+window.downloadTXT = downloadTXT;
 window.shareToTelegram = shareToTelegram;
 window.shareToWhatsApp = shareToWhatsApp;
 window.restartTest = restartTest;

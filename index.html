@@ -349,6 +349,13 @@
           </svg>
           Скачать PDF
         </button>
+        <button class="btn btn-secondary" onclick="downloadTXT()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Сохранить .TXT
+        </button>
         <button class="btn btn-secondary" onclick="restartTest()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="1 4 1 10 7 10"></polyline>
@@ -385,16 +392,11 @@
         <!-- Данные будут добавлены динамически -->
       </div>
       
-      <div class="footer">
-        Разработано Евгением Климовым | Связь: @eklimov
-      </div>
+      <div class="footer">© <span id="pdfYear"></span> Евгений Климов · Контакты: @eklimov</div>
     </div>
     
     <!-- Подвал -->
-    <div class="footer">
-      Разработано <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгением Климовым</a> | 
-      <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
-    </div>
+    <div class="footer">© <span id="currentYear"></span> <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгений Климов</a> · <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a></div>
   </div>
 
   <!-- Подключаем html2pdf.js -->
