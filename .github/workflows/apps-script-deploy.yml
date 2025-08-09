@@ -1,0 +1,57 @@
+name: Deploy Apps Script
+
+on:
+  push:
+    paths:
+      - 'apps-script/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install clasp (stable)
+        run: npm i -g @google/clasp@2.4.2
+
+      - name: Configure clasp auth
+        run: |
+          mkdir -p "$HOME"
+          cat > "$HOME/.clasprc.json" <<'JSON'
+          {
+            "token": {
+              "refresh_token": "${{ secrets.CLASP_REFRESH_TOKEN }}",
+              "access_token": "",
+              "scope": "https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/userinfo.email openid",
+              "token_type": "Bearer",
+              "expiry_date": 0
+            },
+            "oauth2ClientSettings": {
+              "clientId": "${{ secrets.CLASP_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.CLASP_CLIENT_SECRET }}",
+              "redirectUri": "http://localhost"
+            },
+            "isLocalCreds": false
+          }
+          JSON
+
+      - name: Push code to Apps Script
+        working-directory: apps-script
+        run: npx clasp push -f
+
+      - name: Deploy Web App (update existing deployment if provided)
+        if: ${{ secrets.CLASP_DEPLOYMENT_ID != '' }}
+        working-directory: apps-script
+        run: npx clasp deploy -i "${{ secrets.CLASP_DEPLOYMENT_ID }}" -d "CI deploy $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+      - name: Create new deployment if no deployment id is set
+        if: ${{ secrets.CLASP_DEPLOYMENT_ID == '' }}
+        working-directory: apps-script
+        run: npx clasp deploy -d "CI first deploy $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
