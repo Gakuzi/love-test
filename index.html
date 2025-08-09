@@ -330,6 +330,7 @@
           Скачать PDF
         </button>
         <button class="btn btn-secondary" onclick="openShareModal()">🔗 Поделиться результатом</button>
+        <button class="btn btn-secondary" onclick="openInviteModal()">🤝 Пригласить партнёра</button>
         <button class="btn btn-secondary" onclick="restartTest()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="1 4 1 10 7 10"></polyline>
@@ -374,7 +375,7 @@
      <div id="shareModal" class="modal" style="display:none;">
        <div class="modal-content">
          <div class="modal-header">
-           <h3>Поделиться результатом</h3>
+           <h3 id="shareModalTitle">Поделиться</h3>
            <button class="modal-close" onclick="closeShareModal()">✖</button>
          </div>
          <div class="share-grid">

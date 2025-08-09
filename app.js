@@ -374,11 +374,29 @@ async function downloadPDF() {
   doc.save('результаты_теста_отношения.pdf');
 }
 
-// Share modal
-function openShareModal() { const m = document.getElementById('shareModal'); if (m) { m.style.display = 'flex'; } }
+// Share modal state
+let shareMode = 'result'; // 'result' | 'invite'
+
+function openShareModal() {
+  shareMode = 'result';
+  const m = document.getElementById('shareModal');
+  const title = document.getElementById('shareModalTitle');
+  if (title) title.textContent = 'Поделиться результатом';
+  if (m) m.style.display = 'flex';
+}
+function openInviteModal() {
+  shareMode = 'invite';
+  const m = document.getElementById('shareModal');
+  const title = document.getElementById('shareModalTitle');
+  if (title) title.textContent = 'Пригласить пройти тест';
+  if (m) m.style.display = 'flex';
+}
 function closeShareModal() { const m = document.getElementById('shareModal'); if (m) { m.style.display = 'none'; } }
 
 function buildShareText() {
+  if (shareMode === 'invite') {
+    return ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.', '', TEST_URL].join('\n');
+  }
   calculateOverallResult();
   const overall = document.getElementById('overallStatus')?.textContent || '';
   const priority = document.getElementById('priorityBlock')?.textContent || '';
@@ -430,6 +448,38 @@ async function copyShareText() {
   }
 }
 
+// Persist results with tags (stub)
+async function saveResults(tag) {
+  try {
+    // Build payload
+    const payload = {
+      tag: tag || null,
+      url: location.href,
+      timestamp: new Date().toISOString(),
+      answers: currentState.answers,
+      blockResults: currentState.blockResults
+    };
+    // Send to your API endpoint (replace with real URL)
+    await fetch('/api/results', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.warn('Не удалось сохранить результаты:', e);
+  }
+}
+
+// Example: call saveResults when показываем финальные результаты
+const _origShowFinal = showFinalResults;
+showFinalResults = function() {
+  _origShowFinal();
+  // Try to derive tag from URL (utm_source or ref)
+  const params = new URLSearchParams(location.search);
+  const tag = params.get('utm_source') || params.get('ref') || null;
+  saveResults(tag);
+};
+
 // Expose to window for onclick handlers in HTML
 window.startTest = startTest;
 window.toggleHint = toggleHint;
@@ -440,9 +490,11 @@ window.continueToBlock = continueToBlock;
 window.showFinalResults = showFinalResults;
 window.downloadPDF = downloadPDF;
 window.openShareModal = openShareModal;
+window.openInviteModal = openInviteModal;
 window.closeShareModal = closeShareModal;
 window.shareToTelegram = shareToTelegram;
 window.shareToWhatsApp = shareToWhatsApp;
 window.shareToEmail = shareToEmail;
 window.copyShareText = copyShareText;
+window.saveResults = saveResults;
 window.restartTest = restartTest;
