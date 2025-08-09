@@ -172,30 +172,30 @@ body {
 .option input { display: none; }
 .option-label { flex: 1; }
 
-.hint-button {
-  background: none;
-  border: none;
-  color: var(--gray);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
+.hint-button { /* deprecated old button, keep minimal to avoid layout shift if present */ display: none; }
+
+/* New hint details component */
+.hint {
   margin-top: 0.5rem;
-  gap: 0.3rem;
-}
-
-.hint-button:hover { color: var(--primary); }
-
-.hint-content {
   background: #f8fafc;
   border-radius: var(--card-radius);
-  padding: 0.9rem;
-  margin-top: 0.8rem;
-  font-size: 0.92rem;
-  color: var(--gray);
   border: var(--border);
-  display: none;
 }
+.hint > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.9rem 1.2rem;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hint > summary::-webkit-details-marker { display: none; }
+.hint[open] > summary { color: var(--primary); }
+.hint > #hintContent { padding: 0 1.2rem 1.0rem 1.2rem; color: var(--gray); font-size: 0.95rem; line-height: 1.5; }
+
+/* Keyboard focus */
+.hint > summary:focus { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--card-radius); }
 
 /* Navigation */
 .navigation {
@@ -402,4 +402,6 @@ body {
   .option:hover { background: #232b35; }
   .option.selected { background: #223142; }
   .results-summary { background: #111820; border-left-color: var(--primary); }
+  .hint { background: #1b2129; border-color: #2e3742; }
+  .hint > #hintContent { color: var(--gray); }
 }

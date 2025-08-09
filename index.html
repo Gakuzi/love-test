@@ -61,18 +61,17 @@
         <!-- Варианты ответов будут добавлены динамически -->
       </div>
       
-      <button class="hint-button" onclick="toggleHint()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M12 16l0 -4"></path>
-          <circle cx="12" cy="8" r="1"></circle>
-        </svg>
-        Подробнее
-      </button>
-      
-      <div class="hint-content" id="hintContent">
-        Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой, молчанием, упрёками или эмоциональным шантажом.
-      </div>
+      <details id="hintDetails" class="hint">
+        <summary>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16l0 -4"></path>
+            <circle cx="12" cy="8" r="1"></circle>
+          </svg>
+          Подсказка к вопросу
+        </summary>
+        <div id="hintContent"></div>
+      </details>
       
       <div class="navigation">
         <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" style="display: none;">

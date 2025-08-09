@@ -101,6 +101,12 @@ function showQuestion(index) {
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
   document.getElementById('questionText').textContent = question.text;
 
+  // Inject hint content
+  const hintContent = document.getElementById('hintContent');
+  const hintDetails = document.getElementById('hintDetails');
+  if (hintContent) hintContent.textContent = question.hint || '';
+  if (hintDetails) hintDetails.open = false;
+
   optionsContainer.innerHTML = '';
   optionsContainer.setAttribute('role', 'radiogroup');
 
