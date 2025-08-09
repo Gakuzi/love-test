@@ -296,11 +296,22 @@ function calculateOverallResult() {
 
 function downloadPDF() {
   const element = document.getElementById('pdfReport');
-  const opt = { margin: 10, filename: 'результаты_теста_отношения.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-  html2pdf().set(opt).from(element).save().then(() => console.log('PDF успешно сохранен')).catch((error) => {
-    console.error('Ошибка при генерации PDF:', error);
-    alert('Произошла ошибка при создании PDF. Попробуйте еще раз.');
-  });
+  const opt = {
+    margin: 10,
+    filename: 'Результаты_теста_отношений.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf()
+    .set(opt)
+    .from(element)
+    .save()
+    .then(() => console.log('PDF успешно сохранен'))
+    .catch((error) => {
+      console.error('Ошибка при генерации PDF:', error);
+      alert('Произошла ошибка при создании PDF. Попробуйте еще раз.');
+    });
 }
 
 function safeOpen(url) {
@@ -309,9 +320,9 @@ function safeOpen(url) {
 }
 
 function shareToTelegram() {
-  const text = 'Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова:';
-  const encodedText = encodeURIComponent(text);
-  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${encodedText}`;
+  const baseText = 'Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова:';
+  const message = `${baseText}\n${TEST_URL}`.normalize('NFC');
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${encodeURIComponent(message)}`;
   safeOpen(shareUrl);
 }
 

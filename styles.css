@@ -364,8 +364,15 @@ body {
 .messenger-whatsapp:hover { background: #e6f9ee; color: #1da856; }
 
 /* Footer */
-.footer { text-align: center; padding: 1.5rem 0; color: var(--light-gray); font-size: 0.85rem; }
-.footer a { color: var(--light-gray); text-decoration: none; }
+.footer {
+  text-align: center;
+  padding: 1.5rem 0;
+  color: var(--light-gray);
+  font-size: 0.9rem;
+  border-top: 1px solid #e6e9ed;
+  margin-top: 1rem;
+}
+.footer a { color: var(--light-gray); text-decoration: none; font-weight: 500; }
 .footer a:hover { text-decoration: underline; color: var(--primary); }
 
 /* Hidden PDF report */
