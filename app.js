@@ -373,30 +373,9 @@ async function embedCyrillicFont(doc) {
 async function downloadPDF() {
   try {
     calculateOverallResult();
-    const { jsPDF } = window.jspdf || {};
-    if (!jsPDF) throw new Error('jsPDF не загружен');
-    const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-    const fontOk = await embedCyrillicFont(doc);
-    if (fontOk) doc.setFont('Roboto', 'normal');
-
-    // Header
-    doc.setFont(undefined, 'bold');
-    doc.setFontSize(18);
-    doc.text('Результаты теста: Зрелые отношения', 105, 20, { align: 'center' });
-    doc.setFont(undefined, 'normal');
-    doc.setFontSize(11);
-    doc.text(`Дата: ${new Date().toLocaleDateString('ru-RU')}`, 105, 28, { align: 'center' });
-
-    // Overview
     const overall = document.getElementById('overallStatus')?.textContent || '';
     const priority = document.getElementById('priorityBlock')?.textContent || '';
-    doc.setFillColor(248, 250, 252);
-    doc.roundedRect(15, 35, 180, 18, 3, 3, 'F');
-    doc.setFontSize(12);
-    doc.text(`Общее состояние: ${overall}`, 20, 45);
-    doc.text(`Приоритетный блок: ${priority}`, 120, 45);
 
-    // Table (if plugin present)
     const names = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
     const rows = names.map((name, i) => {
       const block = currentState.blockResults[i];
@@ -404,45 +383,47 @@ async function downloadPDF() {
       const zoneText = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone];
       return [name, `${block.sum}/15`, zoneText];
     });
-    if (doc.autoTable) {
-      doc.autoTable({
-        head: [['Блок', 'Баллы', 'Зона']],
-        body: rows,
-        startY: 60,
-        theme: 'grid',
-        headStyles: { fillColor: [74, 107, 138] },
-        styles: { fontSize: 11, font: fontOk ? 'Roboto' : undefined },
-        columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 30, halign: 'center' }, 2: { cellWidth: 60 } }
-      });
+
+    const dd = {
+      content: [
+        { text: 'Результаты теста: Зрелые отношения', style: 'header', alignment: 'center' },
+        { text: `Дата: ${new Date().toLocaleDateString('ru-RU')}`, margin: [0, 4, 0, 12], alignment: 'center' },
+        { columns: [
+          { text: `Общее состояние: ${overall}`, width: '50%' },
+          { text: `Приоритетный блок: ${priority}`, width: '50%' }
+        ], margin: [0, 0, 0, 12] },
+        { text: 'Итоги по блокам', style: 'subheader' },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 60, 100],
+            body: [
+              ['Блок', 'Баллы', 'Зона'],
+              ...rows
+            ]
+          },
+          layout: 'lightHorizontalLines',
+          margin: [0, 6, 0, 12]
+        },
+        { text: 'Рекомендации', style: 'subheader' },
+        { ul: [
+          'Работа с границами — установите одну четкую границу и обсудите её.',
+          'Укрепление связи — ежедневный «ритуал конца дня» 10 минут без телефонов.',
+          'Личностный рост — обсудите, что хотите развивать.'
+        ]}
+      ],
+      styles: {
+        header: { fontSize: 16, bold: true },
+        subheader: { fontSize: 13, bold: true }
+      },
+      defaultStyle: { font: 'Roboto' }
+    };
+
+    if (window.pdfMake && window.pdfMake.createPdf) {
+      pdfMake.createPdf(dd).download('результаты_теста_отношения.pdf');
     } else {
-      // Fallback простым текстом
-      let y = 60;
-      doc.setFontSize(12);
-      doc.text('Итоги по блокам:', 15, y);
-      y += 6;
-      rows.forEach(r => { doc.text(`${r[0]} — ${r[1]} (${r[2]})`, 15, y); y += 6; });
+      alert('PDF движок не загрузился. Обновите страницу и попробуйте ещё раз.');
     }
-
-    // Recommendations
-    let y = doc.lastAutoTable ? (doc.lastAutoTable.finalY + 10) : 60 + 6 * (rows.length + 2);
-    doc.setFont(undefined, 'bold');
-    doc.setFontSize(13);
-    doc.text('Рекомендации', 15, y);
-    doc.setFont(undefined, 'normal');
-    doc.setFontSize(11);
-    y += 6;
-    ['1. Работа с границами — установите одну четкую границу и обсудите её.',
-     '2. Укрепление связи — ежедневный «ритуал конца дня» 10 минут без телефонов.',
-     '3. Личностный рост — обсудите, что хотите развивать.'
-    ].forEach((line, idx) => doc.text(line, 15, y + idx * 6));
-
-    // Footer
-    const year = new Date().getFullYear();
-    doc.setFontSize(10);
-    doc.setTextColor(120);
-    doc.text(`© ${year} Евгений Климов · @eklimov`, 105, 287, { align: 'center' });
-
-    doc.save('результаты_теста_отношения.pdf');
   } catch (e) {
     console.error('PDF ошибка:', e);
     alert('Не удалось сформировать PDF. Попробуйте ещё раз.');
@@ -783,34 +764,37 @@ function generatePlanICS() {
 }
 
 function generatePlanPDF() {
-  const body = document.getElementById('planReportBody');
   const startInput = document.getElementById('planStartDate');
-  if (!body || !startInput) return;
+  if (!startInput) return;
   const start = new Date(startInput.value || new Date());
   if (isNaN(start)) { alert('Укажите корректную дату начала.'); return; }
   const actions = getPlanActions();
-  const lines = [];
+
+  const items = [];
   for (let i = 0; i < 14; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     const day = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' });
     const action = actions[i % actions.length];
-    lines.push(`<p><strong>День ${i+1}</strong> — ${day}<br>${action}</p>`);
+    items.push({ text: [{ text: `День ${i+1}`, bold: true }, ` — ${day}\n${action}`], margin: [0, 2, 0, 2] });
   }
-  body.innerHTML = lines.join('');
 
-  const el = document.getElementById('planReport');
-  const opt = {
-    margin: 10,
-    filename: 'план_14_дней.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  const dd = {
+    content: [
+      { text: '14‑дневный план', style: 'header', alignment: 'center' },
+      { text: `Старт: ${start.toLocaleDateString('ru-RU')}`, alignment: 'center', margin: [0,4,0,12] },
+      ...items
+    ],
+    styles: {
+      header: { fontSize: 16, bold: true }
+    },
+    defaultStyle: { font: 'Roboto' }
   };
-  if (window.html2pdf) {
-    html2pdf().set(opt).from(el).save();
+
+  if (window.pdfMake && window.pdfMake.createPdf) {
+    pdfMake.createPdf(dd).download('план_14_дней.pdf');
   } else {
-    alert('Не удалось создать PDF (модуль не загружен). Попробуйте ещё раз.');
+    alert('PDF движок не загрузился. Обновите страницу и попробуйте ещё раз.');
   }
 }
 
