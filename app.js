@@ -342,17 +342,39 @@ function calculateOverallResult() {
   `;
 }
 
+// Load and embed Cyrillic font for jsPDF
+let __pdfFontReady = false;
+async function embedCyrillicFont(doc) {
+  if (__pdfFontReady) return;
+  const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto-Regular.ttf';
+  const res = await fetch(fontUrl, { mode: 'cors' });
+  const buf = await res.arrayBuffer();
+  const base64 = await new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result; // data:application/octet-stream;base64,AAA...
+      resolve(String(dataUrl).split(',')[1]);
+    };
+    reader.readAsDataURL(new Blob([buf]));
+  });
+  doc.addFileToVFS('Roboto-Regular.ttf', base64);
+  doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+  __pdfFontReady = true;
+}
+
 // New PDF generator with jsPDF + AutoTable
 async function downloadPDF() {
   calculateOverallResult();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+  await embedCyrillicFont(doc);
+  doc.setFont('Roboto', 'normal');
 
   // Header
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(undefined, 'bold');
   doc.setFontSize(18);
   doc.text('Результаты теста: Зрелые отношения', 105, 20, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(undefined, 'normal');
   doc.setFontSize(11);
   doc.text(`Дата: ${new Date().toLocaleDateString('ru-RU')}`, 105, 28, { align: 'center' });
 
@@ -379,16 +401,16 @@ async function downloadPDF() {
     startY: 60,
     theme: 'grid',
     headStyles: { fillColor: [74, 107, 138] },
-    styles: { fontSize: 11 },
+    styles: { fontSize: 11, font: 'Roboto' },
     columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 30, halign: 'center' }, 2: { cellWidth: 60 } }
   });
 
   // Recommendations
   let y = doc.lastAutoTable.finalY + 10;
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(undefined, 'bold');
   doc.setFontSize(13);
   doc.text('Рекомендации', 15, y);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(undefined, 'normal');
   doc.setFontSize(11);
   y += 6;
   const recs = [
@@ -520,6 +542,33 @@ showFinalResults = function() {
   const tag = params.get('utm_source') || params.get('ref') || null;
   saveResults(tag);
 };
+
+// Strong restart: fully reset UI and state
+function restartTest() {
+  if (confirm('Вы уверены, что хотите начать тест заново? Все ваши ответы будут потеряны.')) {
+    clearState();
+    // Hide question card and all block results
+    const card = document.getElementById('questionCard');
+    if (card) card.style.display = 'none';
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`blockResult${i}`);
+      if (el) el.style.display = 'none';
+    }
+    const final = document.getElementById('finalResults');
+    if (final) final.style.display = 'none';
+    const intro = document.getElementById('intro');
+    if (intro) intro.style.display = 'block';
+    // Reset progress bar and scroll
+    const bar = document.getElementById('progressBar');
+    if (bar) bar.style.width = '0%';
+    // Close hint
+    const hint = document.getElementById('hintDetails');
+    if (hint) hint.open = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Persist cleared state
+    saveState();
+  }
+}
 
 // Expose to window for onclick handlers in HTML
 window.startTest = startTest;
