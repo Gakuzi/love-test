@@ -321,25 +321,6 @@
       </div>
       
       <div class="share-actions">
-        <div class="share-title">Поделитесь результатами</div>
-        <div class="messenger-buttons">
-          <button class="messenger-btn messenger-telegram" onclick="shareToTelegram()">
-            <div class="messenger-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.346-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
-              </svg>
-            </div>
-            Telegram
-          </button>
-          <button class="messenger-btn messenger-whatsapp" onclick="shareToWhatsApp()">
-            <div class="messenger-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1.875-5.906h-.03c-3.094 0-5.625-2.531-5.625-5.625 0-1.563.656-3.031 1.734-4.109L7.8 4.875c.187-.187.375-.187.562 0l1.688 1.688c.187.187.187.375 0 .562l-.468.469c-.187.187-.187.375 0 .562l1.312 1.313c.187.187.375.187.562 0l.469-.468c.187-.187.375-.187.562 0l3.75 3.75c.187.187.187.375 0 .562l-1.406 1.406c-.187.187-.375.187-.562 0l-.563-.563c-.187-.187-.187-.375 0-.562l1.218-1.219c.938-.938 1.5-2.156 1.5-3.469 0-2.812-2.297-5.109-5.109-5.109zm-1.875-3.75c-.656 0-1.313.25-1.875.75l-.469.469c-.187.187-.375.187-.562 0l-1.313-1.313c-.187-.187-.187-.375 0-.562l.469-.469c.562-.5 1.219-.75 1.875-.75.656 0 1.313.25 1.875.75l.469.469c.187.187.187.375 0 .562l-1.313 1.313c-.187.187-.375.187-.562 0z"/>
-              </svg>
-            </div>
-            WhatsApp
-          </button>
-        </div>
         <button class="btn" onclick="downloadPDF()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -348,13 +329,7 @@
           </svg>
           Скачать PDF
         </button>
-        <button class="btn btn-secondary" onclick="downloadTXT()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-          </svg>
-          Сохранить .TXT
-        </button>
+        <button class="btn btn-secondary" onclick="openShareModal()">🔗 Поделиться результатом</button>
         <button class="btn btn-secondary" onclick="restartTest()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="1 4 1 10 7 10"></polyline>
@@ -363,43 +338,61 @@
           Пройти снова
         </button>
       </div>
-    </div>
     
-    <!-- Скрытый PDF-отчет -->
-    <div class="pdf-report" id="pdfReport">
-      <h1>Результаты теста: Зрелые отношения</h1>
-      <div class="date" id="pdfDate">Дата: </div>
-      
-      <table id="pdfTable">
-        <thead>
-          <tr>
-            <th>Блок</th>
-            <th>Баллы</th>
-            <th>Зона</th>
-          </tr>
-        </thead>
-        <tbody id="pdfTableBody">
-          <!-- Данные будут добавлены динамически -->
-        </tbody>
-      </table>
-      
-      <div class="summary" id="pdfSummary">
-        <!-- Данные будут добавлены динамически -->
-      </div>
-      
-      <div id="pdfRecommendations">
-        <!-- Данные будут добавлены динамически -->
-      </div>
-      
-      <div class="footer">© <span id="pdfYear"></span> Евгений Климов · Контакты: @eklimov</div>
     </div>
-    
+ 
+     <!-- Скрытый PDF-отчет -->
+     <div class="pdf-report" id="pdfReport">
+       <h1>Результаты теста: Зрелые отношения</h1>
+       <div class="date" id="pdfDate">Дата: </div>
+       
+       <table id="pdfTable">
+         <thead>
+           <tr>
+             <th>Блок</th>
+             <th>Баллы</th>
+             <th>Зона</th>
+           </tr>
+         </thead>
+         <tbody id="pdfTableBody">
+           <!-- Данные будут добавлены динамически -->
+         </tbody>
+       </table>
+       
+       <div class="summary" id="pdfSummary">
+         <!-- Данные будут добавлены динамически -->
+       </div>
+       
+       <div id="pdfRecommendations">
+         <!-- Данные будут добавлены динамически -->
+       </div>
+       
+       <div class="footer">© <span id="pdfYear"></span> Евгений Климов · Контакты: @eklimov</div>
+     </div>
+ 
+     <!-- Share Modal -->
+     <div id="shareModal" class="modal" style="display:none;">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h3>Поделиться результатом</h3>
+           <button class="modal-close" onclick="closeShareModal()">✖</button>
+         </div>
+         <div class="share-grid">
+           <button class="share-item telegram" onclick="shareToTelegram()">📨 Telegram</button>
+           <button class="share-item whatsapp" onclick="shareToWhatsApp()">💚 WhatsApp</button>
+           <button class="share-item email" onclick="shareToEmail()">✉️ Email</button>
+           <button class="share-item copy" onclick="copyShareText()">📋 Копировать</button>
+         </div>
+       </div>
+     </div>
+
     <!-- Подвал -->
     <div class="footer">© <span id="currentYear"></span> <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгений Климов</a> · <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a></div>
   </div>
 
-  <!-- Подключаем html2pdf.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <!-- Подключаем jsPDF + AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js" defer></script>
   <script src="./app.js" defer></script>
 </body>
 </html>

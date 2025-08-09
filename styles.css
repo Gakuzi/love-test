@@ -405,3 +405,25 @@ body {
   .hint { background: #1b2129; border-color: #2e3742; }
   .hint > #hintContent { color: var(--gray); }
 }
+
+/* Share Modal */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; }
+.modal-content { width: 100%; max-width: 520px; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; border-bottom: var(--border); }
+.modal-header h3 { margin: 0; color: var(--primary); font-size: 1.1rem; }
+.modal-close { background: none; border: none; font-size: 1rem; cursor: pointer; color: var(--gray); }
+.share-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; padding: 1rem 1.2rem 1.2rem; }
+.share-item { padding: 0.9rem; border-radius: var(--card-radius); border: 1px solid #e0e4e8; background: #fff; cursor: pointer; text-align: center; font-weight: 500; transition: var(--transition); }
+.share-item:hover { transform: translateY(-1px); }
+.share-item.telegram { color: #229ed9; border-color: #229ed9; background: #e6f2fa; }
+.share-item.whatsapp { color: #1da856; border-color: #1da856; background: #e6f9ee; }
+.share-item.email { color: var(--primary); }
+.share-item.copy { color: var(--dark); }
+
+@media (prefers-color-scheme: dark) {
+  .modal-content { background: #1b2129; }
+  .modal-header { border-bottom-color: #2e3742; }
+  .modal-close { color: var(--gray); }
+  .share-item { background: #1b2129; border-color: #2e3742; }
+  .share-item.copy { color: var(--dark); }
+}
