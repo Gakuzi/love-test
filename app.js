@@ -348,90 +348,105 @@ function calculateOverallResult() {
 // Load and embed Cyrillic font for jsPDF
 let __pdfFontReady = false;
 async function embedCyrillicFont(doc) {
-  if (__pdfFontReady) return;
-  const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto-Regular.ttf';
-  const res = await fetch(fontUrl, { mode: 'cors' });
-  const buf = await res.arrayBuffer();
-  const base64 = await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result; // data:application/octet-stream;base64,AAA...
-      resolve(String(dataUrl).split(',')[1]);
-    };
-    reader.readAsDataURL(new Blob([buf]));
-  });
-  doc.addFileToVFS('Roboto-Regular.ttf', base64);
-  doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-  __pdfFontReady = true;
+  if (__pdfFontReady) return true;
+  try {
+    const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto-Regular.ttf';
+    const res = await fetch(fontUrl, { mode: 'cors' });
+    if (!res.ok) throw new Error('font fetch failed');
+    const buf = await res.arrayBuffer();
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1]);
+      reader.readAsDataURL(new Blob([buf]));
+    });
+    doc.addFileToVFS('Roboto-Regular.ttf', base64);
+    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+    __pdfFontReady = true;
+    return true;
+  } catch (e) {
+    console.warn('Не удалось загрузить шрифт для PDF, используем стандартный:', e);
+    return false;
+  }
 }
 
 // New PDF generator with jsPDF + AutoTable
 async function downloadPDF() {
-  calculateOverallResult();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-  await embedCyrillicFont(doc);
-  doc.setFont('Roboto', 'normal');
+  try {
+    calculateOverallResult();
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) throw new Error('jsPDF не загружен');
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    const fontOk = await embedCyrillicFont(doc);
+    if (fontOk) doc.setFont('Roboto', 'normal');
 
-  // Header
-  doc.setFont(undefined, 'bold');
-  doc.setFontSize(18);
-  doc.text('Результаты теста: Зрелые отношения', 105, 20, { align: 'center' });
-  doc.setFont(undefined, 'normal');
-  doc.setFontSize(11);
-  doc.text(`Дата: ${new Date().toLocaleDateString('ru-RU')}`, 105, 28, { align: 'center' });
+    // Header
+    doc.setFont(undefined, 'bold');
+    doc.setFontSize(18);
+    doc.text('Результаты теста: Зрелые отношения', 105, 20, { align: 'center' });
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(11);
+    doc.text(`Дата: ${new Date().toLocaleDateString('ru-RU')}`, 105, 28, { align: 'center' });
 
-  // Overview box
-  const overall = document.getElementById('overallStatus')?.textContent || '';
-  const priority = document.getElementById('priorityBlock')?.textContent || '';
-  doc.setFillColor(248, 250, 252);
-  doc.roundedRect(15, 35, 180, 18, 3, 3, 'F');
-  doc.setFontSize(12);
-  doc.text(`Общее состояние: ${overall}`, 20, 45);
-  doc.text(`Приоритетный блок: ${priority}`, 120, 45);
+    // Overview
+    const overall = document.getElementById('overallStatus')?.textContent || '';
+    const priority = document.getElementById('priorityBlock')?.textContent || '';
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(15, 35, 180, 18, 3, 3, 'F');
+    doc.setFontSize(12);
+    doc.text(`Общее состояние: ${overall}`, 20, 45);
+    doc.text(`Приоритетный блок: ${priority}`, 120, 45);
 
-  // Blocks table
-  const blockNames = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
-  const rows = blockNames.map((name, i) => {
-    const block = currentState.blockResults[i];
-    if (!block) return [name, '-', '-'];
-    const zoneLabel = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone];
-    return [name, `${block.sum}/15`, zoneLabel];
-  });
-  doc.autoTable({
-    head: [['Блок', 'Баллы', 'Зона']],
-    body: rows,
-    startY: 60,
-    theme: 'grid',
-    headStyles: { fillColor: [74, 107, 138] },
-    styles: { fontSize: 11, font: 'Roboto' },
-    columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 30, halign: 'center' }, 2: { cellWidth: 60 } }
-  });
+    // Table (if plugin present)
+    const names = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
+    const rows = names.map((name, i) => {
+      const block = currentState.blockResults[i];
+      if (!block) return [name, '-', '-'];
+      const zoneText = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone];
+      return [name, `${block.sum}/15`, zoneText];
+    });
+    if (doc.autoTable) {
+      doc.autoTable({
+        head: [['Блок', 'Баллы', 'Зона']],
+        body: rows,
+        startY: 60,
+        theme: 'grid',
+        headStyles: { fillColor: [74, 107, 138] },
+        styles: { fontSize: 11, font: fontOk ? 'Roboto' : undefined },
+        columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 30, halign: 'center' }, 2: { cellWidth: 60 } }
+      });
+    } else {
+      // Fallback простым текстом
+      let y = 60;
+      doc.setFontSize(12);
+      doc.text('Итоги по блокам:', 15, y);
+      y += 6;
+      rows.forEach(r => { doc.text(`${r[0]} — ${r[1]} (${r[2]})`, 15, y); y += 6; });
+    }
 
-  // Recommendations
-  let y = doc.lastAutoTable.finalY + 10;
-  doc.setFont(undefined, 'bold');
-  doc.setFontSize(13);
-  doc.text('Рекомендации', 15, y);
-  doc.setFont(undefined, 'normal');
-  doc.setFontSize(11);
-  y += 6;
-  const recs = [
-    '1. Работа с границами — установите одну четкую границу и обсудите её.',
-    '2. Укрепление связи — ежедневный «ритуал конца дня» 10 минут без телефонов.',
-    '3. Личностный рост — обсудите, что хотите развивать.'
-  ];
-  recs.forEach((line, idx) => {
-    doc.text(line, 15, y + idx * 6);
-  });
+    // Recommendations
+    let y = doc.lastAutoTable ? (doc.lastAutoTable.finalY + 10) : 60 + 6 * (rows.length + 2);
+    doc.setFont(undefined, 'bold');
+    doc.setFontSize(13);
+    doc.text('Рекомендации', 15, y);
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(11);
+    y += 6;
+    ['1. Работа с границами — установите одну четкую границу и обсудите её.',
+     '2. Укрепление связи — ежедневный «ритуал конца дня» 10 минут без телефонов.',
+     '3. Личностный рост — обсудите, что хотите развивать.'
+    ].forEach((line, idx) => doc.text(line, 15, y + idx * 6));
 
-  // Footer
-  const year = new Date().getFullYear();
-  doc.setFontSize(10);
-  doc.setTextColor(120);
-  doc.text(`© ${year} Евгений Климов · @eklimov`, 105, 287, { align: 'center' });
+    // Footer
+    const year = new Date().getFullYear();
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text(`© ${year} Евгений Климов · @eklimov`, 105, 287, { align: 'center' });
 
-  doc.save('результаты_теста_отношения.pdf');
+    doc.save('результаты_теста_отношения.pdf');
+  } catch (e) {
+    console.error('PDF ошибка:', e);
+    alert('Не удалось сформировать PDF. Попробуйте ещё раз.');
+  }
 }
 
 // Share modal state
@@ -473,35 +488,53 @@ function buildShareText() {
 
 function safeOpen(url) { const newWin = window.open(url, '_blank'); if (newWin) newWin.opener = null; }
 
+// UTM helpers for share links
+function withUtm(urlString, source) {
+  try {
+    const url = new URL(urlString);
+    if (source) url.searchParams.set('utm_source', source);
+    return url.toString();
+  } catch { return urlString; }
+}
+
+function getShareLinkForInviteWithSource(source) {
+  const base = getShareLinkForInvite();
+  return withUtm(base, source);
+}
+
 function shareToTelegram() {
-  const text = buildShareText();
-  // Prefer including URL explicitly for Telegram web share
-  const urlParam = encodeURIComponent(shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL);
-  const textParam = encodeURIComponent(text);
-  const shareUrl = `https://t.me/share/url?url=${urlParam}&text=${textParam}`;
+  const src = 'telegram';
+  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
+  const text = buildShareText().replace(TEST_URL, link);
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
   safeOpen(shareUrl);
 }
 
 function shareToWhatsApp() {
-  const text = buildShareText();
+  const src = 'whatsapp';
+  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
+  const text = buildShareText().replace(TEST_URL, link);
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
   safeOpen(whatsappUrl);
 }
 
 function shareToEmail() {
+  const src = 'email';
+  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
   const subject = 'Мои результаты теста «Зрелые отношения»';
-  const body = buildShareText();
+  const body = buildShareText().replace(TEST_URL, link);
   const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href = url;
 }
 
 async function copyShareText() {
-  const text = buildShareText();
+  const src = 'copy';
+  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
+  const text = buildShareText().replace(TEST_URL, link);
   try {
     await navigator.clipboard.writeText(text);
     alert('Текст результата скопирован в буфер обмена');
   } catch {
-    // fallback
     const ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);
