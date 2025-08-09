@@ -468,22 +468,36 @@ function openInviteModal() {
 }
 function closeShareModal() { const m = document.getElementById('shareModal'); if (m) { m.style.display = 'none'; } }
 
-function buildShareText() {
+function buildShareText(opts) {
+  const options = Object.assign({ source: '', includeLink: true }, opts || {});
+  const src = options.source || '';
+  const linkBase = shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL;
+  const link = src ? withUtm(linkBase, src) : linkBase;
+
   if (shareMode === 'invite') {
-    const inviteLink = getShareLinkForInvite();
-    return ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.', '', inviteLink].join('\n');
+    const lines = [
+      '🧭 Тест «Зрелые отношения»',
+      'Давай пройдём его вместе — это быстро и полезно.'
+    ];
+    if (options.includeLink) {
+      lines.push('', link);
+    }
+    return lines.join('\n');
   }
+
+  // result mode
   calculateOverallResult();
   const overall = document.getElementById('overallStatus')?.textContent || '';
   const priority = document.getElementById('priorityBlock')?.textContent || '';
   const lines = [
     '📊 Результаты теста «Зрелые отношения»',
     `• Общее состояние: ${overall}`,
-    `• Приоритетный блок: ${priority}`,
-    '',
-    'Пройди тест и ты: '
+    `• Приоритетный блок: ${priority}`
   ];
-  return lines.join('\n') + TEST_URL;
+  if (options.includeLink) {
+    lines.push('', link);
+  }
+  return lines.join('\n');
 }
 
 function safeOpen(url) { const newWin = window.open(url, '_blank'); if (newWin) newWin.opener = null; }
@@ -504,33 +518,33 @@ function getShareLinkForInviteWithSource(source) {
 
 function shareToTelegram() {
   const src = 'telegram';
-  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
-  const text = buildShareText().replace(TEST_URL, link);
+  // В Telegram для предпросмотра передаём ссылку только в параметре url,
+  // а в тексте ссылку не добавляем (чтобы не было дублей).
+  const linkBase = shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL;
+  const link = withUtm(linkBase, src);
+  const text = buildShareText({ source: src, includeLink: false });
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
   safeOpen(shareUrl);
 }
 
 function shareToWhatsApp() {
   const src = 'whatsapp';
-  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
-  const text = buildShareText().replace(TEST_URL, link);
+  const text = buildShareText({ source: src, includeLink: true });
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
   safeOpen(whatsappUrl);
 }
 
 function shareToEmail() {
   const src = 'email';
-  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
   const subject = 'Мои результаты теста «Зрелые отношения»';
-  const body = buildShareText().replace(TEST_URL, link);
+  const body = buildShareText({ source: src, includeLink: true });
   const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href = url;
 }
 
 async function copyShareText() {
   const src = 'copy';
-  const link = shareMode === 'invite' ? getShareLinkForInviteWithSource(src) : withUtm(TEST_URL, src);
-  const text = buildShareText().replace(TEST_URL, link);
+  const text = buildShareText({ source: src, includeLink: true });
   try {
     await navigator.clipboard.writeText(text);
     alert('Текст результата скопирован в буфер обмена');
