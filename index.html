@@ -325,6 +325,81 @@
       background: #e6f9ee;
     }
 
+    /* Скрытый PDF-отчет */
+    .pdf-report {
+      display: none;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    .pdf-report h1 {
+      text-align: center;
+      color: var(--primary);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .pdf-report .date {
+      text-align: center;
+      color: var(--gray);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .pdf-report table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .pdf-report th, .pdf-report td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .pdf-report th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .pdf-report .summary {
+      background-color: #f9fbfc;
+      border-left: 4px solid var(--primary);
+      padding: 10px 15px;
+      margin: 15px 0;
+    }
+    .pdf-report .recommendation {
+      margin-bottom: 15px;
+    }
+    .pdf-report .recommendation h4 {
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .pdf-report .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .pdf-report .badge-success {
+      background-color: #d8e8e1;
+      color: var(--success);
+    }
+    .pdf-report .badge-warning {
+      background-color: #f9e9db;
+      color: var(--warning);
+    }
+    .pdf-report .badge-danger {
+      background-color: #f5dada;
+      color: var(--danger);
+    }
+    .pdf-report .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #666;
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 1rem;
@@ -696,6 +771,37 @@
       </div>
     </form>
 
+    <!-- Скрытый PDF-отчет -->
+    <div class="pdf-report" id="pdfReport">
+      <h1>Результаты теста: Зрелые отношения</h1>
+      <div class="date" id="pdfDate">Дата: </div>
+      
+      <table id="pdfTable">
+        <thead>
+          <tr>
+            <th>Блок</th>
+            <th>Баллы</th>
+            <th>Зона</th>
+          </tr>
+        </thead>
+        <tbody id="pdfTableBody">
+          <!-- Данные будут добавлены динамически -->
+        </tbody>
+      </table>
+      
+      <div class="summary" id="pdfSummary">
+        <!-- Данные будут добавлены динамически -->
+      </div>
+      
+      <div id="pdfRecommendations">
+        <!-- Данные будут добавлены динамически -->
+      </div>
+      
+      <div class="footer">
+        Разработано Евгением Климовым | Связь: @eklimov
+      </div>
+    </div>
+
     <!-- Результаты -->
     <div class="results" id="results">
       <h2>📊 Ваши результаты</h2>
@@ -725,7 +831,7 @@
           <div id="shareMenu" style="display: none; margin-top: 0.5rem;">
             <button class="messenger-btn telegram" onclick="shareToTelegram()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.504-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.346-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
               </svg>
               Telegram
             </button>
@@ -756,27 +862,57 @@
     </div>
   </div>
 
-  <!-- Подключаем jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <!-- Подключаем html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
-    // Инициализация jsPDF
-    const { jsPDF } = window.jspdf;
-
     // === [НАСТРОЙКА] Укажите вашу ссылку на размещённый тест ===
     const TEST_URL = "https://yourusername.github.io/love-test/"; // ← Замените на ваш URL
-
+    
+    // === [НАСТРОЙКА] URL Google Forms для сбора метрик ===
+    const GOOGLE_FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf.../formResponse"; // ← Замените на ваш URL
+    
     // Получение идентификатора из URL
     const urlParams = new URLSearchParams(window.location.search);
     const source = urlParams.get('source') || 'unknown';
+    
+    // Генерация уникального ID пользователя
+    function generateUserId() {
+      return 'user-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+    }
+    const userId = generateUserId();
 
     function saveResult(data) {
+      // Сохранение в localStorage
       const id = new Date().toISOString() + "_" + Math.random().toString(36).substr(2, 9);
-      const record = { id, source, timestamp: new Date().toISOString(), ...data };
+      const record = { id, source, timestamp: new Date().toISOString(), userId, ...data };
       const history = JSON.parse(localStorage.getItem('loveTestResults') || '[]');
       history.push(record);
       localStorage.setItem('loveTestResults', JSON.stringify(history));
+      
+      // Отправка данных в Google Forms
+      try {
+        const formData = new FormData();
+        
+        // Поля формы (замените entry.xxxxx на ваши ID полей из Google Forms)
+        formData.append('entry.1234567890', userId);
+        formData.append('entry.9876543210', source);
+        formData.append('entry.1122334455', new Date().toISOString());
+        formData.append('entry.5566778899', JSON.stringify(data.results));
+        formData.append('entry.9988776655', data.overall);
+        formData.append('entry.4455667788', data.priority);
+        
+        // Отправка POST-запроса в Google Forms
+        fetch(GOOGLE_FORMS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formData
+        }).catch(error => {
+          console.error('Ошибка отправки данных в Google Forms:', error);
+        });
+      } catch (e) {
+        console.error('Ошибка при подготовке данных для Google Forms:', e);
+      }
     }
 
     const blocks = ['block1', 'block2', 'block3', 'block4'];
@@ -830,15 +966,13 @@
 
     function shareToTelegram() {
       const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
-      const encodedText = encodeURIComponent(text);
-      const shareUrl = `https://t.me/share/url?url=${encodedText}`;
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${text}`;
       window.open(shareUrl, '_blank');
     }
 
     function shareToWhatsApp() {
       const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
-      const encodedText = encodeURIComponent(text);
-      const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
       window.open(whatsappUrl, '_blank');
     }
 
@@ -1050,6 +1184,39 @@
         recContainer.appendChild(div);
       });
 
+      // Заполняем PDF-отчет
+      document.getElementById('pdfDate').textContent = `Дата: ${new Date().toLocaleDateString("ru-RU")}`;
+      
+      const pdfTableBody = document.getElementById('pdfTableBody');
+      pdfTableBody.innerHTML = '';
+      results.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.name}</td>
+          <td>${r.sum}</td>
+          <td>${r.zoneText}</td>
+        `;
+        pdfTableBody.appendChild(tr);
+      });
+      
+      document.getElementById('pdfSummary').innerHTML = `
+        <p><strong>Состояние:</strong> ${overall}</p>
+        <p><strong>Приоритет:</strong> ${lowest.name}</p>
+      `;
+      
+      const pdfRecContainer = document.getElementById('pdfRecommendations');
+      pdfRecContainer.innerHTML = '';
+      results.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'recommendation';
+        div.innerHTML = `
+          <h4>${r.name}</h4>
+          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zoneText}</span></p>
+          ${r.recommendations.replace(/<ul class="checklist">/g, '<ul>').replace(/<li>/g, '<li>• ')}
+        `;
+        pdfRecContainer.appendChild(div);
+      });
+
       saveResult({ results, overall, priority: lowest.name });
 
       document.getElementById('loveForm').style.display = 'none';
@@ -1058,68 +1225,18 @@
     });
 
     function downloadPDF() {
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+      const element = document.getElementById('pdfReport');
+      
+      const opt = {
+        margin: 10,
+        filename: 'результаты_теста_отношения.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
 
-      // Заголовок
-      doc.setFontSize(18);
-      doc.text("Результаты теста: Зрелые отношения", 10, 20);
-      doc.setFontSize(12);
-      doc.text(`Дата: ${new Date().toLocaleDateString("ru-RU")}`, 10, 30);
-
-      // Таблица
-      const tableData = [];
-      document.querySelectorAll('#resultTableBody tr').forEach(tr => {
-        const cells = tr.querySelectorAll('td');
-        tableData.push([cells[0].innerText, cells[1].innerText, cells[2].innerText]);
-      });
-
-      doc.autoTable({
-        head: [['Блок', 'Баллы', 'Зона']],
-        body: tableData,
-        startY: 40,
-        theme: 'striped'
-      });
-
-      // Рекомендации
-      const finalY = doc.lastAutoTable.finalY || 40;
-      doc.setFontSize(14);
-      doc.text("Рекомендации", 10, finalY + 10);
-
-      let yPos = finalY + 20;
-      document.querySelectorAll('#recommendations .recommendation').forEach(rec => {
-        const title = rec.querySelector('h4').innerText;
-        const zone = rec.querySelector('.badge').innerText;
-        const recommendations = rec.querySelector('ul') ? rec.querySelector('ul').innerText : rec.querySelector('p').innerText;
-        
-        doc.setFontSize(12);
-        doc.text(`${title}: ${zone}`, 10, yPos);
-        yPos += 8;
-        
-        const lines = doc.splitTextToSize(recommendations, 180);
-        doc.text(lines, 12, yPos);
-        yPos += lines.length * 6 + 10;
-        
-        if (yPos > 270) {
-          doc.addPage();
-          yPos = 20;
-        }
-      });
-
-      // Нижний колонтитул на каждой странице
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text("Разработано Евгением Климовым | Связь: @eklimov", 105, 290, { align: 'center' });
-      }
-
-      // Сохраняем PDF
-      doc.save("результаты_теста_отношения.pdf");
+      // Генерация и скачивание PDF
+      html2pdf().set(opt).from(element).save();
     }
 
     function sendEmail() {
