@@ -1,5 +1,8 @@
 // Configuration
 const TEST_URL = window.location.href;
+// Google Sheets Web App endpoint (provided by user)
+const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw-ZJfx5wrHY0usZg5sW01MzhU3g6aX800PMXwj4hQWyToJgBrimCOlXp4VXFfpC2nF_A/exec';
+const SHARED_TOKEN = '';
 
 const QUESTIONS = [
   // Block 1: Safety & Boundaries
@@ -513,6 +516,7 @@ async function copyShareText() {
 async function saveResults(tag) {
   try {
     const payload = {
+      token: SHARED_TOKEN || undefined,
       userId,
       invitedBy: getInvitedBy() || null,
       tag: tag || null,
@@ -523,9 +527,9 @@ async function saveResults(tag) {
       answers: currentState.answers,
       blockResults: currentState.blockResults
     };
-    await fetch('/api/results', {
+    await fetch(GOOGLE_SHEETS_WEBAPP_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
   } catch (e) {
