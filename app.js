@@ -2,7 +2,7 @@
 const TEST_URL = window.location.href;
 // Google Sheets Web App endpoint (provided by user)
 const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwDlJR5rboHL469k_pSwndg4ZCKs2PRSMsDcN0QUKXs5VstnjXdkZGVSQX7o54UeRotcw/exec';
-const SHARED_TOKEN = '';
+const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 
 const QUESTIONS = [
   // Block 1: Safety & Boundaries
