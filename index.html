@@ -288,6 +288,43 @@
       color: var(--primary);
     }
 
+    /* Мессенджеры */
+    .messenger-share {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .messenger-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      color: var(--dark);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .messenger-btn:hover {
+      background: #f0f4f8;
+    }
+    .messenger-btn.telegram {
+      border-color: #229ed9;
+      color: #229ed9;
+    }
+    .messenger-btn.telegram:hover {
+      background: #e6f2fa;
+    }
+    .messenger-btn.whatsapp {
+      border-color: #25d366;
+      color: #25d366;
+    }
+    .messenger-btn.whatsapp:hover {
+      background: #e6f9ee;
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 1rem;
@@ -683,7 +720,23 @@
       <div class="actions">
         <button onclick="downloadPDF()">Скачать PDF</button>
         <button onclick="sendEmail()">Отправить на Email</button>
-        <button onclick="shareWithPartner()">Поделиться с партнёром</button>
+        <div>
+          <button onclick="toggleShareMenu()" style="width: 100%; margin-top: 0.5rem;">Поделиться с партнёром</button>
+          <div id="shareMenu" style="display: none; margin-top: 0.5rem;">
+            <button class="messenger-btn telegram" onclick="shareToTelegram()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.504-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
+              </svg>
+              Telegram
+            </button>
+            <button class="messenger-btn whatsapp" onclick="shareToWhatsApp()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1.875-5.906h-.03c-3.094 0-5.625-2.531-5.625-5.625 0-1.563.656-3.031 1.734-4.109L7.8 4.875c.187-.187.375-.187.562 0l1.688 1.688c.187.187.187.375 0 .562l-.468.469c-.187.187-.187.375 0 .562l1.312 1.313c.187.187.375.187.562 0l.469-.468c.187-.187.375-.187.562 0l3.75 3.75c.187.187.187.375 0 .562l-1.406 1.406c-.187.187-.375.187-.562 0l-.563-.563c-.187-.187-.187-.375 0-.562l1.218-1.219c.938-.938 1.5-2.156 1.5-3.469 0-2.812-2.297-5.109-5.109-5.109zm-1.875-3.75c-.656 0-1.313.25-1.875.75l-.469.469c-.187.187-.375.187-.562 0l-1.313-1.313c-.187-.187-.187-.375 0-.562l.469-.469c.562-.5 1.219-.75 1.875-.75.656 0 1.313.25 1.875.75l.469.469c.187.187.187.375 0 .562l-1.313 1.313c-.187.187-.375.187-.562 0z"/>
+              </svg>
+              WhatsApp
+            </button>
+          </div>
+        </div>
         <button onclick="restart()">Пройти снова</button>
       </div>
 
@@ -703,7 +756,7 @@
     </div>
   </div>
 
-  <!-- Подключаем jsPDF и autotable -->
+  <!-- Подключаем jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
@@ -770,6 +823,25 @@
       btn.classList.toggle('active', !isVisible);
     }
 
+    function toggleShareMenu() {
+      const menu = document.getElementById('shareMenu');
+      menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+    }
+
+    function shareToTelegram() {
+      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
+      const encodedText = encodeURIComponent(text);
+      const shareUrl = `https://t.me/share/url?url=${encodedText}`;
+      window.open(shareUrl, '_blank');
+    }
+
+    function shareToWhatsApp() {
+      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
+      const encodedText = encodeURIComponent(text);
+      const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
     document.getElementById('loveForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
@@ -790,18 +862,158 @@
         for (let i = block.start; i <= block.end; i++) {
           sum += answers[`q${i}`] || 0;
         }
-        let zone, className;
+        let zone, zoneText, className, recommendations;
         if (sum >= 11) {
           zone = '✅ Зона силы';
+          zoneText = 'Зона силы';
           className = 'badge-success';
+          
+          // Конкретные рекомендации для зоны силы
+          if (block.name === 'Безопасность') {
+            recommendations = `
+              <p><strong>Сильные стороны:</strong> Вы чувствуете себя защищённо и свободно в отношениях.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Регулярно выражайте благодарность за уважение ваших границ</li>
+                <li>Совместно празднуйте моменты, когда вы могли быть собой без страха</li>
+                <li>Поддерживайте эту зону, продолжая честно делиться своими потребностями</li>
+              </ul>
+            `;
+          } else if (block.name === 'Надёжность') {
+            recommendations = `
+              <p><strong>Сильные стороны:</strong> Есть стабильность и опора в отношениях.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Отмечайте случаи, когда вы чувствуете поддержку друг друга</li>
+                <li>Регулярно обсуждайте распределение обязанностей, чтобы поддерживать баланс</li>
+                <li>Совместно планируйте будущее, опираясь на вашу надёжность</li>
+              </ul>
+            `;
+          } else if (block.name === 'Связь') {
+            recommendations = `
+              <p><strong>Сильные стороны:</strong> Эмоциональная близость присутствует.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Регулярно практикуйте ваши ритуалы внимания</li>
+                <li>Углубляйте разговоры, задавая открытые вопросы</li>
+                <li>Отмечайте моменты, когда вы особенно хорошо поняли друг друга</li>
+              </ul>
+            `;
+          } else { // Рост
+            recommendations = `
+              <p><strong>Сильные стороны:</strong> Отношения поддерживают личностный рост.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Регулярно обсуждайте, как вы растёте как личности</li>
+                <li>Поддерживайте интересы друг друга, даже если они разные</li>
+                <li>Создавайте новые общие цели, опираясь на ваши ценности</li>
+              </ul>
+            `;
+          }
         } else if (sum >= 6) {
           zone = '⚠️ Риск';
+          zoneText = 'Зона риска';
           className = 'badge-warning';
+          
+          // Конкретные рекомендации для зоны риска
+          if (block.name === 'Безопасность') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Чувство безопасности требует внимания.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Попробуйте использовать "Я-сообщения": "Я чувствую себя некомфортно, когда..."</li>
+                <li>Начните с малых границ: попросите 15 минут тишины после работы</li>
+                <li>Обсудите, что значит "уважение границ" для каждого из вас</li>
+              </ul>
+              <p><em>Помните: здоровые границы — это не стена, а дверь с замком, который вы сами контролируете.</em></p>
+            `;
+          } else if (block.name === 'Надёжность') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Недостаток надёжности и предсказуемости.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Начните с малого: договоритесь о времени ежедневного чек-ина</li>
+                <li>Создайте систему напоминаний для важных обещаний</li>
+                <li>Обсудите, что для вас значит "быть надёжным"</li>
+              </ul>
+              <p><em>Помните: надёжность строится из маленьких, но последовательных действий.</em></p>
+            `;
+          } else if (block.name === 'Связь') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Связь есть, но нуждается в укреплении.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Внедрите "ритуал конца дня": 10 минут без телефонов и дел</li>
+                <li>Используйте технику активного слушания: повторяйте суть сказанного</li>
+                <li>Задавайте открытые вопросы: "Как ты себя чувствовал сегодня?"</li>
+              </ul>
+              <p><em>Помните: качество связи важнее количества слов.</em></p>
+            `;
+          } else { // Рост
+            recommendations = `
+              <p><strong>Сейчас:</strong> Ценности и цели требуют обсуждения.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li>Запланируйте "разговор о ценностях": обсудите 3 главных жизненных принципа</li>
+                <li>Создайте совместную доску целей (можно в Trello или на бумаге)</li>
+                <li>Найдите одну маленькую цель, которую можно достичь за месяц</li>
+              </ul>
+              <p><em>Помните: совместный рост начинается с маленьких шагов в одном направлении.</em></p>
+            `;
+          }
         } else {
           zone = '❗ Тревога';
+          zoneText = 'Зона тревоги';
           className = 'badge-danger';
+          
+          // Конкретные рекомендации для зоны тревоги
+          if (block.name === 'Безопасность') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Есть признаки давления и неуважения границ.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li><strong>На этой неделе:</strong> Запишите 3 ситуации, где вы чувствовали давление</li>
+                <li><strong>В течение месяца:</strong> Проведите разговор, используя "Я-сообщения"</li>
+                <li><strong>Долгосрочно:</strong> Рассмотрите возможность консультации с семейным психологом</li>
+              </ul>
+              <p><em>Важно: если есть признаки манипуляций или насилия, ваша безопасность — главный приоритет. Обратитесь к специалисту.</em></p>
+            `;
+          } else if (block.name === 'Надёжность') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Нет стабильности и доверия.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li><strong>На этой неделе:</strong> Запишите случаи, когда вы чувствовали себя незащищённо</li>
+                <li><strong>В течение месяца:</strong> Составьте список ваших ожиданий друг от друга</li>
+                <li><strong>Долгосрочно:</strong> Работайте над восстановлением доверия через маленькие, но последовательные действия</li>
+              </ul>
+              <p><em>Важно: восстановление доверия требует времени и обоюдных усилий. Не стесняйтесь просить поддержки у профессионала.</em></p>
+            `;
+          } else if (block.name === 'Связь') {
+            recommendations = `
+              <p><strong>Сейчас:</strong> Эмоциональный контакт ослаблен.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li><strong>На этой неделе:</strong> Назначьте 15 минут ежедневного разговора без телефонов</li>
+                <li><strong>В течение месяца:</strong> Попробуйте технику "4 вопроса для близости"</li>
+                <li><strong>Долгосрочно:</strong> Рассмотрите совместные занятия, которые укрепляют связь</li>
+              </ul>
+              <p><em>Важно: начните с малого — даже 5 минут качественного общения каждый день могут изменить ситуацию.</em></p>
+            `;
+          } else { // Рост
+            recommendations = `
+              <p><strong>Сейчас:</strong> Отношения не способствуют развитию.</p>
+              <p><strong>Что делать:</strong></p>
+              <ul class="checklist">
+                <li><strong>На этой неделе:</strong> Обсудите, что каждый из вас хочет развивать в себе</li>
+                <li><strong>В течение месяца:</strong> Составьте индивидуальные и совместные цели на 3 месяца</li>
+                <li><strong>Долгосрочно:</strong> Найдите способы поддерживать личностный рост друг друга</li>
+              </ul>
+              <p><em>Важно: здоровые отношения должны поддерживать рост обоих партнёров. Если это не так, стоит обсудить изменения.</em></p>
+            `;
+          }
         }
-        return { ...block, sum, zone, className };
+        return { ...block, sum, zone, zoneText, className, recommendations };
       });
 
       const tableBody = document.getElementById('resultTableBody');
@@ -830,18 +1042,10 @@
       results.forEach(r => {
         const div = document.createElement('div');
         div.className = 'recommendation';
-        let actions = '';
-        if (r.sum >= 11) {
-          actions = `<p>Сильные стороны: высокий уровень доверия. Поддерживайте ритуалы заботы.</p>`;
-        } else if (r.sum >= 6) {
-          actions = `<p>Требует внимания. Сделайте 3 шага: 1) обсудите чувства, 2) назначьте разговор, 3) запишите 3 плюса в отношениях.</p>`;
-        } else {
-          actions = `<p>Важно восстановить. Проведите честный диалог, составьте план, при необходимости обратитесь к психологу.</p>`;
-        }
         div.innerHTML = `
           <h4>${r.name}</h4>
-          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zone}</span></p>
-          ${actions}
+          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zoneText}</span></p>
+          ${r.recommendations}
         `;
         recContainer.appendChild(div);
       });
@@ -877,8 +1081,7 @@
         head: [['Блок', 'Баллы', 'Зона']],
         body: tableData,
         startY: 40,
-        theme: 'striped',
-        styles: { font: 'helvetica' }
+        theme: 'striped'
       });
 
       // Рекомендации
@@ -889,13 +1092,17 @@
       let yPos = finalY + 20;
       document.querySelectorAll('#recommendations .recommendation').forEach(rec => {
         const title = rec.querySelector('h4').innerText;
-        const text = Array.from(rec.querySelectorAll('p')).map(p => p.innerText).join(' ');
+        const zone = rec.querySelector('.badge').innerText;
+        const recommendations = rec.querySelector('ul') ? rec.querySelector('ul').innerText : rec.querySelector('p').innerText;
+        
         doc.setFontSize(12);
-        doc.text(title + ":", 10, yPos);
+        doc.text(`${title}: ${zone}`, 10, yPos);
         yPos += 8;
-        const lines = doc.splitTextToSize(text, 180);
+        
+        const lines = doc.splitTextToSize(recommendations, 180);
         doc.text(lines, 12, yPos);
         yPos += lines.length * 6 + 10;
+        
         if (yPos > 270) {
           doc.addPage();
           yPos = 20;
@@ -911,6 +1118,7 @@
         doc.text("Разработано Евгением Климовым | Связь: @eklimov", 105, 290, { align: 'center' });
       }
 
+      // Сохраняем PDF
       doc.save("результаты_теста_отношения.pdf");
     }
 
@@ -918,23 +1126,6 @@
       const subject = 'Мои результаты теста на зрелость отношений';
       const body = `Привет!\n\nЯ прошёл тест на зрелость отношений.\nРезультаты можно посмотреть здесь: ${window.location.href}\n\nТест разработан Евгением Климовым.\n\nP.S. Ты тоже можешь пройти: ${TEST_URL}`;
       window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    }
-
-    function shareWithPartner() {
-      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
-      const encodedText = encodeURIComponent(text);
-      const shareUrl = `https://t.me/share/url?url=${encodedText}`;
-      const whatsappUrl = `https://wa.me/?text=${encodedText}`;
-
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        if (confirm('Открыть в WhatsApp?')) {
-          window.open(whatsappUrl, '_blank');
-        } else {
-          window.open(shareUrl, '_blank');
-        }
-      } else {
-        window.open(shareUrl, '_blank');
-      }
     }
 
     function restart() {
