@@ -35,6 +35,38 @@ let currentState = {
   blockResults: { 0: null, 1: null, 2: null, 3: null }
 };
 
+// Anonymous identity
+let userId = null;
+function generateUUID() {
+  // RFC4122 v4 using crypto
+  const buf = new Uint8Array(16);
+  crypto.getRandomValues(buf);
+  buf[6] = (buf[6] & 0x0f) | 0x40;
+  buf[8] = (buf[8] & 0x3f) | 0x80;
+  const hex = [...buf].map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.substr(0,8)}-${hex.substr(8,4)}-${hex.substr(12,4)}-${hex.substr(16,4)}-${hex.substr(20)}`;
+}
+function getOrCreateUserId() {
+  try {
+    const key = 'loveTestUserId';
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = generateUUID();
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch { return generateUUID(); }
+}
+function getInvitedBy() {
+  const p = new URLSearchParams(location.search);
+  return p.get('invited_by');
+}
+function getShareLinkForInvite() {
+  const url = new URL(location.href);
+  url.searchParams.set('invited_by', userId || '');
+  return url.toString();
+}
+
 // Init
 window.addEventListener('DOMContentLoaded', () => {
   // Accessibility roles
@@ -44,6 +76,9 @@ window.addEventListener('DOMContentLoaded', () => {
     progressBar.setAttribute('aria-valuemin', '0');
     progressBar.setAttribute('aria-valuemax', '100');
   }
+
+  // Anonymous id
+  userId = getOrCreateUserId();
 
   // Dynamic years in footers
   const year = new Date().getFullYear();
@@ -395,7 +430,8 @@ function closeShareModal() { const m = document.getElementById('shareModal'); if
 
 function buildShareText() {
   if (shareMode === 'invite') {
-    return ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.', '', TEST_URL].join('\n');
+    const inviteLink = getShareLinkForInvite();
+    return ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.', '', inviteLink].join('\n');
   }
   calculateOverallResult();
   const overall = document.getElementById('overallStatus')?.textContent || '';
@@ -413,8 +449,11 @@ function buildShareText() {
 function safeOpen(url) { const newWin = window.open(url, '_blank'); if (newWin) newWin.opener = null; }
 
 function shareToTelegram() {
-  const message = buildShareText();
-  const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+  const text = buildShareText();
+  // Prefer including URL explicitly for Telegram web share
+  const urlParam = encodeURIComponent(shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL);
+  const textParam = encodeURIComponent(text);
+  const shareUrl = `https://t.me/share/url?url=${urlParam}&text=${textParam}`;
   safeOpen(shareUrl);
 }
 
@@ -451,15 +490,17 @@ async function copyShareText() {
 // Persist results with tags (stub)
 async function saveResults(tag) {
   try {
-    // Build payload
     const payload = {
+      userId,
+      invitedBy: getInvitedBy() || null,
       tag: tag || null,
       url: location.href,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
       timestamp: new Date().toISOString(),
       answers: currentState.answers,
       blockResults: currentState.blockResults
     };
-    // Send to your API endpoint (replace with real URL)
     await fetch('/api/results', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
