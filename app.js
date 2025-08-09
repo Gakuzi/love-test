@@ -675,3 +675,149 @@ window.shareToEmail = shareToEmail;
 window.copyShareText = copyShareText;
 window.saveResults = saveResults;
 window.restartTest = restartTest;
+
+function openPlanModal() {
+  const m = document.getElementById('planModal');
+  if (m) {
+    // default start date = tomorrow
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const input = document.getElementById('planStartDate');
+    if (input) input.value = d.toISOString().slice(0, 10);
+    renderPlanPreview();
+    m.style.display = 'flex';
+  }
+}
+function closePlanModal() { const m = document.getElementById('planModal'); if (m) m.style.display = 'none'; }
+
+function getPlanActions() {
+  // Simple template based on priority block
+  const priority = document.getElementById('priorityBlock')?.textContent || '';
+  const base = {
+    'Безопасность': [
+      'Ежедневно: 10 минут “тихого времени” без экранов по очереди',
+      '1 раз: проговорить одну личную границу и договориться, как её уважать',
+      'Практика “я‑сообщений” в сложном разговоре'
+    ],
+    'Надёжность': [
+      'Ежедневно: маленькое выполненное обещание (5–10 минут)',
+      '1 раз: составить бытовой “чек‑лист недели”',
+      'В конце недели: сверка ожиданий на следующую'
+    ],
+    'Связь': [
+      'Ежедневно: 10 минут “итог дня” без телефонов',
+      '3 раза/нед: активное слушание — 5 мин только слушать, 5 мин — говорить',
+      '1 раз: совместное “свидание без экранов” 60–90 мин'
+    ],
+    'Рост': [
+      'Ежедневно: 10 минут на личную цель (чтение/курс/спорт)',
+      '1 раз: сверка ценностей и горизонта 6 месяцев',
+      '1 раз: список “что даёт энергию” для каждого'
+    ]
+  };
+  // fallback if not computed yet
+  const key = ['Безопасность','Надёжность','Связь','Рост'].includes(priority) ? priority : 'Связь';
+  return base[key];
+}
+
+function renderPlanPreview() {
+  const startInput = document.getElementById('planStartDate');
+  const container = document.getElementById('planPreview');
+  if (!startInput || !container) return;
+  const start = new Date(startInput.value || new Date());
+  if (isNaN(start)) return;
+
+  const actions = getPlanActions();
+  const lines = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const day = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'short' });
+    const action = actions[i % actions.length];
+    lines.push(`${day}: ${action}`);
+  }
+  container.textContent = lines.join('\n');
+}
+
+function generatePlanICS() {
+  const startInput = document.getElementById('planStartDate');
+  const start = new Date(startInput?.value || new Date());
+  if (isNaN(start)) { alert('Укажите корректную дату начала.'); return; }
+  const actions = getPlanActions();
+
+  const pad = (n)=> String(n).padStart(2,'0');
+  function formatICSDate(dt) {
+    return dt.getUTCFullYear() + pad(dt.getUTCMonth()+1) + pad(dt.getUTCDate()) + 'T' + pad(dt.getUTCHours()) + pad(dt.getUTCMinutes()) + '00Z';
+  }
+
+  const uidBase = (Math.random().toString(36).slice(2)) + '@love-test';
+  const now = new Date();
+  const dtstamp = formatICSDate(now);
+  const cal = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Love Test//EN'];
+
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    d.setHours(19, 0, 0, 0); // 19:00 локально
+    const dtstart = formatICSDate(d);
+    const action = actions[i % actions.length];
+    cal.push('BEGIN:VEVENT');
+    cal.push(`UID:${i}-${uidBase}`);
+    cal.push(`DTSTAMP:${dtstamp}`);
+    cal.push(`DTSTART:${dtstart}`);
+    cal.push(`DURATION:PT30M`);
+    cal.push(`SUMMARY:План на день #${i+1}`);
+    cal.push(`DESCRIPTION:${action.replace(/\n/g, ' ')}`);
+    cal.push('END:VEVENT');
+  }
+  cal.push('END:VCALENDAR');
+
+  const blob = new Blob([cal.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'plan_14_days.ics';
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
+}
+
+function generatePlanPDF() {
+  const body = document.getElementById('planReportBody');
+  const startInput = document.getElementById('planStartDate');
+  if (!body || !startInput) return;
+  const start = new Date(startInput.value || new Date());
+  if (isNaN(start)) { alert('Укажите корректную дату начала.'); return; }
+  const actions = getPlanActions();
+  const lines = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const day = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' });
+    const action = actions[i % actions.length];
+    lines.push(`<p><strong>День ${i+1}</strong> — ${day}<br>${action}</p>`);
+  }
+  body.innerHTML = lines.join('');
+
+  const el = document.getElementById('planReport');
+  const opt = {
+    margin: 10,
+    filename: 'план_14_дней.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  if (window.html2pdf) {
+    html2pdf().set(opt).from(el).save();
+  } else {
+    alert('Не удалось создать PDF (модуль не загружен). Попробуйте ещё раз.');
+  }
+}
+
+// Wire plan modal events
+window.openPlanModal = openPlanModal;
+window.closePlanModal = closePlanModal;
+window.generatePlanICS = generatePlanICS;
+window.generatePlanPDF = generatePlanPDF;
+// Update preview on date change
+document.addEventListener('change', (e)=>{ if (e.target && e.target.id === 'planStartDate') renderPlanPreview(); });
