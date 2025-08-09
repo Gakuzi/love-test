@@ -1,7 +1,7 @@
 // Configuration
 const TEST_URL = window.location.href;
 // Google Sheets Web App endpoint (provided by user)
-const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw-ZJfx5wrHY0usZg5sW01MzhU3g6aX800PMXwj4hQWyToJgBrimCOlXp4VXFfpC2nF_A/exec';
+const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwDlJR5rboHL469k_pSwndg4ZCKs2PRSMsDcN0QUKXs5VstnjXdkZGVSQX7o54UeRotcw/exec';
 const SHARED_TOKEN = '';
 
 const QUESTIONS = [
