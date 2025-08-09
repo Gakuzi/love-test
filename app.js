@@ -512,9 +512,42 @@ async function copyShareText() {
   }
 }
 
-// Persist results with tags (stub)
+function buildDetailedAnswers() {
+  const details = [];
+  Object.entries(currentState.answers).forEach(([idxStr, value]) => {
+    const idx = Number(idxStr);
+    const q = QUESTIONS[idx];
+    if (!q) return;
+    const opt = (q.options || []).find(o => o.value === value);
+    details.push({
+      номерВопроса: (idx % 5) + 1,
+      порядковыйИндекс: idx,
+      id: q.id,
+      блок: q.block,
+      вопрос: q.text,
+      выбранныйВариант: opt ? opt.label : '',
+      балл: value
+    });
+  });
+  return details;
+}
+
+function buildBlockResultsDetailed() {
+  const names = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
+  return Object.entries(currentState.blockResults).map(([i, block]) => {
+    if (!block) return null;
+    const zoneText = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone];
+    return { блок: names[Number(i)], баллы: `${block.sum}/15`, зона: zoneText };
+  }).filter(Boolean);
+}
+
 async function saveResults(tag) {
   try {
+    // Ensure overall/priority are computed
+    calculateOverallResult();
+    const overall = document.getElementById('overallStatus')?.textContent || '';
+    const priority = document.getElementById('priorityBlock')?.textContent || '';
+
     const payload = {
       token: SHARED_TOKEN || undefined,
       userId,
@@ -524,8 +557,11 @@ async function saveResults(tag) {
       userAgent: navigator.userAgent,
       language: navigator.language,
       timestamp: new Date().toISOString(),
-      answers: currentState.answers,
-      blockResults: currentState.blockResults
+      // подробные ответы и итоги
+      answersDetailed: buildDetailedAnswers(),
+      blockResultsDetailed: buildBlockResultsDetailed(),
+      overall,
+      priorityBlock: priority
     };
     await fetch(GOOGLE_SHEETS_WEBAPP_URL, {
       method: 'POST',
