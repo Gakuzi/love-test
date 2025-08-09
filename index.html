@@ -15,316 +15,522 @@
       --dark: #2b323a;
       --gray: #6c757d;
       --light-gray: #adb5bd;
-      --radius: 14px;
-      --card-radius: 10px;
-      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --card-radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
       --transition: all 0.3s ease;
-      --border: 1px solid #dee2e6;
+      --border: 1px solid #e0e4e8;
+      --progress-height: 8px;
     }
+    
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
+    
     body {
-      background-color: #f4f6f9;
+      background-color: #f5f7fa;
       color: var(--dark);
       line-height: 1.6;
-      font-size: 15px;
+      font-size: 16px;
+      min-height: 100vh;
     }
+    
     .container {
-      max-width: 800px;
-      margin: 1rem auto;
+      max-width: 600px;
+      margin: 0 auto;
       padding: 1.2rem;
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
     }
-    header {
-      text-align: center;
-      margin-bottom: 1.4rem;
-      padding: 1rem;
-      background: #f0f4f8;
-      border-radius: var(--card-radius);
-      border: var(--border);
+    
+    /* Прогресс-бар */
+    .progress-container {
+      margin-bottom: 1.5rem;
     }
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--primary);
+    
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--light-gray);
+      margin-bottom: 0.5rem;
     }
-    header p {
-      color: var(--gray);
-      font-size: 0.9rem;
-      margin-top: 0.3rem;
-    }
-    .progress {
-      height: 6px;
+    
+    .progress-bar-container {
+      height: var(--progress-height);
       background: #e9ecef;
-      border-radius: 3px;
-      margin: 1rem 0 0.7rem;
+      border-radius: var(--progress-height);
       overflow: hidden;
+      margin-bottom: 1.5rem;
     }
+    
     .progress-bar {
       height: 100%;
       background: var(--primary);
       width: 0%;
       transition: width 0.5s ease;
     }
-    .step-indicator {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--light-gray);
-      margin-bottom: 0.5rem;
-    }
-    .block-title {
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin: 1.2rem 0 0.8rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid #edf0f3;
-      font-weight: 550;
-    }
-    .block-desc {
-      font-size: 0.9rem;
-      color: var(--gray);
-      margin-bottom: 1rem;
-      line-height: 1.5;
-      background: #f8fafc;
-      padding: 0.7rem 0.9rem;
-      border-radius: 8px;
-      border: var(--border);
-    }
-    .question {
-      margin-bottom: 1.2rem;
-      padding: 0.9rem;
-      background: var(--light);
-      border-radius: var(--card-radius);
-      border-left: 4px solid var(--primary);
-    }
-    .question p {
-      font-weight: 500;
-      margin-bottom: 0.6rem;
-      color: var(--dark);
-    }
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    .option {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      padding: 0.5rem 0.7rem;
-      border-radius: 6px;
-      transition: var(--transition);
-    }
-    .option:hover {
-      background: #eef4f7;
-    }
-    .option input {
-      margin-right: 0.5rem;
-      accent-color: var(--primary);
-    }
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.4rem;
-      font-size: 0.98rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: var(--transition);
-      margin-top: 0.8rem;
-      font-weight: 500;
-    }
-    button:hover {
-      background: #3a5870;
-    }
-    .btn-nav {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1.4rem;
-    }
-    .btn-secondary {
-      background: var(--light);
-      color: var(--dark);
-      border: 1px solid #dde2e6;
-    }
-    .btn-secondary:hover {
-      background: #e9ecef;
-    }
-    .results {
-      display: none;
-      margin-top: 1.4rem;
-      padding: 1.4rem;
+    
+    /* Введение */
+    .intro {
+      text-align: center;
+      padding: 1.5rem;
       background: white;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
-    .results h2 {
+    
+    .intro h1 {
+      font-size: 1.8rem;
       color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .intro p {
+      color: var(--gray);
+      line-height: 1.6;
       margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+    }
+    
+    .intro-stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 1.2rem 0;
+      background: #f8fafc;
+      padding: 0.8rem;
+      border-radius: var(--card-radius);
+      font-size: 0.9rem;
+    }
+    
+    .stat {
       text-align: center;
-      font-size: 1.5rem;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 1.2rem;
-      font-size: 0.92rem;
+    
+    .stat-value {
+      font-weight: 600;
+      color: var(--primary);
     }
-    th, td {
-      padding: 0.6rem 0.5rem;
-      text-align: left;
-      border-bottom: 1px solid #edf0f3;
+    
+    /* Карточка вопроса */
+    .question-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
     }
-    th {
-      background: #f1f5f9;
-      color: var(--dark);
-      font-weight: 550;
-    }
-    .badge {
-      display: inline-flex;
+    
+    .question-header {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.25rem;
-      padding: 0.3rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+    
+    .block-tag {
+      background: #eef4f7;
+      color: var(--primary);
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
       font-weight: 500;
     }
-    .badge-success {
+    
+    .question-number {
+      color: var(--light-gray);
+      font-weight: 500;
+    }
+    
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+    
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .option {
+      background: var(--light);
+      border: 1px solid #e0e4e8;
+      border-radius: var(--card-radius);
+      padding: 0.9rem 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+    }
+    
+    .option:hover {
+      background: #eef4f7;
+      border-color: var(--primary);
+    }
+    
+    .option.selected {
+      background: #e6f0fa;
+      border-color: var(--primary);
+      position: relative;
+    }
+    
+    .option.selected::after {
+      content: "✓";
+      position: absolute;
+      right: 12px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .option input {
+      display: none;
+    }
+    
+    .option-label {
+      flex: 1;
+    }
+    
+    .hint-button {
+      background: none;
+      border: none;
+      color: var(--gray);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      gap: 0.3rem;
+    }
+    
+    .hint-button:hover {
+      color: var(--primary);
+    }
+    
+    .hint-content {
+      background: #f8fafc;
+      border-radius: var(--card-radius);
+      padding: 0.9rem;
+      margin-top: 0.8rem;
+      font-size: 0.92rem;
+      color: var(--gray);
+      border: var(--border);
+      display: none;
+    }
+    
+    /* Кнопки навигации */
+    .navigation {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn {
+      flex: 1;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border-radius: var(--card-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn:hover {
+      background: #3a5870;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: var(--light);
+      color: var(--dark);
+      border: var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+    
+    /* Промежуточные результаты */
+    .block-result {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    
+    .block-result h2 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 1.2rem;
+      font-size: 1.5rem;
+    }
+    
+    .result-summary {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    
+    .score-circle::before {
+      content: '';
+      position: absolute;
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      background: white;
+      z-index: 1;
+    }
+    
+    .score-text {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .zone-label {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    .zone-success {
       background: #d8e8e1;
       color: var(--success);
     }
-    .badge-warning {
+    
+    .zone-warning {
       background: #f9e9db;
       color: var(--warning);
     }
-    .badge-danger {
+    
+    .zone-danger {
       background: #f5dada;
       color: var(--danger);
     }
-    .summary {
-      margin: 1.2rem 0;
-      padding: 1rem;
-      background: #f9fbfc;
-      border-radius: var(--card-radius);
-      border-left: 4px solid var(--primary);
+    
+    .result-description {
+      text-align: center;
+      color: var(--gray);
       font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
     }
-    .priority {
+    
+    .result-actions {
+      display: flex;
+      gap: 0.8rem;
+      width: 100%;
+    }
+    
+    /* Итоговые результаты */
+    .final-results {
+      display: none;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .final-results h2 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+    }
+    
+    .results-overview {
+      margin-bottom: 1.8rem;
+    }
+    
+    .results-chart {
+      height: 200px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .results-summary {
+      background: #f8fafc;
+      border-radius: var(--card-radius);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .results-summary p {
+      margin: 0.5rem 0;
+    }
+    
+    .results-details {
+      margin-bottom: 1.8rem;
+    }
+    
+    .results-block {
+      margin-bottom: 1.5rem;
+    }
+    
+    .results-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+    
+    .block-title {
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    .block-score {
       font-weight: 600;
-      color: var(--danger);
+      color: var(--primary);
     }
-    .recommendation {
-      margin-bottom: 1.4rem;
-      padding: 0.9rem 0;
+    
+    .block-zone {
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
-    .recommendation h4 {
+    
+    .recommendations {
+      margin-bottom: 1.8rem;
+    }
+    
+    .recommendation-item {
+      background: #f8fafc;
+      border-radius: var(--card-radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: var(--border);
+    }
+    
+    .recommendation-title {
+      font-weight: 500;
       color: var(--primary);
       margin-bottom: 0.5rem;
-      font-size: 1.1rem;
-    }
-    .checklist {
-      list-style: none;
-      margin-top: 0.5rem;
-    }
-    .checklist li::before {
-      content: "✓";
-      color: var(--success);
-      font-weight: bold;
-      margin-right: 0.5rem;
-    }
-    .checklist li {
-      margin: 0.3rem 0;
-      color: var(--gray);
-      font-size: 0.92rem;
-    }
-    .actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.7rem;
-      margin-top: 1.6rem;
-      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .actions button {
+    
+    .recommendation-content {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .share-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .share-title {
+      text-align: center;
+      font-weight: 500;
+      color: var(--gray);
       font-size: 0.9rem;
-      padding: 0.6rem 1rem;
+      margin-bottom: 0.5rem;
     }
-    .links {
-      margin-top: 2.2rem;
-      font-size: 0.85rem;
-      text-align: center;
-      color: var(--light-gray);
-      line-height: 1.6;
+    
+    .messenger-buttons {
+      display: flex;
+      gap: 0.8rem;
     }
-    .links a {
-      color: var(--primary);
-      text-decoration: none;
+    
+    .messenger-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem;
+      border-radius: var(--card-radius);
+      border: 1px solid #e0e4e8;
+      background: white;
+      cursor: pointer;
+      transition: var(--transition);
     }
-    .links a:hover {
-      text-decoration: underline;
+    
+    .messenger-btn:hover {
+      background: #f0f4f8;
     }
-
+    
+    .messenger-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+    
+    .messenger-telegram {
+      color: #229ed9;
+      border-color: #229ed9;
+    }
+    
+    .messenger-telegram:hover {
+      background: #e6f2fa;
+      color: #1a7cb7;
+    }
+    
+    .messenger-whatsapp {
+      color: #25d366;
+      border-color: #25d366;
+    }
+    
+    .messenger-whatsapp:hover {
+      background: #e6f9ee;
+      color: #1da856;
+    }
+    
+    /* Подвал */
     .footer {
-      margin-top: 2rem;
-      padding-top: 1rem;
-      border-top: 1px solid #edf0f3;
       text-align: center;
-      font-size: 0.8rem;
+      padding: 1.5rem 0;
       color: var(--light-gray);
+      font-size: 0.85rem;
     }
+    
     .footer a {
       color: var(--light-gray);
       text-decoration: none;
-      font-weight: 500;
     }
+    
     .footer a:hover {
       text-decoration: underline;
       color: var(--primary);
     }
-
-    /* Мессенджеры */
-    .messenger-share {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 0.5rem;
-    }
-    .messenger-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.4rem 0.8rem;
-      color: var(--dark);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .messenger-btn:hover {
-      background: #f0f4f8;
-    }
-    .messenger-btn.telegram {
-      border-color: #229ed9;
-      color: #229ed9;
-    }
-    .messenger-btn.telegram:hover {
-      background: #e6f2fa;
-    }
-    .messenger-btn.whatsapp {
-      border-color: #25d366;
-      color: #25d366;
-    }
-    .messenger-btn.whatsapp:hover {
-      background: #e6f9ee;
-    }
-
+    
     /* Скрытый PDF-отчет */
     .pdf-report {
       display: none;
@@ -333,94 +539,27 @@
       max-width: 210mm;
       margin: 0 auto;
     }
-    .pdf-report h1 {
-      text-align: center;
-      color: var(--primary);
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .pdf-report .date {
-      text-align: center;
-      color: var(--gray);
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .pdf-report table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    .pdf-report th, .pdf-report td {
-      padding: 8px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    .pdf-report th {
-      background-color: #f2f2f2;
-      font-weight: bold;
-    }
-    .pdf-report .summary {
-      background-color: #f9fbfc;
-      border-left: 4px solid var(--primary);
-      padding: 10px 15px;
-      margin: 15px 0;
-    }
-    .pdf-report .recommendation {
-      margin-bottom: 15px;
-    }
-    .pdf-report .recommendation h4 {
-      color: var(--primary);
-      margin-bottom: 5px;
-    }
-    .pdf-report .badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-      margin-right: 5px;
-    }
-    .pdf-report .badge-success {
-      background-color: #d8e8e1;
-      color: var(--success);
-    }
-    .pdf-report .badge-warning {
-      background-color: #f9e9db;
-      color: var(--warning);
-    }
-    .pdf-report .badge-danger {
-      background-color: #f5dada;
-      color: var(--danger);
-    }
-    .pdf-report .footer {
-      text-align: center;
-      margin-top: 30px;
-      padding-top: 10px;
-      border-top: 1px solid #ddd;
-      font-size: 12px;
-      color: #666;
-    }
-
+    
+    /* Адаптивность */
     @media (max-width: 480px) {
       .container {
         padding: 1rem;
       }
-      .block-title {
+      
+      .question-card, .block-result, .final-results {
+        padding: 1.4rem;
+      }
+      
+      .question-text {
         font-size: 1.15rem;
       }
-      .question {
+      
+      .messenger-buttons {
+        flex-direction: column;
+      }
+      
+      .btn {
         padding: 0.8rem;
-      }
-      .options {
-        gap: 0.3rem;
-      }
-      .option {
-        padding: 0.45rem 0.6rem;
-      }
-      .option input {
-        margin-right: 0.4rem;
-      }
-      button {
-        padding: 0.7rem 1.2rem;
         font-size: 0.95rem;
       }
     }
@@ -428,349 +567,354 @@
 </head>
 <body>
   <div class="container">
-    <header>
+    <!-- Введение -->
+    <div id="intro" class="intro">
       <h1>Диагностика зрелых отношений</h1>
-      <p>Честный тест для понимания сильных и слабых сторон вашей пары</p>
-    </header>
-
-    <div class="progress">
-      <div class="progress-bar" id="progressBar"></div>
+      <p>Честный тест для понимания сильных и слабых сторон вашей пары. Пройдите 20 вопросов и получите персональные рекомендации.</p>
+      
+      <div class="intro-stats">
+        <div class="stat">
+          <div class="stat-value">20</div>
+          <div>Вопросов</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">5-7</div>
+          <div>Минут</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">4</div>
+          <div>Блока</div>
+        </div>
+      </div>
+      
+      <button class="btn" onclick="startTest()">Начать тест</button>
     </div>
-    <div class="step-indicator">
-      <span>Начало</span>
-      <span>Блок 1</span>
-      <span>Блок 2</span>
-      <span>Блок 3</span>
-      <span>Блок 4</span>
-      <span>Результат</span>
+    
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-labels">
+        <span>Начало</span>
+        <span>Блок 1</span>
+        <span>Блок 2</span>
+        <span>Блок 3</span>
+        <span>Блок 4</span>
+        <span>Результат</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
     </div>
-
-    <form id="loveForm">
-      <!-- Блок 1 -->
-      <div class="block" id="block1">
-        <h2 class="block-title">🔹 Безопасность и границы</h2>
-        <p class="block-desc">Оценка чувства безопасности и уважения личных границ.</p>
-
-        <div class="question">
-          <p>1. Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q1" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q1" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q1" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q1" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Если вы отказываете в близости, помощи или планах — сталкиваетесь ли с обидой, молчанием или шантажом?
-          </div>
+    
+    <!-- Карточка вопроса -->
+    <div id="questionCard" class="question-card" style="display: none;">
+      <div class="question-header">
+        <div class="block-tag" id="blockTag">Безопасность</div>
+        <div class="question-number" id="questionNumber">Вопрос 1 из 5</div>
+      </div>
+      <p class="question-text" id="questionText">Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий или конфликтов?</p>
+      
+      <div class="options" id="optionsContainer">
+        <!-- Варианты ответов будут добавлены динамически -->
+      </div>
+      
+      <button class="hint-button" onclick="toggleHint()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 16l0 -4"></path>
+          <circle cx="12" cy="8" r="1"></circle>
+        </svg>
+        Подробнее
+      </button>
+      
+      <div class="hint-content" id="hintContent">
+        Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой, молчанием, упрёками или эмоциональным шантажом.
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Назад
+        </button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()">
+          Далее
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Промежуточные результаты блока 1 -->
+    <div id="blockResult1" class="block-result">
+      <h2>Безопасность и границы</h2>
+      
+      <div class="result-summary">
+        <div class="score-circle" id="block1Score" style="background: conic-gradient(var(--warning) 60%, #e0e4e8 60%)">
+          <span class="score-text">9/15</span>
         </div>
-
-        <div class="question">
-          <p>2. Уважает ли партнёр моё личное пространство, когда я прошу об этом?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q2" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q2" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q2" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q2" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Можете ли вы побыть одному, не отчитываясь? Партнёр уважает это или обвиняет в отстранении?
-          </div>
+        <div class="zone-label zone-warning">Зона риска</div>
+      </div>
+      
+      <p class="result-description">
+        У вас есть признаки неуважения границ, но есть и сильные стороны. Нужно уделить внимание установлению здоровых границ в отношениях.
+      </p>
+      
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="reviewBlock(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Вернуться
+        </button>
+        <button class="btn" onclick="continueToBlock(2)">
+          Продолжить
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Промежуточные результаты блока 2 -->
+    <div id="blockResult2" class="block-result">
+      <h2>Надёжность и партнёрство</h2>
+      
+      <div class="result-summary">
+        <div class="score-circle" id="block2Score" style="background: conic-gradient(var(--success) 80%, #e0e4e8 80%)">
+          <span class="score-text">12/15</span>
         </div>
-
-        <div class="question">
-          <p>3. Чувствую ли я, что могу быть собой рядом с партнёром?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q3" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q3" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q3" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q3" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Можете ли вы плакать, молчать, быть не в духе — и при этом не бояться осуждения?
-          </div>
+        <div class="zone-label zone-success">Зона силы</div>
+      </div>
+      
+      <p class="result-description">
+        У вас высокий уровень надёжности и предсказуемости в отношениях. Продолжайте поддерживать это состояние.
+      </p>
+      
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="reviewBlock(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Вернуться
+        </button>
+        <button class="btn" onclick="continueToBlock(3)">
+          Продолжить
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Промежуточные результаты блока 3 -->
+    <div id="blockResult3" class="block-result">
+      <h2>Связь и эмоции</h2>
+      
+      <div class="result-summary">
+        <div class="score-circle" id="block3Score" style="background: conic-gradient(var(--warning) 60%, #e0e4e8 60%)">
+          <span class="score-text">9/15</span>
         </div>
-
-        <div class="question">
-          <p>4. Испытываю ли я уважение к своим эмоциям со стороны партнёра?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q4" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q4" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q4" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q4" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Когда вы говорите: «Мне грустно», «Я злюсь» — партнёр поддерживает или обесценивает?
-          </div>
+        <div class="zone-label zone-warning">Зона риска</div>
+      </div>
+      
+      <p class="result-description">
+        У вас есть признаки ослабленной эмоциональной связи. Нужно уделить внимание укреплению коммуникации и близости.
+      </p>
+      
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="reviewBlock(3)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Вернуться
+        </button>
+        <button class="btn" onclick="continueToBlock(4)">
+          Продолжить
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Промежуточные результаты блока 4 -->
+    <div id="blockResult4" class="block-result">
+      <h2>Рост и ценности</h2>
+      
+      <div class="result-summary">
+        <div class="score-circle" id="block4Score" style="background: conic-gradient(var(--danger) 40%, #e0e4e8 40%)">
+          <span class="score-text">6/15</span>
         </div>
-
-        <div class="question">
-          <p>5. Есть ли в отношениях давление: крики, молчание, шантаж?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q5" value="0" required> Да</label>
-            <label class="option"><input type="radio" name="q5" value="1"> Скорее да</label>
-            <label class="option"><input type="radio" name="q5" value="2"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q5" value="3"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Крики, игнор, угрозы, манипуляции — даже редкие случаи — сигнал тревоги.
-          </div>
+        <div class="zone-label zone-danger">Зона тревоги</div>
+      </div>
+      
+      <p class="result-description">
+        У вас есть признаки того, что отношения не способствуют личностному росту. Это требует внимания и работы.
+      </p>
+      
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="reviewBlock(4)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Вернуться
+        </button>
+        <button class="btn" onclick="showFinalResults()">
+          Посмотреть итог
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Итоговые результаты -->
+    <div id="finalResults" class="final-results">
+      <h2>📊 Ваши результаты</h2>
+      
+      <div class="results-overview">
+        <div class="results-chart" id="resultsChart">
+          <!-- Здесь будет диаграмма -->
+          <svg width="100%" height="100%" viewBox="0 0 400 200">
+            <!-- Блок 1 -->
+            <rect x="50" y="40" width="60" height="120" fill="#d68a4e" rx="4"></rect>
+            <text x="80" y="175" text-anchor="middle" font-size="12">Безопасность</text>
+            <text x="80" y="35" text-anchor="middle" font-size="14" font-weight="bold">9</text>
+            
+            <!-- Блок 2 -->
+            <rect x="140" y="20" width="60" height="140" fill="#418e73" rx="4"></rect>
+            <text x="170" y="175" text-anchor="middle" font-size="12">Надёжность</text>
+            <text x="170" y="15" text-anchor="middle" font-size="14" font-weight="bold">12</text>
+            
+            <!-- Блок 3 -->
+            <rect x="230" y="40" width="60" height="120" fill="#d68a4e" rx="4"></rect>
+            <text x="260" y="175" text-anchor="middle" font-size="12">Связь</text>
+            <text x="260" y="35" text-anchor="middle" font-size="14" font-weight="bold">9</text>
+            
+            <!-- Блок 4 -->
+            <rect x="320" y="60" width="60" height="100" fill="#c45252" rx="4"></rect>
+            <text x="350" y="175" text-anchor="middle" font-size="12">Рост</text>
+            <text x="350" y="55" text-anchor="middle" font-size="14" font-weight="bold">6</text>
+          </svg>
         </div>
-
-        <div class="btn-nav">
-          <button type="button" disabled>Назад</button>
-          <button type="button" onclick="nextBlock(1)">Далее</button>
+        
+        <div class="results-summary">
+          <p><strong>Общее состояние:</strong> <span id="overallStatus">шаткие</span></p>
+          <p><strong>Приоритетный блок:</strong> <span class="priority" id="priorityBlock">Рост</span></p>
         </div>
       </div>
-
-      <!-- Блок 2 -->
-      <div class="block" id="block2" style="display:none;">
-        <h2 class="block-title">🔹 Надёжность и партнёрство</h2>
-        <p class="block-desc">Оценка стабильности, доверия и совместной ответственности.</p>
-
-        <div class="question">
-          <p>6. Выполняет ли партнёр свои обещания, даже мелкие?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q6" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q6" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q6" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q6" value="0"> Нет</label>
+      
+      <div class="results-details">
+        <div class="results-block">
+          <div class="results-block-header">
+            <div class="block-title">Безопасность и границы</div>
+            <div class="block-score">9/15</div>
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Если говорит: «куплю хлеб», «приду вовремя» — выполняет ли? Забывчивость снижает доверие.
-          </div>
+          <div class="block-zone zone-warning">Зона риска</div>
         </div>
-
-        <div class="question">
-          <p>7. Чувствую ли я, что мы в одной команде в трудные моменты?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q7" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q7" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q7" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q7" value="0"> Нет</label>
+        
+        <div class="results-block">
+          <div class="results-block-header">
+            <div class="block-title">Надёжность и партнёрство</div>
+            <div class="block-score">12/15</div>
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            В кризисе (болезнь, потеря работы) вы чувствуете поддержку или одиночество?
-          </div>
+          <div class="block-zone zone-success">Зона силы</div>
         </div>
-
-        <div class="question">
-          <p>8. Разделены ли обязанности честно и понятно?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q8" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q8" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q8" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q8" value="0"> Нет</label>
+        
+        <div class="results-block">
+          <div class="results-block-header">
+            <div class="block-title">Связь и эмоции</div>
+            <div class="block-score">9/15</div>
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Деление не обязательно 50/50, но должно быть справедливым и обсуждаемым.
-          </div>
+          <div class="block-zone zone-warning">Зона риска</div>
         </div>
-
-        <div class="question">
-          <p>9. Можем ли мы говорить о деньгах без скандалов?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q9" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q9" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q9" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q9" value="0"> Нет</label>
+        
+        <div class="results-block">
+          <div class="results-block-header">
+            <div class="block-title">Рост и ценности</div>
+            <div class="block-score">6/15</div>
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Обсуждение бюджета не должно вызывать крики. Зрелый диалог: «Давай сократим расходы».
-          </div>
-        </div>
-
-        <div class="question">
-          <p>10. Является ли партнёр предсказуемым?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q10" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q10" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q10" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q10" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Вы знаете, чего ожидать? Частые срывы планов создают тревожность.
-          </div>
-        </div>
-
-        <div class="btn-nav">
-          <button type="button" onclick="prevBlock(2)">Назад</button>
-          <button type="button" onclick="nextBlock(2)">Далее</button>
+          <div class="block-zone zone-danger">Зона тревоги</div>
         </div>
       </div>
-
-      <!-- Блок 3 -->
-      <div class="block" id="block3" style="display:none;">
-        <h2 class="block-title">🔹 Связь и эмоции</h2>
-        <p class="block-desc">Оценка близости, заботы и способности слышать друг друга.</p>
-
-        <div class="question">
-          <p>11. Есть ли ежедневные ритуалы внимания?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q11" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q11" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q11" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q11" value="0"> Нет</label>
+      
+      <div class="recommendations">
+        <div class="recommendation-item">
+          <div class="recommendation-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Приоритетные рекомендации
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Утреннее «доброе утро», вечернее «как день прошёл?», объятие — поддерживают связь.
+          <div class="recommendation-content">
+            <p>1. <strong>Работа с границами:</strong> Начните с малого - установите одну четкую границу и обсудите её с партнером.</p>
+            <p>2. <strong>Укрепление связи:</strong> Внедрите ежедневный "ритуал конца дня" - 10 минут без телефонов и дел.</p>
+            <p>3. <strong>Личностный рост:</strong> На этой неделе обсудите, что каждый из вас хочет развивать в себе.</p>
           </div>
         </div>
-
-        <div class="question">
-          <p>12. Можем ли мы делиться чувствами, а не только делами?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q12" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q12" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q12" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q12" value="0"> Нет</label>
+        
+        <div class="recommendation-item">
+          <div class="recommendation-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V7a2 2 0 0 0-2-2h-7l-4-4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"></path>
+              <polyline points="14 3 14 10 21 10"></polyline>
+            </svg>
+            Долгосрочные рекомендации
           </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Разговоры о чувствах: «мне было обидно», а не только «надо купить молоко».
+          <div class="recommendation-content">
+            <p>1. <strong>Через месяц:</strong> Составьте список ваших ожиданий друг от друга и обсудите их.</p>
+            <p>2. <strong>Через три месяца:</strong> Создайте совместные цели на будущее и план их достижения.</p>
+            <p>3. <strong>Долгосрочно:</strong> Регулярно проводите "проверки состояния отношений" раз в месяц.</p>
           </div>
-        </div>
-
-        <div class="question">
-          <p>13. Чувствую ли я, что партнёр меня слышит и понимает?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q13" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q13" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q13" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q13" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Он не перебивает, не спешит с советами, не обесценивает: «Тебе было тяжело, я понимаю».
-          </div>
-        </div>
-
-        <div class="question">
-          <p>14. Умеем ли мы мириться и признавать ошибки?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q14" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q14" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q14" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q14" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            После конфликта идёт диалог и извинение? Или молчание и обида?
-          </div>
-        </div>
-
-        <div class="question">
-          <p>15. Комфортно ли нам быть вдвоём без отвлечений?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q15" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q15" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q15" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q15" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Можете ли провести время вдвоём, не включая ТВ, не проверяя телефоны?
-          </div>
-        </div>
-
-        <div class="btn-nav">
-          <button type="button" onclick="prevBlock(3)">Назад</button>
-          <button type="button" onclick="nextBlock(3)">Далее</button>
         </div>
       </div>
-
-      <!-- Блок 4 -->
-      <div class="block" id="block4" style="display:none;">
-        <h2 class="block-title">🔹 Рост и ценности</h2>
-        <p class="block-desc">Оценка развития личности, ценностей и совместного будущего.</p>
-
-        <div class="question">
-          <p>16. Обсуждали ли мы ключевые темы: деньги, дети, верность?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q16" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q16" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q16" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q16" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Если эти темы не обсуждались — риск столкновения взглядов в будущем.
-          </div>
+      
+      <div class="share-actions">
+        <div class="share-title">Поделитесь результатами</div>
+        <div class="messenger-buttons">
+          <button class="messenger-btn messenger-telegram" onclick="shareToTelegram()">
+            <div class="messenger-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.346-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
+              </svg>
+            </div>
+            Telegram
+          </button>
+          <button class="messenger-btn messenger-whatsapp" onclick="shareToWhatsApp()">
+            <div class="messenger-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1.875-5.906h-.03c-3.094 0-5.625-2.531-5.625-5.625 0-1.563.656-3.031 1.734-4.109L7.8 4.875c.187-.187.375-.187.562 0l1.688 1.688c.187.187.187.375 0 .562l-.468.469c-.187.187-.187.375 0 .562l1.312 1.313c.187.187.375.187.562 0l.469-.468c.187-.187.375-.187.562 0l3.75 3.75c.187.187.187.375 0 .562l-1.406 1.406c-.187.187-.375.187-.562 0l-.563-.563c-.187-.187-.187-.375 0-.562l1.218-1.219c.938-.938 1.5-2.156 1.5-3.469 0-2.812-2.297-5.109-5.109-5.109zm-1.875-3.75c-.656 0-1.313.25-1.875.75l-.469.469c-.187.187-.375.187-.562 0l-1.313-1.313c-.187-.187-.187-.375 0-.562l.469-.469c.562-.5 1.219-.75 1.875-.75.656 0 1.313.25 1.875.75l.469.469c.187.187.187.375 0 .562l-1.313 1.313c-.187.187-.375.187-.562 0z"/>
+              </svg>
+            </div>
+            WhatsApp
+          </button>
         </div>
-
-        <div class="question">
-          <p>17. Есть ли у нас общие цели на будущее?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q17" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q17" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q17" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q17" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            «Через год поедем в Италию», «купим дом» — важно обсуждать это вместе.
-          </div>
-        </div>
-
-        <div class="question">
-          <p>18. Эти отношения помогают мне становиться лучше?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q18" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q18" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q18" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q18" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Вы становитесь добрее, увереннее? Или чувствуете, что «теряете себя»?
-          </div>
-        </div>
-
-        <div class="question">
-          <p>19. Чувствую ли я, что могу развиваться, а не только адаптироваться?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q19" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q19" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q19" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q19" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Вы можете учиться, меняться? Или «притворяетесь, чтобы не конфликтовать»?
-          </div>
-        </div>
-
-        <div class="question">
-          <p>20. Уважаю ли я партнёра, даже в конфликте?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q20" value="3" required> Да</label>
-            <label class="option"><input type="radio" name="q20" value="2"> Скорее да</label>
-            <label class="option"><input type="radio" name="q20" value="1"> Скорее нет</label>
-            <label class="option"><input type="radio" name="q20" value="0"> Нет</label>
-          </div>
-          <button type="button" class="toggle-btn" onclick="toggleExplanation(this)"></button>
-          <div class="explanation">
-            Вы можете спорить, но не переходить на личности, не обесценивать.
-          </div>
-        </div>
-
-        <div class="btn-nav">
-          <button type="button" onclick="prevBlock(4)">Назад</button>
-          <button type="submit">Получить результаты</button>
-        </div>
+        <button class="btn" onclick="downloadPDF()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Скачать PDF
+        </button>
+        <button class="btn btn-secondary" onclick="restartTest()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Пройти снова
+        </button>
       </div>
-    </form>
-
+    </div>
+    
     <!-- Скрытый PDF-отчет -->
     <div class="pdf-report" id="pdfReport">
       <h1>Результаты теста: Зрелые отношения</h1>
@@ -801,60 +945,7 @@
         Разработано Евгением Климовым | Связь: @eklimov
       </div>
     </div>
-
-    <!-- Результаты -->
-    <div class="results" id="results">
-      <h2>📊 Ваши результаты</h2>
-      <table id="resultTable">
-        <thead>
-          <tr>
-            <th>Блок</th>
-            <th>Баллы</th>
-            <th>Зона</th>
-          </tr>
-        </thead>
-        <tbody id="resultTableBody"></tbody>
-      </table>
-
-      <div class="summary">
-        <p><strong>Состояние:</strong> <span id="overallStatus"></span></p>
-        <p><strong>Приоритет:</strong> <span class="priority" id="priorityBlock"></span></p>
-      </div>
-
-      <div id="recommendations"></div>
-
-      <div class="actions">
-        <button onclick="downloadPDF()">Скачать PDF</button>
-        <button onclick="sendEmail()">Отправить на Email</button>
-        <div>
-          <button onclick="toggleShareMenu()" style="width: 100%; margin-top: 0.5rem;">Поделиться с партнёром</button>
-          <div id="shareMenu" style="display: none; margin-top: 0.5rem;">
-            <button class="messenger-btn telegram" onclick="shareToTelegram()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.346-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
-              </svg>
-              Telegram
-            </button>
-            <button class="messenger-btn whatsapp" onclick="shareToWhatsApp()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1.875-5.906h-.03c-3.094 0-5.625-2.531-5.625-5.625 0-1.563.656-3.031 1.734-4.109L7.8 4.875c.187-.187.375-.187.562 0l1.688 1.688c.187.187.187.375 0 .562l-.468.469c-.187.187-.187.375 0 .562l1.312 1.313c.187.187.375.187.562 0l.469-.468c.187-.187.375-.187.562 0l3.75 3.75c.187.187.187.375 0 .562l-1.406 1.406c-.187.187-.375.187-.562 0l-.563-.563c-.187-.187-.187-.375 0-.562l1.218-1.219c.938-.938 1.5-2.156 1.5-3.469 0-2.812-2.297-5.109-5.109-5.109zm-1.875-3.75c-.656 0-1.313.25-1.875.75l-.469.469c-.187.187-.375.187-.562 0l-1.313-1.313c-.187-.187-.187-.375 0-.562l.469-.469c.562-.5 1.219-.75 1.875-.75.656 0 1.313.25 1.875.75l.469.469c.187.187.187.375 0 .562l-1.313 1.313c-.187.187-.375.187-.562 0z"/>
-              </svg>
-              WhatsApp
-            </button>
-          </div>
-        </div>
-        <button onclick="restart()">Пройти снова</button>
-      </div>
-
-      <div class="links">
-        <p>
-          <a href="https://www.gottman.com" target="_blank">Сайт Готтмана — научный подход к отношениям</a><br>
-          <a href="https://www.relate.org.uk" target="_blank">Relate UK — помощь парам и семьям</a><br>
-          <a href="https://www.psychologytoday.com" target="_blank">Psychology Today — статьи о психологии отношений</a>
-        </p>
-      </div>
-    </div>
-
+    
     <!-- Подвал -->
     <div class="footer">
       Разработано <a href="https://t.me/eklimov" target="_blank">Евгением Климовым</a> | 
@@ -866,364 +957,579 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
-    // === [НАСТРОЙКА] Укажите вашу ссылку на размещённый тест ===
-    const TEST_URL = "https://yourusername.github.io/love-test/"; // ← Замените на ваш URL
-    
-    // === [НАСТРОЙКА] URL Google Forms для сбора метрик ===
-    const GOOGLE_FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf.../formResponse"; // ← Замените на ваш URL
-    
-    // Получение идентификатора из URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const source = urlParams.get('source') || 'unknown';
-    
-    // Генерация уникального ID пользователя
-    function generateUserId() {
-      return 'user-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
-    }
-    const userId = generateUserId();
-
-    function saveResult(data) {
-      // Сохранение в localStorage
-      const id = new Date().toISOString() + "_" + Math.random().toString(36).substr(2, 9);
-      const record = { id, source, timestamp: new Date().toISOString(), userId, ...data };
-      const history = JSON.parse(localStorage.getItem('loveTestResults') || '[]');
-      history.push(record);
-      localStorage.setItem('loveTestResults', JSON.stringify(history));
+    // Конфигурация
+    const TEST_URL = window.location.href;
+    const QUESTIONS = [
+      // Блок 1: Безопасность и границы
+      {
+        id: 1,
+        block: 'Безопасность',
+        blockIndex: 0,
+        text: 'Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий или конфликтов?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой, молчанием, упрёками или эмоциональным шантажом. Например: если вы устали и скажете «не хочу идти на вечеринку», партнёр спокойно примет это или начнёт давить?'
+      },
+      {
+        id: 2,
+        block: 'Безопасность',
+        blockIndex: 0,
+        text: 'Уважает ли партнёр моё личное пространство, когда я прошу об этом?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Личное пространство — это не только физическое (время наедине, хобби), но и психологическое (возможность побыть в тишине, не отчитываться за каждый шаг). Если вы говорите: «Мне нужно побыть одной/одному», партнёр уважает это или проявляет ревность, тревогу, обвиняет в отстранении?'
+      },
+      {
+        id: 3,
+        block: 'Безопасность',
+        blockIndex: 0,
+        text: 'Чувствую ли я, что могу быть собой рядом с партнёром, без масок и напряжения?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Вы можете плакать, молчать, быть не в духе, говорить о своих страхах — и при этом не бояться, что вас осудят, посчитают «слабым» или «неинтересным»? Или вы чувствуете, что должны быть «в форме», чтобы вас любили?'
+      },
+      {
+        id: 4,
+        block: 'Безопасность',
+        blockIndex: 0,
+        text: 'Испытываю ли я уважение к своим эмоциям со стороны партнёра?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Когда вы говорите: «Мне грустно», «Я злюсь», «Мне неудобно» — партнёр пытается понять, поддерживает, не обесценивает ли ваши чувства? Например, не говорит ли: «Да брось, это ерунда» или «Ты слишком остро реагируешь»?'
+      },
+      {
+        id: 5,
+        block: 'Безопасность',
+        blockIndex: 0,
+        text: 'Есть ли в наших отношениях признаки давления: крики, молчание «в наказание», шантаж, манипуляции?',
+        options: [
+          { value: 0, label: 'Да' },
+          { value: 1, label: 'Скорее да' },
+          { value: 2, label: 'Скорее нет' },
+          { value: 3, label: 'Нет' }
+        ],
+        hint: 'Обратите внимание: крик, игнорирование, угрозы (явные или скрытые: «Если ты уйдёшь — я сломаюсь»), манипуляции вины («После всего, что я для тебя сделал…»). Даже редкие случаи — сигнал. Ответ «Нет» означает, что таких проявлений нет вообще.'
+      },
       
-      // Отправка данных в Google Forms
-      try {
-        const formData = new FormData();
-        
-        // Поля формы (замените entry.xxxxx на ваши ID полей из Google Forms)
-        formData.append('entry.1234567890', userId);
-        formData.append('entry.9876543210', source);
-        formData.append('entry.1122334455', new Date().toISOString());
-        formData.append('entry.5566778899', JSON.stringify(data.results));
-        formData.append('entry.9988776655', data.overall);
-        formData.append('entry.4455667788', data.priority);
-        
-        // Отправка POST-запроса в Google Forms
-        fetch(GOOGLE_FORMS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: formData
-        }).catch(error => {
-          console.error('Ошибка отправки данных в Google Forms:', error);
-        });
-      } catch (e) {
-        console.error('Ошибка при подготовке данных для Google Forms:', e);
+      // Блок 2: Надёжность и партнёрство
+      {
+        id: 6,
+        block: 'Надёжность',
+        blockIndex: 1,
+        text: 'Выполняет ли партнёр свои обещания, даже мелкие?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Речь не только о крупных обещаниях («купим дом»), но и о бытовых: «куплю хлеб», «позвоню твоим родителям», «приду вовремя». Если партнёр систематически забывает или откладывает — это снижает доверие и чувство опоры.'
+      },
+      {
+        id: 7,
+        block: 'Надёжность',
+        blockIndex: 1,
+        text: 'Чувствую ли я, что мы в одной команде, особенно в сложные моменты?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'В кризис (болезнь, потеря работы, конфликт с родителями) вы чувствуете поддержку? Или остаётесь наедине с проблемой, а партнёр отстраняется, критикует, перекладывает ответственность?'
+      },
+      {
+        id: 8,
+        block: 'Надёжность',
+        blockIndex: 1,
+        text: 'Разделены ли между нами бытовые и финансовые обязанности честно и понятно?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Деление обязанностей не обязательно 50/50, но должно быть справедливым и обсуждаемым. Например, один больше зарабатывает — другой больше времени уделяет дому. Главное — отсутствие чувства эксплуатации и ясность: кто за что отвечает.'
+      },
+      {
+        id: 9,
+        block: 'Надёжность',
+        blockIndex: 1,
+        text: 'Можем ли мы говорить о деньгах без скандалов и обвинений?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Тема денег — одна из самых острых. Если обсуждение бюджета, трат, долгов вызывает крики, обвинения, молчание — это признак тревоги. Зрелый диалог: «Давай посмотрим, где можно сократить», а не «Ты всегда тратишь больше!»'
+      },
+      {
+        id: 10,
+        block: 'Надёжность',
+        blockIndex: 1,
+        text: 'Является ли партнёр предсказуемым в вопросах времени, ресурсов, обязательств?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Предсказуемость — это когда вы знаете, чего ожидать: вернётся ли он с работы вовремя, будет ли свободен в выходные, выполнит ли обещанное. Частые срывы планов, непостоянство создают тревожность и нестабильность.'
+      },
+      
+      // Блок 3: Связь и эмоции
+      {
+        id: 11,
+        block: 'Связь',
+        blockIndex: 2,
+        text: 'Есть ли в наших отношениях ежедневные ритуалы внимания (объятие, поцелуй, «как день прошёл?»)?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Ритуалы — это маленькие, но регулярные проявления заботы: утреннее «доброе утро», вечернее «как прошёл день?», объятие при встрече. Они поддерживают связь, даже когда нет времени на глубокие разговоры.'
+      },
+      {
+        id: 12,
+        block: 'Связь',
+        blockIndex: 2,
+        text: 'Можем ли мы делиться своими чувствами, а не только обсуждать дела и быт?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Разговоры о чувствах — это не «надо купить молоко», а «мне было обидно, когда ты опоздал». Если вы говорите только о делах, дети, быт — эмоциональная связь ослабевает.'
+      },
+      {
+        id: 13,
+        block: 'Связь',
+        blockIndex: 2,
+        text: 'Чувствую ли я, что партнёр меня слышит и понимает?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Слышать — это не просто «я слышу слова», а «я чувствую, что ты понимаешь, что я переживаю». Партнёр не перебивает, не спешит с советами, не обесценивает. Он может сказать: «Тебе было тяжело, я понимаю».'
+      },
+      {
+        id: 14,
+        block: 'Связь',
+        blockIndex: 2,
+        text: 'Умеем ли мы мириться и признавать свои ошибки после конфликта?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Конфликты бывают у всех. Важно, что происходит после: идёт ли диалог, признание своей части в конфликте, извинение? Или всё заканчивается молчанием, обидами, «забыли, но не простили»?'
+      },
+      {
+        id: 15,
+        block: 'Связь',
+        blockIndex: 2,
+        text: 'Комфортно ли нам быть вдвоём без отвлечений — телефонов, дел, посторонних?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Можете ли вы провести вечер или утро вдвоём, не включая ТВ, не проверяя телефоны, не приглашая гостей? Это показатель качества близости: вы наслаждаетесь обществом друг друга, а не просто «живёте под одной крышей».'
+      },
+      
+      // Блок 4: Рост и ценности
+      {
+        id: 16,
+        block: 'Рост',
+        blockIndex: 3,
+        text: 'Обсуждали ли мы взгляды друг друга на ключевые темы (деньги, верность, дети, работа)?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Речь о глубоких ценностях. Например: как вы относитесь к верности? Что важнее — карьера или семья? Хотите ли детей? Как распределять финансы? Если эти темы не обсуждались — есть риск столкновения взглядов в будущем.'
+      },
+      {
+        id: 17,
+        block: 'Рост',
+        blockIndex: 3,
+        text: 'Есть ли у нас общие цели на будущее, которые мы реально обсуждали?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Общие цели — это не просто «жить вместе», а конкретные планы: «через год поедем в Италию», «через пять лет купим дом», «выйдем на пенсию пораньше». Главное — чтобы вы обсуждали это вместе и были на одной волне.'
+      },
+      {
+        id: 18,
+        block: 'Рост',
+        blockIndex: 3,
+        text: 'Эти отношения помогают мне становиться лучшей версией себя?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'В зрелых отношениях вы чувствуете, что растёте: становитесь добрее, увереннее, осознаннее. Если же вы чувствуете, что «теряете себя», становитесь тревожнее, зависимее — это тревожный сигнал.'
+      },
+      {
+        id: 19,
+        block: 'Рост',
+        blockIndex: 3,
+        text: 'Чувствую ли я, что могу развиваться, а не только адаптироваться?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Развитие — это возможность учиться, меняться, пробовать новое. Адаптация — это «притворяться, чтобы не конфликтовать». Если вы чувствуете, что гнетётесь под ожиданиями — это признак дисбаланса.'
+      },
+      {
+        id: 20,
+        block: 'Рост',
+        blockIndex: 3,
+        text: 'Уважаю ли я партнёра, даже если мы не согласны или в конфликте?',
+        options: [
+          { value: 3, label: 'Да' },
+          { value: 2, label: 'Скорее да' },
+          { value: 1, label: 'Скорее нет' },
+          { value: 0, label: 'Нет' }
+        ],
+        hint: 'Уважение — это когда вы можете спорить, но не переходить на личности, не смотреть свысока, не обесценивать. Даже в гневе вы видите в партнёре достойного человека, с которым можно диалог.'
+      }
+    ];
+    
+    // Состояние приложения
+    let currentState = {
+      currentQuestionIndex: 0,
+      answers: {},
+      blockResults: {
+        0: null,
+        1: null,
+        2: null,
+        3: null
+      }
+    };
+    
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+      loadState();
+      updateProgress();
+      
+      // Если есть сохранённое состояние, восстанавливаем его
+      if (currentState.currentQuestionIndex > 0) {
+        showQuestion(currentState.currentQuestionIndex);
+      }
+    });
+    
+    // Функции управления состоянием
+    function saveState() {
+      localStorage.setItem('loveTestState', JSON.stringify(currentState));
+    }
+    
+    function loadState() {
+      const savedState = localStorage.getItem('loveTestState');
+      if (savedState) {
+        try {
+          const parsedState = JSON.parse(savedState);
+          // Проверяем валидность состояния
+          if (parsedState.currentQuestionIndex >= 0 && 
+              parsedState.currentQuestionIndex <= 20 &&
+              typeof parsedState.answers === 'object') {
+            currentState = parsedState;
+          }
+        } catch (e) {
+          console.error('Ошибка при загрузке состояния:', e);
+        }
       }
     }
-
-    const blocks = ['block1', 'block2', 'block3', 'block4'];
-    let currentBlock = 0;
-
-    function updateProgress() {
-      document.getElementById('progressBar').style.width = `${(currentBlock / 4) * 100}%`;
+    
+    function clearState() {
+      localStorage.removeItem('loveTestState');
+      currentState = {
+        currentQuestionIndex: 0,
+        answers: {},
+        blockResults: {
+          0: null,
+          1: null,
+          2: null,
+          3: null
+        }
+      };
     }
-
-    function nextBlock(n) {
-      const form = document.getElementById(`block${n}`);
-      const inputs = form.querySelectorAll('input[required]');
-      let valid = true;
-      inputs.forEach(input => {
-        const name = input.name;
-        const checked = form.querySelector(`input[name="${name}"]:checked`);
-        if (!checked) valid = false;
+    
+    // Функции отображения
+    function startTest() {
+      document.getElementById('intro').style.display = 'none';
+      showQuestion(0);
+    }
+    
+    function showQuestion(index) {
+      const question = QUESTIONS[index];
+      
+      // Обновляем интерфейс
+      document.getElementById('questionCard').style.display = 'block';
+      document.getElementById('blockTag').textContent = question.block;
+      document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
+      document.getElementById('questionText').textContent = question.text;
+      
+      // Отображаем варианты ответов
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach(option => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'option';
+        if (currentState.answers[index] === option.value) {
+          optionElement.classList.add('selected');
+        }
+        
+        optionElement.innerHTML = `
+          <input type="radio" id="option-${index}-${option.value}" name="question-${index}" value="${option.value}">
+          <label class="option-label" for="option-${index}-${option.value}">${option.label}</label>
+        `;
+        
+        optionElement.onclick = function() {
+          // Снимаем выделение со всех вариантов
+          document.querySelectorAll(`#optionsContainer .option`).forEach(el => {
+            el.classList.remove('selected');
+          });
+          
+          // Выделяем выбранный вариант
+          this.classList.add('selected');
+          
+          // Сохраняем ответ
+          currentState.answers[index] = option.value;
+          saveState();
+        };
+        
+        optionsContainer.appendChild(optionElement);
       });
-      if (!valid) {
-        alert("Пожалуйста, ответьте на все вопросы.");
+      
+      // Показываем/скрываем кнопку "Назад"
+      document.getElementById('prevBtn').style.display = index > 0 ? 'flex' : 'none';
+      
+      // Обновляем прогресс
+      currentState.currentQuestionIndex = index;
+      updateProgress();
+      
+      // Прокручиваем вверх
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function toggleHint() {
+      const hintContent = document.getElementById('hintContent');
+      const isVisible = hintContent.style.display === 'block';
+      hintContent.style.display = isVisible ? 'none' : 'block';
+    }
+    
+    function updateProgress() {
+      const progress = (currentState.currentQuestionIndex / 20) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+    }
+    
+    function nextQuestion() {
+      const currentQuestion = QUESTIONS[currentState.currentQuestionIndex];
+      const answer = currentState.answers[currentState.currentQuestionIndex];
+      
+      // Проверяем, ответил ли пользователь
+      if (answer === undefined) {
+        alert("Пожалуйста, выберите ответ на вопрос.");
         return;
       }
-      document.getElementById(blocks[currentBlock]).style.display = 'none';
-      currentBlock++;
-      const nextBlockElement = document.getElementById(blocks[currentBlock]);
-      nextBlockElement.style.display = 'block';
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function prevBlock(n) {
-      document.getElementById(blocks[currentBlock]).style.display = 'none';
-      currentBlock--;
-      const prevBlockElement = document.getElementById(blocks[currentBlock]);
-      prevBlockElement.style.display = 'block';
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function toggleExplanation(btn) {
-      const explanation = btn.nextElementSibling;
-      const isVisible = explanation.style.display === 'block';
-      explanation.style.display = isVisible ? 'none' : 'block';
-      btn.classList.toggle('active', !isVisible);
-    }
-
-    function toggleShareMenu() {
-      const menu = document.getElementById('shareMenu');
-      menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-    }
-
-    function shareToTelegram() {
-      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
-      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${text}`;
-      window.open(shareUrl, '_blank');
-    }
-
-    function shareToWhatsApp() {
-      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(whatsappUrl, '_blank');
-    }
-
-    document.getElementById('loveForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const answers = {};
-      for (let [key, value] of formData) {
-        answers[key] = parseInt(value);
+      
+      // Переход к следующему вопросу или блоку
+      if (currentState.currentQuestionIndex < 19) {
+        showQuestion(currentState.currentQuestionIndex + 1);
+      } else {
+        // Последний вопрос, показываем результаты блока 4
+        calculateBlockResult(3);
+        showBlockResult(4);
       }
-
-      const blockData = [
-        { name: 'Безопасность', start: 1, end: 5 },
-        { name: 'Надёжность', start: 6, end: 10 },
-        { name: 'Связь', start: 11, end: 15 },
-        { name: 'Рост', start: 16, end: 20 }
-      ];
-
-      const results = blockData.map(block => {
-        let sum = 0;
-        for (let i = block.start; i <= block.end; i++) {
-          sum += answers[`q${i}`] || 0;
-        }
-        let zone, zoneText, className, recommendations;
-        if (sum >= 11) {
-          zone = '✅ Зона силы';
-          zoneText = 'Зона силы';
-          className = 'badge-success';
-          
-          // Конкретные рекомендации для зоны силы
-          if (block.name === 'Безопасность') {
-            recommendations = `
-              <p><strong>Сильные стороны:</strong> Вы чувствуете себя защищённо и свободно в отношениях.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Регулярно выражайте благодарность за уважение ваших границ</li>
-                <li>Совместно празднуйте моменты, когда вы могли быть собой без страха</li>
-                <li>Поддерживайте эту зону, продолжая честно делиться своими потребностями</li>
-              </ul>
-            `;
-          } else if (block.name === 'Надёжность') {
-            recommendations = `
-              <p><strong>Сильные стороны:</strong> Есть стабильность и опора в отношениях.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Отмечайте случаи, когда вы чувствуете поддержку друг друга</li>
-                <li>Регулярно обсуждайте распределение обязанностей, чтобы поддерживать баланс</li>
-                <li>Совместно планируйте будущее, опираясь на вашу надёжность</li>
-              </ul>
-            `;
-          } else if (block.name === 'Связь') {
-            recommendations = `
-              <p><strong>Сильные стороны:</strong> Эмоциональная близость присутствует.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Регулярно практикуйте ваши ритуалы внимания</li>
-                <li>Углубляйте разговоры, задавая открытые вопросы</li>
-                <li>Отмечайте моменты, когда вы особенно хорошо поняли друг друга</li>
-              </ul>
-            `;
-          } else { // Рост
-            recommendations = `
-              <p><strong>Сильные стороны:</strong> Отношения поддерживают личностный рост.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Регулярно обсуждайте, как вы растёте как личности</li>
-                <li>Поддерживайте интересы друг друга, даже если они разные</li>
-                <li>Создавайте новые общие цели, опираясь на ваши ценности</li>
-              </ul>
-            `;
-          }
-        } else if (sum >= 6) {
-          zone = '⚠️ Риск';
-          zoneText = 'Зона риска';
-          className = 'badge-warning';
-          
-          // Конкретные рекомендации для зоны риска
-          if (block.name === 'Безопасность') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Чувство безопасности требует внимания.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Попробуйте использовать "Я-сообщения": "Я чувствую себя некомфортно, когда..."</li>
-                <li>Начните с малых границ: попросите 15 минут тишины после работы</li>
-                <li>Обсудите, что значит "уважение границ" для каждого из вас</li>
-              </ul>
-              <p><em>Помните: здоровые границы — это не стена, а дверь с замком, который вы сами контролируете.</em></p>
-            `;
-          } else if (block.name === 'Надёжность') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Недостаток надёжности и предсказуемости.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Начните с малого: договоритесь о времени ежедневного чек-ина</li>
-                <li>Создайте систему напоминаний для важных обещаний</li>
-                <li>Обсудите, что для вас значит "быть надёжным"</li>
-              </ul>
-              <p><em>Помните: надёжность строится из маленьких, но последовательных действий.</em></p>
-            `;
-          } else if (block.name === 'Связь') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Связь есть, но нуждается в укреплении.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Внедрите "ритуал конца дня": 10 минут без телефонов и дел</li>
-                <li>Используйте технику активного слушания: повторяйте суть сказанного</li>
-                <li>Задавайте открытые вопросы: "Как ты себя чувствовал сегодня?"</li>
-              </ul>
-              <p><em>Помните: качество связи важнее количества слов.</em></p>
-            `;
-          } else { // Рост
-            recommendations = `
-              <p><strong>Сейчас:</strong> Ценности и цели требуют обсуждения.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li>Запланируйте "разговор о ценностях": обсудите 3 главных жизненных принципа</li>
-                <li>Создайте совместную доску целей (можно в Trello или на бумаге)</li>
-                <li>Найдите одну маленькую цель, которую можно достичь за месяц</li>
-              </ul>
-              <p><em>Помните: совместный рост начинается с маленьких шагов в одном направлении.</em></p>
-            `;
-          }
+      
+      // Если это последний вопрос блока, показываем промежуточный результат
+      if ((currentState.currentQuestionIndex + 1) % 5 === 0 && currentState.currentQuestionIndex < 19) {
+        const blockIndex = Math.floor((currentState.currentQuestionIndex + 1) / 5) - 1;
+        calculateBlockResult(blockIndex);
+        showBlockResult(blockIndex + 1);
+      }
+    }
+    
+    function prevQuestion() {
+      if (currentState.currentQuestionIndex > 0) {
+        // Если текущий вопрос - первый в блоке, возвращаемся к результатам предыдущего блока
+        if (currentState.currentQuestionIndex % 5 === 0) {
+          showBlockResult(Math.floor(currentState.currentQuestionIndex / 5));
         } else {
-          zone = '❗ Тревога';
-          zoneText = 'Зона тревоги';
-          className = 'badge-danger';
-          
-          // Конкретные рекомендации для зоны тревоги
-          if (block.name === 'Безопасность') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Есть признаки давления и неуважения границ.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li><strong>На этой неделе:</strong> Запишите 3 ситуации, где вы чувствовали давление</li>
-                <li><strong>В течение месяца:</strong> Проведите разговор, используя "Я-сообщения"</li>
-                <li><strong>Долгосрочно:</strong> Рассмотрите возможность консультации с семейным психологом</li>
-              </ul>
-              <p><em>Важно: если есть признаки манипуляций или насилия, ваша безопасность — главный приоритет. Обратитесь к специалисту.</em></p>
-            `;
-          } else if (block.name === 'Надёжность') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Нет стабильности и доверия.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li><strong>На этой неделе:</strong> Запишите случаи, когда вы чувствовали себя незащищённо</li>
-                <li><strong>В течение месяца:</strong> Составьте список ваших ожиданий друг от друга</li>
-                <li><strong>Долгосрочно:</strong> Работайте над восстановлением доверия через маленькие, но последовательные действия</li>
-              </ul>
-              <p><em>Важно: восстановление доверия требует времени и обоюдных усилий. Не стесняйтесь просить поддержки у профессионала.</em></p>
-            `;
-          } else if (block.name === 'Связь') {
-            recommendations = `
-              <p><strong>Сейчас:</strong> Эмоциональный контакт ослаблен.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li><strong>На этой неделе:</strong> Назначьте 15 минут ежедневного разговора без телефонов</li>
-                <li><strong>В течение месяца:</strong> Попробуйте технику "4 вопроса для близости"</li>
-                <li><strong>Долгосрочно:</strong> Рассмотрите совместные занятия, которые укрепляют связь</li>
-              </ul>
-              <p><em>Важно: начните с малого — даже 5 минут качественного общения каждый день могут изменить ситуацию.</em></p>
-            `;
-          } else { // Рост
-            recommendations = `
-              <p><strong>Сейчас:</strong> Отношения не способствуют развитию.</p>
-              <p><strong>Что делать:</strong></p>
-              <ul class="checklist">
-                <li><strong>На этой неделе:</strong> Обсудите, что каждый из вас хочет развивать в себе</li>
-                <li><strong>В течение месяца:</strong> Составьте индивидуальные и совместные цели на 3 месяца</li>
-                <li><strong>Долгосрочно:</strong> Найдите способы поддерживать личностный рост друг друга</li>
-              </ul>
-              <p><em>Важно: здоровые отношения должны поддерживать рост обоих партнёров. Если это не так, стоит обсудить изменения.</em></p>
-            `;
-          }
+          showQuestion(currentState.currentQuestionIndex - 1);
         }
-        return { ...block, sum, zone, zoneText, className, recommendations };
-      });
-
-      const tableBody = document.getElementById('resultTableBody');
-      tableBody.innerHTML = '';
-      results.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${r.name}</td>
-          <td>${r.sum}</td>
-          <td>${r.zone}</td>
-        `;
-        tableBody.appendChild(tr);
-      });
-
-      const avg = results.reduce((a, b) => a + b.sum, 0) / 4;
+      }
+    }
+    
+    function showBlockResult(blockNumber) {
+      document.getElementById('questionCard').style.display = 'none';
+      
+      // Скрываем все результаты блоков
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`blockResult${i}`).style.display = 'none';
+      }
+      
+      // Показываем нужный результат
+      document.getElementById(`blockResult${blockNumber}`).style.display = 'block';
+      
+      // Прокручиваем вверх
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function calculateBlockResult(blockIndex) {
+      const start = blockIndex * 5;
+      const end = start + 5;
+      let sum = 0;
+      
+      for (let i = start; i < end; i++) {
+        sum += currentState.answers[i] || 0;
+      }
+      
+      // Сохраняем результат
+      currentState.blockResults[blockIndex] = {
+        sum: sum,
+        zone: sum >= 11 ? 'success' : (sum >= 6 ? 'warning' : 'danger')
+      };
+      
+      // Обновляем отображение
+      const scoreElement = document.getElementById(`block${blockIndex + 1}Score`);
+      const percentage = (sum / 15) * 100;
+      const color = {
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)'
+      }[currentState.blockResults[blockIndex].zone];
+      
+      scoreElement.style.background = `conic-gradient(${color} ${percentage}%, #e0e4e8 ${percentage}%)`;
+      scoreElement.querySelector('.score-text').textContent = `${sum}/15`;
+      
+      const zoneLabel = scoreElement.nextElementSibling;
+      zoneLabel.className = `zone-label zone-${currentState.blockResults[blockIndex].zone}`;
+      zoneLabel.textContent = {
+        success: 'Зона силы',
+        warning: 'Зона риска',
+        danger: 'Зона тревоги'
+      }[currentState.blockResults[blockIndex].zone];
+    }
+    
+    function continueToBlock(blockNumber) {
+      const questionIndex = (blockNumber - 1) * 5;
+      showQuestion(questionIndex);
+    }
+    
+    function reviewBlock(blockNumber) {
+      const questionIndex = (blockNumber - 1) * 5;
+      showQuestion(questionIndex);
+    }
+    
+    function showFinalResults() {
+      document.getElementById('blockResult4').style.display = 'none';
+      document.getElementById('finalResults').style.display = 'block';
+      
+      // Рассчитываем общий результат
+      calculateOverallResult();
+      
+      // Прокручиваем вверх
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function calculateOverallResult() {
+      // Общее состояние
+      const total = Object.values(currentState.blockResults).reduce((sum, block) => sum + (block ? block.sum : 0), 0);
+      const avg = total / 4;
+      
       let overall = 'зрелые';
       if (avg < 8) overall = 'разрушительные';
       else if (avg < 11) overall = 'шаткие';
+      
       document.getElementById('overallStatus').textContent = overall;
-
-      const lowest = results.reduce((a, b) => a.sum < b.sum ? a : b);
-      document.getElementById('priorityBlock').textContent = lowest.name;
-
-      const recContainer = document.getElementById('recommendations');
-      recContainer.innerHTML = '';
-      results.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'recommendation';
-        div.innerHTML = `
-          <h4>${r.name}</h4>
-          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zoneText}</span></p>
-          ${r.recommendations}
-        `;
-        recContainer.appendChild(div);
-      });
-
+      
+      // Приоритетный блок
+      const lowestBlock = Object.entries(currentState.blockResults).reduce((lowest, [index, block]) => {
+        if (!block) return lowest;
+        return block.sum < lowest.sum ? { index, sum: block.sum } : lowest;
+      }, { index: null, sum: Infinity });
+      
+      const blockNames = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
+      document.getElementById('priorityBlock').textContent = blockNames[lowestBlock.index];
+      
       // Заполняем PDF-отчет
       document.getElementById('pdfDate').textContent = `Дата: ${new Date().toLocaleDateString("ru-RU")}`;
       
       const pdfTableBody = document.getElementById('pdfTableBody');
       pdfTableBody.innerHTML = '';
-      results.forEach(r => {
+      
+      blockNames.forEach((name, index) => {
+        const block = currentState.blockResults[index];
+        if (!block) return;
+        
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${r.name}</td>
-          <td>${r.sum}</td>
-          <td>${r.zoneText}</td>
+          <td>${name}</td>
+          <td>${block.sum}/15</td>
+          <td>${{
+            success: 'Зона силы',
+            warning: 'Зона риска',
+            danger: 'Зона тревоги'
+          }[block.zone]}</td>
         `;
         pdfTableBody.appendChild(tr);
       });
       
       document.getElementById('pdfSummary').innerHTML = `
-        <p><strong>Состояние:</strong> ${overall}</p>
-        <p><strong>Приоритет:</strong> ${lowest.name}</p>
+        <p><strong>Общее состояние:</strong> ${overall}</p>
+        <p><strong>Приоритетный блок:</strong> ${blockNames[lowestBlock.index]}</p>
       `;
       
       const pdfRecContainer = document.getElementById('pdfRecommendations');
-      pdfRecContainer.innerHTML = '';
-      results.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'recommendation';
-        div.innerHTML = `
-          <h4>${r.name}</h4>
-          <p><strong>Зона:</strong> <span class="badge ${r.className}">${r.zoneText}</span></p>
-          ${r.recommendations.replace(/<ul class="checklist">/g, '<ul>').replace(/<li>/g, '<li>• ')}
-        `;
-        pdfRecContainer.appendChild(div);
-      });
-
-      saveResult({ results, overall, priority: lowest.name });
-
-      document.getElementById('loveForm').style.display = 'none';
-      document.getElementById('results').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
+      pdfRecContainer.innerHTML = `
+        <h3>Приоритетные рекомендации</h3>
+        <p>1. <strong>Работа с границами:</strong> Начните с малого - установите одну четкую границу и обсудите её с партнером.</p>
+        <p>2. <strong>Укрепление связи:</strong> Внедрите ежедневный "ритуал конца дня" - 10 минут без телефонов и дел.</p>
+        <p>3. <strong>Личностный рост:</strong> На этой неделе обсудите, что каждый из вас хочет развивать в себе.</p>
+        
+        <h3>Долгосрочные рекомендации</h3>
+        <p>1. <strong>Через месяц:</strong> Составьте список ваших ожиданий друг от друга и обсудите их.</p>
+        <p>2. <strong>Через три месяца:</strong> Создайте совместные цели на будущее и план их достижения.</p>
+        <p>3. <strong>Долгосрочно:</strong> Регулярно проводите "проверки состояния отношений" раз в месяц.</p>
+      `;
+    }
+    
     function downloadPDF() {
       const element = document.getElementById('pdfReport');
       
@@ -1236,29 +1542,35 @@
       };
 
       // Генерация и скачивание PDF
-      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).save().then(() => {
+        console.log('PDF успешно сохранен');
+      }).catch(error => {
+        console.error('Ошибка при генерации PDF:', error);
+        alert('Произошла ошибка при создании PDF. Попробуйте еще раз.');
+      });
     }
-
-    function sendEmail() {
-      const subject = 'Мои результаты теста на зрелость отношений';
-      const body = `Привет!\n\nЯ прошёл тест на зрелость отношений.\nРезультаты можно посмотреть здесь: ${window.location.href}\n\nТест разработан Евгением Климовым.\n\nP.S. Ты тоже можешь пройти: ${TEST_URL}`;
-      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    function shareToTelegram() {
+      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова:`;
+      const encodedText = encodeURIComponent(text);
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(TEST_URL)}&text=${encodedText}`;
+      window.open(shareUrl, '_blank');
     }
-
-    function restart() {
-      document.getElementById('results').style.display = 'none';
-      document.getElementById('loveForm').style.display = 'block';
-      document.getElementById('loveForm').reset();
-      currentBlock = 0;
-      document.getElementById(blocks[0]).style.display = 'block';
-      for (let i = 1; i < 4; i++) {
-        document.getElementById(blocks[i]).style.display = 'none';
+    
+    function shareToWhatsApp() {
+      const text = `Пройди тест на зрелость отношений — давай лучше поймём наши сильные и слабые стороны. Тест от Евгения Климова: ${TEST_URL}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+    
+    function restartTest() {
+      if (confirm('Вы уверены, что хотите начать тест заново? Все ваши ответы будут потеряны.')) {
+        clearState();
+        document.getElementById('finalResults').style.display = 'none';
+        document.getElementById('intro').style.display = 'block';
+        updateProgress();
       }
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    updateProgress();
   </script>
 </body>
 </html>
