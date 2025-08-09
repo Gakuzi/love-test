@@ -386,19 +386,28 @@
       </div>
       
       <div class="footer">
-        Разработано Евгением Климовым | Связь: @eklimov
+        © <span id="footerYear"></span> Евгений Климов · Связь: <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
       </div>
     </div>
     
     <!-- Подвал -->
     <div class="footer">
-      Разработано <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгением Климовым</a> | 
-      <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
+      © <span id="footerYearBottom"></span> <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгений Климов</a> · <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
     </div>
   </div>
 
   <!-- Подключаем html2pdf.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
   <script src="./app.js" defer></script>
+  <script>
+    // Заполняем год в подвале
+    document.addEventListener('DOMContentLoaded', function() {
+      const year = new Date().getFullYear();
+      const topYear = document.getElementById('footerYear');
+      const bottomYear = document.getElementById('footerYearBottom');
+      if (topYear) topYear.textContent = year;
+      if (bottomYear) bottomYear.textContent = year;
+    });
+  </script>
 </body>
 </html>
