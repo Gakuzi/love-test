@@ -213,12 +213,9 @@ function showQuestion(index) {
 }
 
 function toggleHint() {
-  console.log('toggleHint called'); // Отладка
   const hintContent = document.getElementById('hintContent');
   const toggleButton = document.querySelector('.hint-toggle');
   const hintLabel = toggleButton?.querySelector('.hint-label');
-  
-  console.log('Elements found:', { hintContent, toggleButton, hintLabel }); // Отладка
   
   if (hintContent) {
     hintContent.classList.toggle('show');
@@ -234,8 +231,6 @@ function toggleHint() {
         hintLabel.textContent = 'Пояснение 📖';
       }
     }
-  } else {
-    console.error('hintContent not found!'); // Отладка
   }
 }
 
@@ -255,21 +250,25 @@ function nextQuestion() {
 
   const currentIndex = currentState.currentQuestionIndex;
   
-  // Проверяем, завершили ли мы блок (5 вопросов)
-  if ((currentIndex + 1) % 5 === 0) {
-    const blockIndex = Math.floor(currentIndex / 5);
-    calculateBlockResult(blockIndex);
-    showCompactBlockResult(blockIndex);
-  }
-  
   // Если это последний вопрос (индекс 19)
   if (currentIndex === 19) {
     // Обновляем индекс для последнего вопроса
     currentState.currentQuestionIndex = 20;
     saveState();
     
-    // Показываем финальные результаты
+    // Рассчитываем последний блок и показываем финальные результаты
+    const blockIndex = Math.floor(currentIndex / 5);
+    calculateBlockResult(blockIndex);
     showFinalResults();
+    return;
+  }
+  
+  // Проверяем, завершили ли мы блок (5 вопросов)
+  if ((currentIndex + 1) % 5 === 0) {
+    const blockIndex = Math.floor(currentIndex / 5);
+    calculateBlockResult(blockIndex);
+    showCompactBlockResult(blockIndex);
+    // Останавливаемся на результатах блока - пользователь нажмёт "Продолжить"
     return;
   }
   
@@ -291,19 +290,26 @@ function prevQuestion() {
   }
 }
 
-// Показываем компактный блок результата внизу экрана
+// Показываем компактный блок результата
 function showCompactBlockResult(blockIndex) {
   const blockNumber = blockIndex + 1;
   const compactBlock = document.getElementById(`blockResult${blockNumber}`);
+  
+  // Скрываем карточку вопроса
+  document.getElementById('questionCard').style.display = 'none';
+  
+  // Показываем контейнер с вопросами
+  document.getElementById('question-container').style.display = 'block';
+  
   if (compactBlock) {
     compactBlock.style.display = 'block';
     
     // Обновляем информацию в компактном блоке
     updateCompactBlockInfo(blockIndex);
     
-    // Плавно прокручиваем к блоку
+    // Плавно прокручиваем к верху
     setTimeout(() => {
-      compactBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 300);
   }
 }
@@ -379,6 +385,34 @@ function calculateBlockResult(blockIndex) {
 function continueToBlock(blockNumber) {
   const questionIndex = (blockNumber - 1) * 5;
   showQuestion(questionIndex);
+}
+
+function continueToNextBlock() {
+  // Продолжаем к следующему вопросу после показа результатов блока
+  const nextQuestionIndex = currentState.currentQuestionIndex + 1;
+  
+  // Если достигли конца теста
+  if (nextQuestionIndex >= 20) {
+    showFinalResults();
+    return;
+  }
+  
+  // Скрываем все блоки результатов
+  for (let i = 1; i <= 4; i++) {
+    const blockResult = document.getElementById(`blockResult${i}`);
+    if (blockResult) blockResult.style.display = 'none';
+  }
+  
+  // Скрываем контейнер с блоками результатов
+  document.getElementById('question-container').style.display = 'none';
+  
+  // Переходим к следующему вопросу
+  currentState.currentQuestionIndex = nextQuestionIndex;
+  saveState();
+  showQuestion(nextQuestionIndex);
+  
+  // Показываем прогресс-бар
+  document.querySelector('.progress-container').style.display = 'block';
 }
 
 function reviewBlock(blockNumber) { continueToBlock(blockNumber); }
@@ -727,6 +761,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.continueToBlock = continueToBlock;
+window.continueToNextBlock = continueToNextBlock;
 window.showFinalResults = showFinalResults;
 window.downloadPDF = downloadPDF;
 window.shareToTelegram = shareToTelegram;
