@@ -106,6 +106,12 @@ function showQuestion(index) {
   const optionsContainer = document.getElementById('optionsContainer');
   const nextBtn = document.getElementById('nextBtn');
 
+  // Очищаем состояние кнопки перед обновлением
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.classList.remove('disabled');
+  }
+
   card.style.display = 'block';
   document.getElementById('blockTag').textContent = question.block;
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
@@ -396,6 +402,7 @@ function continueToBlock(blockNumber) {
 function continueToNextBlock() {
   // Продолжаем к следующему вопросу после показа результатов блока
   const nextQuestionIndex = currentState.currentQuestionIndex;
+  console.log(`continueToNextBlock: currentQuestionIndex=${nextQuestionIndex}, answers=`, currentState.answers);
   
   // Если достигли конца теста
   if (nextQuestionIndex >= 20) {
@@ -412,11 +419,14 @@ function continueToNextBlock() {
   // Скрываем контейнер с блоками результатов
   document.getElementById('question-container').style.display = 'none';
   
-  // Переходим к следующему вопросу (currentQuestionIndex уже правильный)
-  showQuestion(nextQuestionIndex);
-  
-  // Показываем прогресс-бар
-  document.querySelector('.progress-container').style.display = 'block';
+  // Принудительно обновляем DOM с задержкой
+  setTimeout(() => {
+    // Переходим к следующему вопросу (currentQuestionIndex уже правильный)
+    showQuestion(nextQuestionIndex);
+    
+    // Показываем прогресс-бар
+    document.querySelector('.progress-container').style.display = 'block';
+  }, 50);
 }
 
 function reviewBlock(blockNumber) { continueToBlock(blockNumber); }
@@ -791,16 +801,29 @@ function closeErrorModal() {
 // Управление состоянием кнопок
 function updateButtonStates() {
   const nextBtn = document.getElementById('nextBtn');
-  const currentAnswer = currentState.answers[currentState.currentQuestionIndex];
+  const currentIndex = currentState.currentQuestionIndex;
+  const currentAnswer = currentState.answers[currentIndex];
+  
+  // Отладочная информация
+  console.log(`updateButtonStates: questionIndex=${currentIndex}, answer=${currentAnswer}, answers=`, currentState.answers);
   
   if (nextBtn) {
-    nextBtn.disabled = (currentAnswer === undefined);
+    const shouldDisable = (currentAnswer === undefined);
+    nextBtn.disabled = shouldDisable;
+    
+    if (shouldDisable) {
+      nextBtn.classList.add('disabled');
+    } else {
+      nextBtn.classList.remove('disabled');
+    }
   }
 }
 
 // Обновляем состояние кнопок при выборе ответа
+// Примечание: Логика выбора опции находится в showQuestion() функции
 function selectOptionWithUpdate(questionIndex, value) {
-  selectOption(questionIndex, value);
+  // Эта функция зарезервирована для будущего использования
+  console.warn('Функция selectOptionWithUpdate не реализована');
   updateButtonStates();
 }
 
