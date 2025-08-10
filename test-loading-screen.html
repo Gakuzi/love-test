@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест новой заставки</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 2rem; 
+            background: #f8fafc; 
+        }
+        .test-container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .demo-section { 
+            margin: 2rem 0; 
+            padding: 1.5rem; 
+            border: 2px dashed #ddd; 
+            border-radius: 8px; 
+        }
+        .timeline { 
+            background: #f4f7fa; 
+            padding: 1rem; 
+            border-radius: 8px; 
+            margin: 1rem 0; 
+        }
+        .timeline-item { 
+            display: flex; 
+            align-items: center; 
+            margin: 0.5rem 0; 
+        }
+        .timeline-time { 
+            background: #4a6b8a; 
+            color: white; 
+            padding: 0.2rem 0.5rem; 
+            border-radius: 4px; 
+            min-width: 60px; 
+            text-align: center; 
+            font-size: 0.8rem; 
+            margin-right: 1rem; 
+        }
+        .check { color: #28a745; font-weight: bold; }
+        .code-block { 
+            background: #f4f4f4; 
+            padding: 1rem; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            margin: 1rem 0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 Тест новой заставки</h1>
+        
+        <div class="demo-section">
+            <h3>✨ Новый сценарий загрузки:</h3>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-time">0с</div>
+                    <div>Показ заставки с анимированными элементами</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">1с</div>
+                    <div>📊 Появляется факт: "Анализ на основе 200+ исследований" (20% прогресса)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">3.5с</div>
+                    <div>🧠 Появляется факт: "Методы Джона Готтмана и Сью Джонсон" (40% прогресса)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">6с</div>
+                    <div>❤️ Появляется факт: "Комплексная оценка качества отношений" (60% прогресса)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">8.5с</div>
+                    <div>🎯 Появляется факт: "Персональные рекомендации для улучшения" (80% прогресса)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">11с</div>
+                    <div>🔍 Появляется факт: "Подробная аналитика по 4 блокам" (100% прогресса)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">12.5с</div>
+                    <div><strong>🎯 Прогресс-бар исчезает, появляется круглая кнопка "Начать тест"</strong></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">∞</div>
+                    <div><strong>👤 Пользователь решает когда нажать кнопку "Начать"</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔧 Ключевые изменения:</h3>
+            <ul>
+                <li class="check">✅ Медленная загрузка (12.5 секунд вместо 5)</li>
+                <li class="check">✅ 5 фактов вместо 3 для большей информативности</li>
+                <li class="check">✅ Интервал между фактами увеличен до 2.5 секунд</li>
+                <li class="check">✅ Круглая кнопка "Начать тест" после завершения загрузки</li>
+                <li class="check">✅ Пользователь сам контролирует начало теста</li>
+                <li class="check">✅ Красивая анимация появления кнопки</li>
+                <li class="check">✅ Адаптивный дизайн для мобильных устройств</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎨 CSS стили кнопки:</h3>
+            <div class="code-block">
+.loading-start-btn {<br>
+&nbsp;&nbsp;width: 140px;<br>
+&nbsp;&nbsp;height: 140px;<br>
+&nbsp;&nbsp;border-radius: 50%;<br>
+&nbsp;&nbsp;background: linear-gradient(135deg, var(--primary), var(--success));<br>
+&nbsp;&nbsp;animation: pulseStartButton 2s ease-in-out infinite;<br>
+&nbsp;&nbsp;color: white;<br>
+&nbsp;&nbsp;font-weight: 600;<br>
+}
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📱 Мобильная адаптация:</h3>
+            <ul>
+                <li>Кнопка уменьшается до 120x120px на мобильных</li>
+                <li>Шрифт адаптируется под размер экрана</li>
+                <li>Анимации оптимизированы для сенсорных экранов</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 Проверка работы:</h3>
+            <p>Откройте <a href="http://localhost:3000" target="_blank">основное приложение</a> и убедитесь, что:</p>
+            <ol>
+                <li>Заставка показывается при загрузке страницы</li>
+                <li>Факты появляются последовательно с интервалом ~2.5 секунды</li>
+                <li>Прогресс увеличивается с каждым фактом (20%, 40%, 60%, 80%, 100%)</li>
+                <li>После 100% прогресса появляется круглая кнопка "Начать тест"</li>
+                <li>Кнопка имеет анимацию пульсации</li>
+                <li>При клике на кнопку заставка исчезает и показывается стартовый экран</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎬 Тест новой заставки загружен');
+        console.log('📊 Новый тайминг: 12.5 секунд + ожидание пользователя');
+        console.log('🎯 Круглая кнопка с градиентом и анимацией');
+        console.log('📱 Адаптивный дизайн для всех устройств');
+    </script>
+</body>
+</html>

@@ -80,7 +80,23 @@ function clearState() {
 
 // UI controls
 function startTest() {
+  clearState(); // Очищаем состояние перед началом
+  
+  // Скрываем заставку
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (loadingScreen) {
+    loadingScreen.style.opacity = '0';
+    loadingScreen.style.transition = 'opacity 0.8s ease';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 800);
+  }
+  
+  // Скрываем все остальные экраны и показываем вопросы
   document.getElementById('intro').style.display = 'none';
+  document.getElementById('question-container').style.display = 'block';
+  
+  // Показываем первый вопрос
   showQuestion(0);
 }
 
@@ -88,14 +104,56 @@ function showQuestion(index) {
   const question = QUESTIONS[index];
   const card = document.getElementById('questionCard');
   const optionsContainer = document.getElementById('optionsContainer');
+  const nextBtn = document.getElementById('nextBtn');
 
   card.style.display = 'block';
   document.getElementById('blockTag').textContent = question.block;
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
   document.getElementById('questionText').textContent = question.text;
+  
+  // Обновляем текст кнопки На последнем вопросе
+  if (index === 19) {
+    nextBtn.innerHTML = 'Получить результаты →';
+    nextBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+  } else {
+    nextBtn.innerHTML = 'Далее →';
+    nextBtn.style.background = '';
+  }
+  
+  // Обновляем хинт
+  const hintContent = document.getElementById('hintContent');
+  if (hintContent) {
+    hintContent.textContent = question.hint;
+    hintContent.classList.remove('show'); // Сворачиваем при переходе к новому вопросу
+  }
+  
+  // Сбрасываем состояние кнопки пояснения
+  const hintToggle = document.querySelector('.hint-toggle');
+  if (hintToggle) {
+    hintToggle.classList.remove('active');
+    const hintLabel = hintToggle.querySelector('.hint-label');
+    if (hintLabel) {
+      hintLabel.textContent = 'Пояснение 📖';
+    }
+  }
+
+  // Скрыть все промежуточные результаты
+  for (let i = 1; i <= 4; i++) {
+    const blockResult = document.getElementById(`blockResult${i}`);
+    if (blockResult) blockResult.style.display = 'none';
+  }
+  
+  // Скрыть финальные результаты
+  const finalResults = document.getElementById('finalResults');
+  if (finalResults) finalResults.style.display = 'none';
 
   optionsContainer.innerHTML = '';
   optionsContainer.setAttribute('role', 'radiogroup');
+  
+  // Принудительно устанавливаем grid стили
+  optionsContainer.style.display = 'grid';
+  optionsContainer.style.gridTemplateColumns = window.innerWidth <= 768 ? '1fr' : '1fr 1fr';
+  optionsContainer.style.gap = '1rem';
 
   question.options.forEach((option) => {
     const optionElement = document.createElement('div');
@@ -139,6 +197,15 @@ function showQuestion(index) {
   });
 
   document.getElementById('prevBtn').style.display = index > 0 ? 'flex' : 'none';
+  
+  // Изменяем текст кнопки на последнем вопросе
+  if (index === 19) { // Последний вопрос (индекс 19 = 20-й вопрос)
+    nextBtn.innerHTML = 'Получить результаты →';
+    nextBtn.className = 'nav-btn nav-btn-forward btn-final';
+  } else {
+    nextBtn.innerHTML = 'Далее →';
+    nextBtn.className = 'nav-btn nav-btn-forward';
+  }
 
   currentState.currentQuestionIndex = index;
   updateProgress();
@@ -147,8 +214,24 @@ function showQuestion(index) {
 
 function toggleHint() {
   const hintContent = document.getElementById('hintContent');
-  const isVisible = hintContent.style.display === 'block';
-  hintContent.style.display = isVisible ? 'none' : 'block';
+  const toggleButton = document.querySelector('.hint-toggle');
+  const hintLabel = toggleButton?.querySelector('.hint-label');
+  
+  if (hintContent) {
+    hintContent.classList.toggle('show');
+    
+    if (toggleButton) {
+      toggleButton.classList.toggle('active');
+    }
+    
+    if (hintLabel) {
+      if (hintContent.classList.contains('show')) {
+        hintLabel.textContent = 'Скрыть 📖';
+      } else {
+        hintLabel.textContent = 'Пояснение 📖';
+      }
+    }
+  }
 }
 
 function updateProgress() {
@@ -165,26 +248,99 @@ function nextQuestion() {
     return;
   }
 
-  if (currentState.currentQuestionIndex < 19) {
-    showQuestion(currentState.currentQuestionIndex + 1);
-  } else {
-    calculateBlockResult(3);
-    showBlockResult(4);
-  }
-
-  if ((currentState.currentQuestionIndex + 1) % 5 === 0 && currentState.currentQuestionIndex < 19) {
-    const blockIndex = Math.floor((currentState.currentQuestionIndex + 1) / 5) - 1;
+  const currentIndex = currentState.currentQuestionIndex;
+  
+  // Если это последний вопрос (индекс 19)
+  if (currentIndex === 19) {
+    // Обновляем индекс для последнего вопроса
+    currentState.currentQuestionIndex = 20;
+    saveState();
+    
+    // Рассчитываем последний блок и показываем финальные результаты
+    const blockIndex = Math.floor(currentIndex / 5);
     calculateBlockResult(blockIndex);
-    showBlockResult(blockIndex + 1);
+    showFinalResults();
+    return;
   }
+  
+  // Проверяем, завершили ли мы блок (5 вопросов)
+  if ((currentIndex + 1) % 5 === 0) {
+    const blockIndex = Math.floor(currentIndex / 5);
+    calculateBlockResult(blockIndex);
+    showCompactBlockResult(blockIndex);
+    // Останавливаемся на результатах блока - пользователь нажмёт "Продолжить"
+    return;
+  }
+  
+  // Обновляем индекс и переходим к следующему вопросу
+  currentState.currentQuestionIndex = currentIndex + 1;
+  saveState();
+  showQuestion(currentState.currentQuestionIndex);
 }
 
 function prevQuestion() {
   if (currentState.currentQuestionIndex > 0) {
-    if (currentState.currentQuestionIndex % 5 === 0) {
-      showBlockResult(Math.floor(currentState.currentQuestionIndex / 5));
-    } else {
-      showQuestion(currentState.currentQuestionIndex - 1);
+    // Обновляем индекс и переходим к предыдущему вопросу
+    currentState.currentQuestionIndex = currentState.currentQuestionIndex - 1;
+    saveState();
+    showQuestion(currentState.currentQuestionIndex);
+    
+    // Обновляем компактные блоки результатов
+    updateCompactBlocks();
+  }
+}
+
+// Показываем компактный блок результата
+function showCompactBlockResult(blockIndex) {
+  const blockNumber = blockIndex + 1;
+  const compactBlock = document.getElementById(`blockResult${blockNumber}`);
+  
+  // Скрываем карточку вопроса
+  document.getElementById('questionCard').style.display = 'none';
+  
+  // Показываем контейнер с вопросами
+  document.getElementById('question-container').style.display = 'block';
+  
+  if (compactBlock) {
+    compactBlock.style.display = 'block';
+    
+    // Обновляем информацию в компактном блоке
+    updateCompactBlockInfo(blockIndex);
+    
+    // Плавно прокручиваем к верху
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+  }
+}
+
+// Обновляем информацию в компактном блоке
+function updateCompactBlockInfo(blockIndex) {
+  const blockNumber = blockIndex + 1;
+  const result = currentState.blockResults[blockIndex];
+  if (!result) return;
+  
+  // Обновляем скор
+  const scoreElement = document.querySelector(`#blockResult${blockNumber} .score-badge`);
+  if (scoreElement) {
+    scoreElement.textContent = `${result.sum} баллов`;
+    scoreElement.className = `score-badge score-${result.zone}`;
+  }
+  
+  // Обновляем зону
+  const zoneElement = document.querySelector(`#blockResult${blockNumber} .zone-mini`);
+  if (zoneElement) {
+    zoneElement.className = `zone-mini zone-${result.zone}`;
+    const zoneTexts = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' };
+    zoneElement.textContent = zoneTexts[result.zone];
+  }
+}
+
+// Обновляем все компактные блоки
+function updateCompactBlocks() {
+  for (let i = 0; i < 4; i++) {
+    if (currentState.blockResults[i]) {
+      updateCompactBlockInfo(i);
     }
   }
 }
@@ -231,12 +387,69 @@ function continueToBlock(blockNumber) {
   showQuestion(questionIndex);
 }
 
+function continueToNextBlock() {
+  // Продолжаем к следующему вопросу после показа результатов блока
+  const nextQuestionIndex = currentState.currentQuestionIndex + 1;
+  
+  // Если достигли конца теста
+  if (nextQuestionIndex >= 20) {
+    showFinalResults();
+    return;
+  }
+  
+  // Скрываем все блоки результатов
+  for (let i = 1; i <= 4; i++) {
+    const blockResult = document.getElementById(`blockResult${i}`);
+    if (blockResult) blockResult.style.display = 'none';
+  }
+  
+  // Скрываем контейнер с блоками результатов
+  document.getElementById('question-container').style.display = 'none';
+  
+  // Переходим к следующему вопросу
+  currentState.currentQuestionIndex = nextQuestionIndex;
+  saveState();
+  showQuestion(nextQuestionIndex);
+  
+  // Показываем прогресс-бар
+  document.querySelector('.progress-container').style.display = 'block';
+}
+
 function reviewBlock(blockNumber) { continueToBlock(blockNumber); }
 
 function showFinalResults() {
-  document.getElementById('blockResult4').style.display = 'none';
-  document.getElementById('finalResults').style.display = 'block';
+  // Полностью скрываем все элементы теста
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('questionCard').style.display = 'none';
+  document.querySelector('.progress-container').style.display = 'none';
+  
+  // Скрываем все компактные блоки результатов
+  for (let i = 1; i <= 4; i++) {
+    const blockResult = document.getElementById(`blockResult${i}`);
+    if (blockResult) blockResult.style.display = 'none';
+  }
+  
+  // Показываем финальные результаты на всю страницу
+  const finalResults = document.getElementById('finalResults');
+  finalResults.style.display = 'block';
+  finalResults.style.position = 'relative';
+  finalResults.style.zIndex = '10';
+  finalResults.style.background = '#f8f9fa';
+  finalResults.style.minHeight = '100vh';
+  finalResults.style.paddingTop = '2rem';
+  
   calculateOverallResult();
+  
+  // Плавный переход к результатам
+  finalResults.style.opacity = '0';
+  finalResults.style.transform = 'translateY(30px)';
+  
+  setTimeout(() => {
+    finalResults.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    finalResults.style.opacity = '1';
+    finalResults.style.transform = 'translateY(0)';
+  }, 100);
+  
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -342,14 +555,219 @@ function restartTest() {
 }
 
 // Expose to window for onclick handlers in HTML
+// Функции для модального окна помощи
+function showHelp() {
+    document.getElementById('helpOverlay').style.display = 'flex';
+}
+
+function hideHelp() {
+    document.getElementById('helpOverlay').style.display = 'none';
+}
+
 window.startTest = startTest;
+window.showHelp = showHelp;
+window.hideHelp = hideHelp;
+// Начало теста - функция уже определена выше
+
 window.toggleHint = toggleHint;
+window.startTest = startTest;
 window.nextQuestion = nextQuestion;
 window.prevQuestion = prevQuestion;
 window.reviewBlock = reviewBlock;
+// Функция для разворачивания компактных блоков результатов
+function toggleBlockResult(blockId) {
+    const details = document.getElementById(`details-${blockId}`);
+    const toggle = document.getElementById(`toggle-${blockId}`);
+    
+    if (details && toggle) {
+        details.classList.toggle('expanded');
+        toggle.classList.toggle('expanded');
+    }
+}
+
+// Инициализация обработчиков для компактных блоков
+function initCompactBlocks() {
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.result-header')) {
+            const header = e.target.closest('.result-header');
+            const blockId = header.getAttribute('data-block');
+            if (blockId) {
+                toggleBlockResult(blockId);
+            }
+        }
+    });
+}
+
+// Инициализация приложения
+function initializeApp() {
+    // Инициализация состояния
+    currentState.currentQuestionIndex = 0;
+    currentState.answers = {};
+    currentState.blockResults = { 0: null, 1: null, 2: null, 3: null };
+    
+    // Скрыть все элементы (включая intro) - покажем intro только после заставки
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('questionCard').style.display = 'none';
+    document.getElementById('finalResults').style.display = 'none';
+    document.querySelectorAll('.block-result-compact').forEach(el => el.style.display = 'none');
+    
+    // Скрыть прогресс-бар на главной
+    document.querySelector('.progress-container').style.display = 'none';
+    
+    initCompactBlocks();
+}
+
+// Анимированная заставка
+let loadingState = {
+    isLoading: true,
+    currentStep: 0,
+    progress: 0
+};
+
+// Массив сообщений для смены
+const MESSAGES = [
+    {
+        text: '“Безопасность — это когда вы можете быть собой без страха осуждения”',
+        attribution: '— Основа здоровых отношений'
+    },
+    {
+        text: '“Отношения становятся надёжными, когда оба партнёра держат слово”',
+        attribution: '— Основа доверия'
+    },
+    {
+        text: '“Эмоциональная связь — это сердце любых зрелых отношений”',
+        attribution: '— Глубина связи'
+    },
+    {
+        text: '“Лучшие отношения те, в которых оба растут и становятся лучше”',
+        attribution: '— Перспективы роста'
+    }
+];
+
+let currentMessageIndex = 0;
+
+function rotateMessage() {
+    const messageText = document.getElementById('messageText');
+    const messageAttribution = document.querySelector('.message-attribution');
+    
+    if (!messageText || !messageAttribution) return;
+    
+    setTimeout(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % MESSAGES.length;
+        const message = MESSAGES[currentMessageIndex];
+        
+        messageText.textContent = message.text;
+        messageAttribution.textContent = message.attribution;
+    }, 4000); // Меняем каждые 4 секунды
+}
+
+function startLoadingAnimation() {
+    const loadingSteps = [
+        'Подготовка вопросов...',
+        'Настройка теста...',
+        'Инициализация системы...',
+        'Подготовка результатов...',
+        'Готово к работе!'
+    ];
+
+    const loadingProgressBar = document.getElementById('loadingProgressBar');
+    const loadingText = document.getElementById('loadingText');
+    
+    let currentStep = 0;
+    
+    function animateStep() {
+        if (currentStep >= loadingSteps.length) {
+            // Завершаем анимацию
+            setTimeout(() => {
+                showStartButton();
+            }, 500);
+            return;
+        }
+
+        const progress = ((currentStep + 1) / loadingSteps.length) * 100;
+        
+        // Обновляем прогресс-бар
+        if (loadingProgressBar) {
+            loadingProgressBar.style.width = `${progress}%`;
+        }
+        
+        // Обновляем текст
+        if (loadingText) {
+            loadingText.textContent = loadingSteps[currentStep];
+        }
+        
+        currentStep++;
+        
+        // Переход к следующему шагу
+        setTimeout(animateStep, 1200);
+    }
+
+    // Начинаем анимацию через небольшую задержку
+    setTimeout(() => {
+        animateStep();
+    }, 1000);
+}
+
+function showStartButton() {
+    const loadingProgressBar = document.getElementById('loadingProgressBar');
+    const loadingText = document.getElementById('loadingText');
+    const startButton = document.getElementById('startButton');
+    const testInfo = document.getElementById('testInfo');
+
+    // Скрываем прогресс бар
+    if (loadingProgressBar) {
+        loadingProgressBar.parentElement.style.opacity = '0';
+        loadingProgressBar.parentElement.style.transition = 'opacity 0.5s ease';
+    }
+    
+    // Скрываем текст загрузки
+    if (loadingText) {
+        loadingText.style.opacity = '0';
+        loadingText.style.transition = 'opacity 0.5s ease';
+    }
+
+    // Показываем кнопку старта и информацию
+    setTimeout(() => {
+        if (startButton) {
+            startButton.classList.remove('hidden');
+        }
+        
+        if (testInfo) {
+            testInfo.classList.remove('hidden');
+        }
+        
+        loadingState.isLoading = false;
+    }, 600);
+}
+
+// Обновленные экспорты функций (кнопка теперь вызывает startTest напрямую)
+// window.handleCircleClick больше не нужен
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация приложения
+    initializeApp();
+    
+    // Настраиваем прогресс-кольцо и запускаем анимированную загрузку
+    const progressRing = document.getElementById('progressRing');
+    if (progressRing) {
+        const circumference = 2 * Math.PI * 80;
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressRing.style.strokeDashoffset = circumference;
+    }
+    
+    // Запускаем анимированную загрузку
+    startLoadingAnimation();
+});
+
 window.continueToBlock = continueToBlock;
+window.continueToNextBlock = continueToNextBlock;
 window.showFinalResults = showFinalResults;
 window.downloadPDF = downloadPDF;
 window.shareToTelegram = shareToTelegram;
 window.shareToWhatsApp = shareToWhatsApp;
 window.restartTest = restartTest;
+// Функция toggleHint уже определена выше
+
+window.toggleBlockResult = toggleBlockResult;
+window.toggleHint = toggleHint;

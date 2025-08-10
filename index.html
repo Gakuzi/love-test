@@ -1,37 +1,115 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Диагностика зрелых отношений</title>
-  <meta name="description" content="Пройдите тест на зрелость отношений и получите персональные рекомендации">
-  <meta name="theme-color" content="#4a6b8a" />
-  <meta name="color-scheme" content="light dark" />
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="stylesheet" href="./styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест на зрелость отношений | Диагностика качества отношений</title>
+  
+  <meta name="description" content="Научно обоснованный тест на зрелость отношений. Получите подробную аналитику качества ваших отношений и персональные рекомендации от эксперта.">
+  <meta name="keywords" content="тест на зрелость отношений, диагностика отношений, психологический тест, качество отношений, тест пар">
+  <meta name="author" content="Евгений Климов">
+  
+  <!-- Open Graph для социальных сетей -->
+  <meta property="og:title" content="Тест на зрелость отношений">
+  <meta property="og:description" content="Узнайте, насколько зрелыми являются ваши отношения. Научно обоснованный тест с персональными рекомендациями.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://your-domain.com">
+  
+  <!-- Превью для Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Тест на зрелость отношений">
+  <meta name="twitter:description" content="Профессиональная диагностика качества отношений с персональными рекомендациями.">
+  
+  <!-- SEO оптимизация -->
+  <link rel="canonical" href="https://your-domain.com">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  
+  <!-- Preload критических ресурсов -->
+  <link rel="preload" href="styles.css" as="style">
+  <link rel="preload" href="app.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Тест на зрелость отношений",
+    "description": "Научно обоснованный тест для оценки качества отношений",
+    "url": "https://your-domain.com",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "RUB"
+    }
+  }
+  </script>
 </head>
+
 <body>
+  <!-- Современный экран загрузки -->
+  <div id="loadingScreen" class="modern-loading-screen">
+    <div class="loading-content">
+      <!-- Минимальная информация о тесте -->
+      <div class="test-preview">
+        <div class="test-info">
+          <div class="info-item">
+            <span class="info-number">20</span>
+            <span class="info-text">вопросов</span>
+          </div>
+          <div class="info-separator">•</div>
+          <div class="info-item">
+            <span class="info-number">5-7</span>
+            <span class="info-text">минут</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Современный прогресс-бар -->
+      <div class="loading-progress-modern">
+        <div class="progress-track">
+          <div class="progress-fill" id="loadingProgressBar"></div>
+        </div>
+        <div class="loading-status" id="loadingText">Подготовка...</div>
+      </div>
+      
+      <!-- Кнопка старта (показывается после загрузки) -->
+      <button class="modern-start-button hidden" id="startButton" onclick="startTest()">
+        <div class="button-inner">
+          <span class="button-label">Начать</span>
+          <div class="button-icon">→</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
   <noscript>Для прохождения теста требуется JavaScript.</noscript>
   <div class="container">
     <!-- Введение -->
-    <div id="intro" class="intro">
-      <h1>Диагностика зрелых отношений</h1>
-      <p>Честный тест для понимания сильных и слабых сторон вашей пары. Пройдите 20 вопросов и получите персональные рекомендации.</p>
-      <div class="intro-stats">
-        <div class="stat">
-          <div class="stat-value">20</div>
-          <div>Вопросов</div>
+    <div id="intro" class="intro-modern">
+      <div class="intro-content">
+        <div class="test-duration">
+          <div class="duration-icon">⏱️</div>
+          <div class="duration-text">Время прохождения: 5-7 минут</div>
         </div>
-        <div class="stat">
-          <div class="stat-value">5-7</div>
-          <div>Минут</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">4</div>
-          <div>Блока</div>
-        </div>
+        
+        <button class="start-button" onclick="startTest()">
+          <div class="button-content">
+            <span class="button-text">Начать диагностику</span>
+            <div class="button-arrow">→</div>
+          </div>
+        </button>
       </div>
-      <button class="btn" onclick="startTest()">Начать тест</button>
     </div>
     
     <!-- Прогресс-бар -->
@@ -49,365 +127,267 @@
       </div>
     </div>
     
-    <!-- Карточка вопроса -->
+    <!-- Карточка вопроса с фокусом на вопросе -->
     <div id="questionCard" class="question-card" style="display: none;">
-      <div class="question-header">
-        <div class="block-tag" id="blockTag">Безопасность</div>
-        <div class="question-number" id="questionNumber">Вопрос 1 из 5</div>
-      </div>
-      <p class="question-text" id="questionText">Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий или конфликтов?</p>
-      
-      <div class="options" id="optionsContainer">
-        <!-- Варианты ответов будут добавлены динамически -->
+      <div class="question-meta">
+        <div class="block-indicator" id="blockTag">Безопасность</div>
+        <div class="question-counter" id="questionNumber">Вопрос 1 из 5</div>
       </div>
       
-      <button class="hint-button" onclick="toggleHint()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M12 16l0 -4"></path>
-          <circle cx="12" cy="8" r="1"></circle>
-        </svg>
-        Подробнее
-      </button>
-      
-      <div class="hint-content" id="hintContent">
-        Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой, молчанием, упрёками или эмоциональным шантажом.
+      <div class="question-main">
+        <div class="question-card-content">
+          <div class="question-text-container">
+            <h2 class="question-text" id="questionText">Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий или конфликтов?</h2>
+            <button class="hint-toggle" onclick="toggleHint()" id="hintToggle" title="Подробнее о вопросе">
+              📝
+              <span class="hint-label">Пояснение</span>
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hintContent">
+            Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой, молчанием, упрёками или эмоциональным шантажом.
+          </div>
+        </div>
       </div>
       
-      <div class="navigation">
-        <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" style="display: none;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          Назад
+      <div class="answers-section">
+        <div class="options" id="optionsContainer">
+          <!-- Варианты ответов будут добавлены динамически -->
+        </div>
+      </div>
+      
+      <div class="question-navigation">
+        <button class="nav-btn nav-btn-back" id="prevBtn" onclick="prevQuestion()" style="display: none;">
+          ← Назад
         </button>
-        <button class="btn" id="nextBtn" onclick="nextQuestion()">
-          Далее
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
+        <button class="nav-btn nav-btn-forward" id="nextBtn" onclick="nextQuestion()">
+          Далее →
         </button>
       </div>
     </div>
-    
-    <!-- Промежуточные результаты блока 1 -->
-    <div id="blockResult1" class="block-result">
-      <h2>Безопасность и границы</h2>
-      
-      <div class="result-summary">
-        <div class="score-circle" id="block1Score" style="background: conic-gradient(var(--warning) 60%, #e0e4e8 60%)">
-          <span class="score-text">9/15</span>
+
+    <!-- Остальной контент остается как есть -->
+    <div id="question-container" style="display: none;">
+      <div id="blockResult1" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="1">
+          <div class="block-info">
+            <h3>Блок 1: Безопасность</h3>
+            <div class="score-badge" id="score1">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone1">Зона силы</div>
+          <div class="toggle-icon" id="toggle-1">▼</div>
         </div>
-        <div class="zone-label zone-warning">Зона риска</div>
+        
+        <div class="result-details" id="details-1">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> В ваших отношениях есть базовое доверие и уважение границ.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Продолжайте поддерживать открытое общение</li>
+              <li>Цените взаимное уважение в отношениях</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(1)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" id="continueBtn" onclick="continueToNextBlock()">Продолжить ✨</button>
       </div>
       
-      <p class="result-description">
-        У вас есть признаки неуважения границ, но есть и сильные стороны. Нужно уделить внимание установлению здоровых границ в отношениях.
-      </p>
+      <div id="blockResult2" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="2">
+          <div class="block-info">
+            <h3>Блок 2: Надёжность</h3>
+            <div class="score-badge" id="score2">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone2">Зона силы</div>
+          <div class="toggle-icon" id="toggle-2">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-2">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> В ваших отношениях есть взаимная поддержка и надёжность.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Продолжайте держать слово и быть предсказуемыми</li>
+              <li>Развивайте совместное планирование</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(2)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+      </div>
       
-      <div class="result-actions">
-        <button class="btn btn-secondary" onclick="reviewBlock(1)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Вернуться
-        </button>
-        <button class="btn" onclick="continueToBlock(2)">
-          Продолжить
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
+      <div id="blockResult3" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="3">
+          <div class="block-info">
+            <h3>Блок 3: Связь</h3>
+            <div class="score-badge" id="score3">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone3">Зона силы</div>
+          <div class="toggle-icon" id="toggle-3">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-3">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> У вас есть эмоциональная близость и взаимопонимание.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Поддерживайте ежедневные ритуалы общения</li>
+              <li>Делитесь не только делами, но и чувствами</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(3)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+      </div>
+      
+      <div id="blockResult4" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="4">
+          <div class="block-info">
+            <h3>Блок 4: Рост</h3>
+            <div class="score-badge" id="score4">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone4">Зона силы</div>
+          <div class="toggle-icon" id="toggle-4">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-4">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> Вы развиваетесь вместе и поддерживаете рост друг друга.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Обсуждайте свои цели и мечты</li>
+              <li>Поддерживайте развитие партнёра</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(4)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Завершить тест ✨</button>
       </div>
     </div>
-    
-    <!-- Промежуточные результаты блока 2 -->
-    <div id="blockResult2" class="block-result">
-      <h2>Надёжность и партнёрство</h2>
-      
-      <div class="result-summary">
-        <div class="score-circle" id="block2Score" style="background: conic-gradient(var(--success) 80%, #e0e4e8 80%)">
-          <span class="score-text">12/15</span>
-        </div>
-        <div class="zone-label zone-success">Зона силы</div>
-      </div>
-      
-      <p class="result-description">
-        У вас высокий уровень надёжности и предсказуемости в отношениях. Продолжайте поддерживать это состояние.
-      </p>
-      
-      <div class="result-actions">
-        <button class="btn btn-secondary" onclick="reviewBlock(2)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Вернуться
-        </button>
-        <button class="btn" onclick="continueToBlock(3)">
-          Продолжить
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    <!-- Промежуточные результаты блока 3 -->
-    <div id="blockResult3" class="block-result">
-      <h2>Связь и эмоции</h2>
-      
-      <div class="result-summary">
-        <div class="score-circle" id="block3Score" style="background: conic-gradient(var(--warning) 60%, #e0e4e8 60%)">
-          <span class="score-text">9/15</span>
-        </div>
-        <div class="zone-label zone-warning">Зона риска</div>
-      </div>
-      
-      <p class="result-description">
-        У вас есть признаки ослабленной эмоциональной связи. Нужно уделить внимание укреплению коммуникации и близости.
-      </p>
-      
-      <div class="result-actions">
-        <button class="btn btn-secondary" onclick="reviewBlock(3)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Вернуться
-        </button>
-        <button class="btn" onclick="continueToBlock(4)">
-          Продолжить
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    <!-- Промежуточные результаты блока 4 -->
-    <div id="blockResult4" class="block-result">
-      <h2>Рост и ценности</h2>
-      
-      <div class="result-summary">
-        <div class="score-circle" id="block4Score" style="background: conic-gradient(var(--danger) 40%, #e0e4e8 40%)">
-          <span class="score-text">6/15</span>
-        </div>
-        <div class="zone-label zone-danger">Зона тревоги</div>
-      </div>
-      
-      <p class="result-description">
-        У вас есть признаки того, что отношения не способствуют личностному росту. Это требует внимания и работы.
-      </p>
-      
-      <div class="result-actions">
-        <button class="btn btn-secondary" onclick="reviewBlock(4)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Вернуться
-        </button>
-        <button class="btn" onclick="showFinalResults()">
-          Посмотреть итог
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    <!-- Итоговые результаты -->
-    <div id="finalResults" class="final-results">
-      <h2>📊 Ваши результаты</h2>
-      
-      <div class="results-overview">
-        <div class="results-chart" id="resultsChart">
-          <!-- Здесь будет диаграмма -->
-          <svg width="100%" height="100%" viewBox="0 0 400 200">
-            <!-- Блок 1 -->
-            <rect x="50" y="40" width="60" height="120" fill="#d68a4e" rx="4"></rect>
-            <text x="80" y="175" text-anchor="middle" font-size="12">Безопасность</text>
-            <text x="80" y="35" text-anchor="middle" font-size="14" font-weight="bold">9</text>
-            
-            <!-- Блок 2 -->
-            <rect x="140" y="20" width="60" height="140" fill="#418e73" rx="4"></rect>
-            <text x="170" y="175" text-anchor="middle" font-size="12">Надёжность</text>
-            <text x="170" y="15" text-anchor="middle" font-size="14" font-weight="bold">12</text>
-            
-            <!-- Блок 3 -->
-            <rect x="230" y="40" width="60" height="120" fill="#d68a4e" rx="4"></rect>
-            <text x="260" y="175" text-anchor="middle" font-size="12">Связь</text>
-            <text x="260" y="35" text-anchor="middle" font-size="14" font-weight="bold">9</text>
-            
-            <!-- Блок 4 -->
-            <rect x="320" y="60" width="60" height="100" fill="#c45252" rx="4"></rect>
-            <text x="350" y="175" text-anchor="middle" font-size="12">Рост</text>
-            <text x="350" y="55" text-anchor="middle" font-size="14" font-weight="bold">6</text>
-          </svg>
-        </div>
-        
-        <div class="results-summary">
-          <p><strong>Общее состояние:</strong> <span id="overallStatus">шаткие</span></p>
-          <p><strong>Приоритетный блок:</strong> <span class="priority" id="priorityBlock">Рост</span></p>
-        </div>
-      </div>
-      
-      <div class="results-details">
-        <div class="results-block">
-          <div class="results-block-header">
-            <div class="block-title">Безопасность и границы</div>
-            <div class="block-score">9/15</div>
-          </div>
-          <div class="block-zone zone-warning">Зона риска</div>
-        </div>
-        
-        <div class="results-block">
-          <div class="results-block-header">
-            <div class="block-title">Надёжность и партнёрство</div>
-            <div class="block-score">12/15</div>
-          </div>
-          <div class="block-zone zone-success">Зона силы</div>
-        </div>
-        
-        <div class="results-block">
-          <div class="results-block-header">
-            <div class="block-title">Связь и эмоции</div>
-            <div class="block-score">9/15</div>
-          </div>
-          <div class="block-zone zone-warning">Зона риска</div>
-        </div>
-        
-        <div class="results-block">
-          <div class="results-block-header">
-            <div class="block-title">Рост и ценности</div>
-            <div class="block-score">6/15</div>
-          </div>
-          <div class="block-zone zone-danger">Зона тревоги</div>
-        </div>
-      </div>
-      
-      <div class="recommendations">
-        <div class="recommendation-item">
-          <div class="recommendation-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            Приоритетные рекомендации
-          </div>
-          <div class="recommendation-content">
-            <p>1. <strong>Работа с границами:</strong> Начните с малого - установите одну четкую границу и обсудите её с партнером.</p>
-            <p>2. <strong>Укрепление связи:</strong> Внедрите ежедневный "ритуал конца дня" - 10 минут без телефонов и дел.</p>
-            <p>3. <strong>Личностный рост:</strong> На этой неделе обсудите, что каждый из вас хочет развивать в себе.</p>
-          </div>
-        </div>
-        
-        <div class="recommendation-item">
-          <div class="recommendation-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 11.08V7a2 2 0 0 0-2-2h-7l-4-4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"></path>
-              <polyline points="14 3 14 10 21 10"></polyline>
-            </svg>
-            Долгосрочные рекомендации
-          </div>
-          <div class="recommendation-content">
-            <p>1. <strong>Через месяц:</strong> Составьте список ваших ожиданий друг от друга и обсудите их.</p>
-            <p>2. <strong>Через три месяца:</strong> Создайте совместные цели на будущее и план их достижения.</p>
-            <p>3. <strong>Долгосрочно:</strong> Регулярно проводите "проверки состояния отношений" раз в месяц.</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="share-actions">
-        <div class="share-title">Поделитесь результатами</div>
-        <div class="messenger-buttons">
-          <button class="messenger-btn messenger-telegram" onclick="shareToTelegram()">
-            <div class="messenger-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.152 8.152c.19-.127.315-.254.377-.442-.063-.188-.22-.315-.41-.442l-1.952-.932c-.38-.19-.693-.095-.97.22l-.66.857-2.887-1.474c-.157-.095-.346-.127-.536 0L6.8 9.22c-.315.158-.38.41-.22.66l1.793 2.982c.094.19.127.41.095.628l-.503 2.205c-.063.284.032.472.253.567.19.095.41.095.628-.032l2.427-1.442 2.428 1.505c.19.127.41.19.628.127.284-.063.442-.254.346-.535l.567-2.597 1.92-.9c.284-.127.473-.346.346-.628-.126-.284-.345-.378-.628-.315l-1.635.764-1.505-1.03 4.905-2.237z"/>
-              </svg>
+
+    <!-- Результаты -->
+    <div id="results" style="display: none;">
+      <div id="finalResults" class="final-results" style="display: none;">
+        <div class="results-header">
+          <h2>Результаты анализа ваших отношений</h2>
+          <div class="overall-score" id="overallScore">
+            <div class="score-circle">
+              <div class="score-number">85</div>
+              <div class="score-label">баллов</div>
             </div>
-            Telegram
-          </button>
-          <button class="messenger-btn messenger-whatsapp" onclick="shareToWhatsApp()">
-            <div class="messenger-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1.875-5.906h-.03c-3.094 0-5.625-2.531-5.625-5.625 0-1.563.656-3.031 1.734-4.109L7.8 4.875c.187-.187.375-.187.562 0l1.688 1.688c.187.187.187.375 0 .562l-.468.469c-.187.187-.187.375 0 .562l1.312 1.313c.187.187.375.187.562 0l.469-.468c.187-.187.375-.187.562 0l3.75 3.75c.187.187.187.375 0 .562l-1.406 1.406c-.187.187-.375.187-.562 0l-.563-.563c-.187-.187-.187-.375 0-.562l1.218-1.219c.938-.938 1.5-2.156 1.5-3.469 0-2.812-2.297-5.109-5.109-5.109zm-1.875-3.75c-.656 0-1.313.25-1.875.75l-.469.469c-.187.187-.375.187-.562 0l-1.313-1.313c-.187-.187-.187-.375 0-.562l.469-.469c.562-.5 1.219-.75 1.875-.75.656 0 1.313.25 1.875.75l.469.469c.187.187.187.375 0 .562l-1.313 1.313c-.187.187-.375.187-.562 0z"/>
-              </svg>
+            <div class="score-description">
+              <h3>Зрелые отношения</h3>
+              <p>Ваши отношения демонстрируют высокий уровень зрелости</p>
             </div>
-            WhatsApp
-          </button>
+          </div>
         </div>
-        <button class="btn" onclick="downloadPDF()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Скачать PDF
-        </button>
-        <button class="btn btn-secondary" onclick="restartTest()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10"></polyline>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-          </svg>
-          Пройти снова
-        </button>
+
+        <div class="detailed-results">
+          <div class="block-summary" data-block="1">
+            <div class="block-header">
+              <h4>Безопасность</h4>
+              <div class="block-score">22/25</div>
+            </div>
+            <div class="block-status status-good">Зона силы</div>
+          </div>
+          
+          <div class="block-summary" data-block="2">
+            <div class="block-header">
+              <h4>Надёжность</h4>
+              <div class="block-score">20/25</div>
+            </div>
+            <div class="block-status status-good">Зона силы</div>
+          </div>
+          
+          <div class="block-summary" data-block="3">
+            <div class="block-header">
+              <h4>Партнёрство</h4>
+              <div class="block-score">18/25</div>
+            </div>
+            <div class="block-status status-warning">Зона роста</div>
+          </div>
+          
+          <div class="block-summary" data-block="4">
+            <div class="block-header">
+              <h4>Эмоциональная связь</h4>
+              <div class="block-score">25/25</div>
+            </div>
+            <div class="block-status status-excellent">Зона совершенства</div>
+          </div>
+        </div>
+
+        <div class="recommendations" id="recommendations">
+          <h3>💡 Персональные рекомендации</h3>
+          <div class="recommendation-item">
+            <h4>Для укрепления партнёрства:</h4>
+            <p>Развивайте совместное планирование и принятие решений.</p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="location.reload()">Пройти тест заново</button>
+          <button class="btn btn-secondary" onclick="shareResults()">Поделиться результатами</button>
+        </div>
       </div>
-    </div>
-    
-    <!-- Скрытый PDF-отчет -->
-    <div class="pdf-report" id="pdfReport">
-      <h1>Результаты теста: Зрелые отношения</h1>
-      <div class="date" id="pdfDate">Дата: </div>
-      
-      <table id="pdfTable">
-        <thead>
-          <tr>
-            <th>Блок</th>
-            <th>Баллы</th>
-            <th>Зона</th>
-          </tr>
-        </thead>
-        <tbody id="pdfTableBody">
-          <!-- Данные будут добавлены динамически -->
-        </tbody>
-      </table>
-      
-      <div class="summary" id="pdfSummary">
-        <!-- Данные будут добавлены динамически -->
-      </div>
-      
-      <div id="pdfRecommendations">
-        <!-- Данные будут добавлены динамически -->
-      </div>
-      
-      <div class="footer">
-        © <span id="footerYear"></span> Евгений Климов · Связь: <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
-      </div>
-    </div>
-    
-    <!-- Подвал -->
-    <div class="footer">
-      © <span id="footerYearBottom"></span> <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">Евгений Климов</a> · <a href="https://t.me/eklimov" target="_blank" rel="noopener noreferrer">@eklimov</a>
     </div>
   </div>
 
-  <!-- Подключаем html2pdf.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
-  <script src="./app.js" defer></script>
-  <script>
-    // Заполняем год в подвале
-    document.addEventListener('DOMContentLoaded', function() {
-      const year = new Date().getFullYear();
-      const topYear = document.getElementById('footerYear');
-      const bottomYear = document.getElementById('footerYearBottom');
-      if (topYear) topYear.textContent = year;
-      if (bottomYear) bottomYear.textContent = year;
-    });
-  </script>
+  <!-- Красивая кнопка помощи -->
+  <button class="help-btn-beautiful" onclick="showHelp()" title="Помощь">
+    <span class="help-icon">💡</span>
+  </button>
+
+  <!-- Модальное окно помощи -->
+  <div id="helpOverlay" class="help-overlay" style="display: none;">
+    <div class="help-modal">
+      <div class="help-header">
+        <h3>💡 О тесте</h3>
+        <button class="close-btn" onclick="hideHelp()" title="Закрыть">×</button>
+      </div>
+      <div class="help-content">
+        <h4>Определение зрелости отношений</h4>
+        <p>Научно обоснованный тест для комплексной оценки зрелости и качества ваших отношений.</p>
+        
+        <h4>Как проходить:</h4>
+        <ul>
+          <li>• <strong>20 вопросов</strong> по 4 ключевым темам</li>
+          <li>• <strong>5-7 минут</strong> на прохождение</li>
+          <li>• Отвечайте честно и спокойно</li>
+          <li>• Используйте кнопку <em>Пояснение</em> для понимания вопроса</li>
+        </ul>
+        
+        <h4>Что вы получите:</h4>
+        <ul>
+          <li>• Подробный анализ по 4 сферам</li>
+          <li>• Персональные рекомендации</li>
+          <li>• Оценку общего уровня зрелости</li>
+          <li>• План действий для улучшения</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="test-automation.js"></script>
 </body>
 </html>

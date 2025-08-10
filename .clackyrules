@@ -1,0 +1,74 @@
+## ✅ GENERAL PRINCIPLES
+This is a step-based test application. All development must follow strict modular, readable, and user-friendly standards. The goal is to create a modern, calm, and intuitive interface with clear navigation and minimal distractions.
+
+---
+
+## 🧩 DEVELOPMENT FLOW
+
+1. **Branching**
+   - All work must begin in the `dev` branch.
+   - For each new feature, create a branch from `dev` named `feature/<feature-name>`.
+
+2. **Commit Rules**
+   - After **every change**, commit with a **clear message in Russian**.
+   - Example: `git commit -m "Добавлен экран загрузки с пастельными цветами"`
+   - Push changes to GitHub: `git push origin <branch-name>`
+
+3. **Pull Requests**
+   - After testing and debugging, propose a merge into `dev`.
+   - **Do not merge until Евгений confirms everything works.**
+   - Only stable, reviewed code is merged into `main`.
+
+---
+
+## 🎨 UI/UX REQUIREMENTS
+
+- Interfaces must be:
+  - Calm and modern
+  - Logically structured
+  - Free from bright or flashy colors
+  - Minimalistic and intuitive
+
+- Use **pastel color palette**:
+  - Soft blue: `#8ba3c7`
+  - Sage green: `#7db3a6`
+  - Peach: `#e6b894`
+  - Rose red: `#db9b9b`
+
+- Design elements:
+  - Questions: inside gradient box
+  - Answers: displayed in **2 columns and 2 lines**
+  - Help button (“?”): always visible, opens modal with instructions
+  - Loading screen: must show only:
+    - Total number of questions
+    - Estimated time to complete the test
+    - No other information
+
+---
+
+## 🧱 CODE STRUCTURE
+
+- Use ES6+ syntax
+- Modular architecture
+- Functional components only
+- Avoid inline styles
+- Each function in a separate file if possible
+
+---
+
+## 🧠 AI LOGIC RULES
+
+- Navigation must follow:
+  - `intro → question → results`
+- Do not merge unrelated UI elements
+- Respect spacing and visual hierarchy
+- Prioritize clarity and accessibility
+
+---
+
+## 🆘 HELP MODAL CONTENT
+
+The modal must clearly explain:
+- What the test is for
+- How to take it
+- What the user will gain from it
