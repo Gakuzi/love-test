@@ -45,6 +45,12 @@ window.addEventListener('DOMContentLoaded', () => {
     progressBar.setAttribute('aria-valuemax', '100');
   }
 
+  // Принудительно используем светлую тему для читаемости
+  try {
+    document.documentElement.classList.add('force-light');
+    document.documentElement.style.colorScheme = 'light';
+  } catch (_) {}
+
   loadState();
   updateProgress();
 
@@ -312,6 +318,16 @@ function showCompactBlockResult(blockIndex) {
     
     // Обновляем информацию в компактном блоке
     updateCompactBlockInfo(blockIndex);
+
+    // Разворачиваем детали по умолчанию, чтобы явно показать промежуточный результат
+    const detailsEl = document.getElementById(`details-${blockNumber}`);
+    if (detailsEl) {
+      detailsEl.classList.add('expanded');
+    }
+    const toggleIcon = document.getElementById(`toggle-${blockNumber}`);
+    if (toggleIcon) {
+      toggleIcon.classList.add('expanded');
+    }
     
     // Плавно прокручиваем к верху
     setTimeout(() => {

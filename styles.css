@@ -910,22 +910,27 @@ body {
 
 /* Basic dark mode */
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* Мягкий режим тёмной темы без потери контрастности */
+  /* Если явно включена светлая тема — не применять затемнение */
+  :root:not(.force-light) {
     --light: #121418;
-    --dark: #f1f3f5; /* Текст чуть светлее для читаемости */
+    --dark: #f1f3f5;
     --gray: #c2c8cf;
     --light-gray: #98a1aa;
     --border: 1px solid #2a3340;
     --shadow: 0 4px 20px rgba(0,0,0,0.45);
   }
-  body { background-color: #0f141a; color: var(--dark); }
-  .intro, .question-card, .block-result, .final-results, .recommendation-item, .messenger-btn { background: #1b2129; }
-  .progress-bar-container { background: #2a333d; }
-  .option { background: #1b2129; border-color: #2e3742; }
-  .option:hover { background: #232b35; }
-  .option.selected { background: #223142; }
-  .results-summary { background: #111820; border-left-color: var(--primary); }
+  :root:not(.force-light) body { background-color: #0f141a; color: var(--dark); }
+  :root:not(.force-light) .intro,
+  :root:not(.force-light) .question-card,
+  :root:not(.force-light) .block-result,
+  :root:not(.force-light) .final-results,
+  :root:not(.force-light) .recommendation-item,
+  :root:not(.force-light) .messenger-btn { background: #1b2129; }
+  :root:not(.force-light) .progress-bar-container { background: #2a333d; }
+  :root:not(.force-light) .option { background: #1b2129; border-color: #2e3742; }
+  :root:not(.force-light) .option:hover { background: #232b35; }
+  :root:not(.force-light) .option.selected { background: #223142; }
+  :root:not(.force-light) .results-summary { background: #111820; border-left-color: var(--primary); }
 }
 
 /* Глобальная страховка от чрезмерного затемнения: сохраняем хорошую читаемость всегда */
