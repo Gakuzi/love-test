@@ -1,2 +1,32 @@
 node_modules/
 .env
+
+# Clacky-related configuration
+.clackyai/
+.1024
+.environments.yaml
+
+# Browser and development tools
+.DS_Store
+Thumbs.db
+*.log
+*.cache
+.temp/
+.tmp/
+
+# Editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build and distribution
+dist/
+build/
+out/
+
+# Backup files
+*.bak
+*.backup
+*.orig

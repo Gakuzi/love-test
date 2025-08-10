@@ -1,0 +1,35 @@
+# Project Overview
+This is a step-based test application focused on clarity, usability, and modern UI/UX principles.
+
+# Git Workflow
+- All development must occur in a dedicated branch named `dev`.
+- For each new feature, create a separate branch from `dev` using the format: `feature/<feature-name>`.
+- Pull requests must target `dev`, and only stable, reviewed code is merged into `main`.
+
+# UI/UX Standards
+- All interfaces must be modern, readable, and thoughtfully designed.
+- Questions should be wrapped in a visually distinct gradient box.
+- Answers must be displayed in two columns and two lines for better readability.
+- A help button with a “?” icon must be present at all times, opening a modal that explains the test purpose and instructions.
+
+# Code Structure
+- Each function should be placed in a separate file whenever possible to simplify editing and maintenance.
+- Use ES6+ syntax and modular architecture.
+- Prefer functional components and avoid inline styles.
+
+# AI Preferences
+- Prioritize UX clarity and accessibility.
+- Maintain stage-based navigation logic (intro → question → results).
+- Avoid merging unrelated UI elements into a single view.
+- Respect visual hierarchy and spacing.
+
+# Commit Norms
+- Use descriptive commit messages.
+- Group related changes together.
+- Avoid committing broken or experimental code to `main`.
+
+# Modal Help Content
+The help modal must clearly explain:
+- What the test is for
+- How to take it
+- What the user will gain from it

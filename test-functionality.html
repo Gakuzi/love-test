@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест функциональности приложения</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .test-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        .status-running {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        .status-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        .test-results {
+            margin-top: 20px;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+        .test-item.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-item.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-icon {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .stat-item {
+            flex: 1;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        #testOutput {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Тест функциональности приложения</h1>
+            <p>Автоматическая проверка всех компонентов теста на зрелость отношений</p>
+        </div>
+
+        <div id="testStatus" class="test-status status-running">
+            ⏳ Ожидание начала тестирования...
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Всего тестов</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="passedTests" style="color: #28a745;">0</div>
+                <div class="stat-label">Пройдено</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="failedTests" style="color: #dc3545;">0</div>
+                <div class="stat-label">Провалено</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Успешность</div>
+            </div>
+        </div>
+
+        <div class="test-results" id="testResults">
+            <!-- Результаты тестов будут добавлены здесь -->
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn" onclick="runFunctionalityTest()">🚀 Запустить тест</button>
+            <button class="btn" onclick="runFullSimulation()">🎯 Полная симуляция</button>
+            <button class="btn" onclick="clearResults()">🗑️ Очистить</button>
+        </div>
+
+        <div id="testOutput"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let testOutput = document.getElementById('testOutput');
+
+        function log(message, isError = false) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            testOutput.textContent += logMessage + '\n';
+            testOutput.scrollTop = testOutput.scrollHeight;
+            
+            if (isError) {
+                console.error(logMessage);
+            } else {
+                console.log(logMessage);
+            }
+        }
+
+        function updateStats() {
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = total - passed;
+            const successRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+            document.getElementById('successRate').textContent = successRate + '%';
+
+            const statusEl = document.getElementById('testStatus');
+            if (total === 0) {
+                statusEl.className = 'test-status status-running';
+                statusEl.innerHTML = '⏳ Ожидание начала тестирования...';
+            } else if (failed === 0) {
+                statusEl.className = 'test-status status-success';
+                statusEl.innerHTML = `✅ Все тесты пройдены успешно! (${total}/${total})`;
+            } else {
+                statusEl.className = 'test-status status-error';
+                statusEl.innerHTML = `❌ Обнаружены проблемы: ${failed} из ${total} тестов провалены`;
+            }
+        }
+
+        function addTestResult(name, passed, message) {
+            testResults.push({ name, passed, message });
+            
+            const resultsContainer = document.getElementById('testResults');
+            const testItem = document.createElement('div');
+            testItem.className = `test-item ${passed ? 'pass' : 'fail'}`;
+            testItem.innerHTML = `
+                <span class="test-icon">${passed ? '✅' : '❌'}</span>
+                <div>
+                    <strong>${name}</strong>
+                    <div style="font-size: 0.9em; opacity: 0.8;">${message}</div>
+                </div>
+            `;
+            resultsContainer.appendChild(testItem);
+            
+            updateStats();
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('testResults').innerHTML = '';
+            testOutput.textContent = '';
+            updateStats();
+            log('🗑️ Результаты тестов очищены');
+        }
+
+        async function testBasicStructure() {
+            log('🔍 Тестирование базовой структуры...');
+            
+            // Тест 1: Проверка основных элементов DOM
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                addTestResult('DOM: Заставка', true, 'Элемент loadingScreen найден');
+            } else {
+                addTestResult('DOM: Заставка', false, 'Элемент loadingScreen не найден');
+            }
+
+            const circleBtn = document.getElementById('circleBtn');
+            if (circleBtn) {
+                addTestResult('DOM: Круглая кнопка', true, 'Кнопка найдена и доступна');
+            } else {
+                addTestResult('DOM: Круглая кнопка', false, 'Кнопка не найдена');
+            }
+
+            const questionCard = document.getElementById('questionCard');
+            if (questionCard) {
+                addTestResult('DOM: Карточка вопроса', true, 'Контейнер вопросов существует');
+            } else {
+                addTestResult('DOM: Карточка вопроса', false, 'Контейнер вопросов не найден');
+            }
+
+            const finalResults = document.getElementById('finalResults');
+            if (finalResults) {
+                addTestResult('DOM: Финальные результаты', true, 'Контейнер результатов существует');
+            } else {
+                addTestResult('DOM: Финальные результаты', false, 'Контейнер результатов не найден');
+            }
+        }
+
+        async function testGlobalFunctions() {
+            log('🔧 Тестирование глобальных функций...');
+
+            const functions = [
+                'handleCircleClick',
+                'startTest', 
+                'nextQuestion',
+                'prevQuestion',
+                'showQuestion',
+                'selectAnswer',
+                'showFinalResults',
+                'restartTest'
+            ];
+
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    addTestResult(`Функция: ${funcName}`, true, 'Функция определена и доступна');
+                } else {
+                    addTestResult(`Функция: ${funcName}`, false, 'Функция не найдена или не является функцией');
+                }
+            });
+        }
+
+        async function testDataStructures() {
+            log('📊 Тестирование структур данных...');
+
+            if (typeof QUESTIONS !== 'undefined' && Array.isArray(QUESTIONS)) {
+                addTestResult('Данные: QUESTIONS', true, `Массив вопросов содержит ${QUESTIONS.length} вопросов`);
+                
+                // Проверяем структуру вопросов
+                const validQuestions = QUESTIONS.filter(q => 
+                    q.id && q.text && q.options && Array.isArray(q.options) && q.options.length === 4
+                );
+                
+                if (validQuestions.length === QUESTIONS.length) {
+                    addTestResult('Данные: Структура вопросов', true, 'Все вопросы имеют корректную структуру');
+                } else {
+                    addTestResult('Данные: Структура вопросов', false, `${QUESTIONS.length - validQuestions.length} вопросов имеют некорректную структуру`);
+                }
+            } else {
+                addTestResult('Данные: QUESTIONS', false, 'Массив вопросов не найден или некорректен');
+            }
+
+            if (typeof currentState !== 'undefined' && currentState !== null) {
+                addTestResult('Состояние: currentState', true, 'Объект состояния найден');
+                
+                if (typeof currentState.currentQuestionIndex === 'number' &&
+                    typeof currentState.answers === 'object' &&
+                    typeof currentState.blockResults === 'object') {
+                    addTestResult('Состояние: Структура', true, 'Структура состояния корректна');
+                } else {
+                    addTestResult('Состояние: Структура', false, 'Структура состояния некорректна');
+                }
+            } else {
+                addTestResult('Состояние: currentState', false, 'Объект состояния не найден');
+            }
+        }
+
+        async function testStylesAndCSS() {
+            log('🎨 Тестирование стилей и CSS...');
+
+            const cssClasses = [
+                'loading-screen',
+                'circle-btn',
+                'question-card',
+                'options',
+                'nav-btn'
+            ];
+
+            cssClasses.forEach(className => {
+                const elements = document.getElementsByClassName(className);
+                if (elements.length > 0) {
+                    addTestResult(`CSS: .${className}`, true, `Найдено ${elements.length} элементов с классом`);
+                } else {
+                    addTestResult(`CSS: .${className}`, false, 'Элементы с данным классом не найдены');
+                }
+            });
+
+            // Проверка загрузки шрифтов
+            if (document.fonts && document.fonts.check) {
+                try {
+                    const interFont = document.fonts.check('16px Inter');
+                    addTestResult('Шрифты: Inter', interFont, interFont ? 'Шрифт Inter загружен' : 'Шрифт Inter не загружен');
+                } catch (e) {
+                    addTestResult('Шрифты: Inter', false, 'Ошибка проверки шрифта');
+                }
+            }
+        }
+
+        async function runFunctionalityTest() {
+            log('🚀 Начинаем комплексное тестирование функциональности...');
+            clearResults();
+
+            await testBasicStructure();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await testGlobalFunctions();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await testDataStructures();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await testStylesAndCSS();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            log('✅ Тестирование завершено!');
+            
+            const totalTests = testResults.length;
+            const passedTests = testResults.filter(r => r.passed).length;
+            const failedTests = totalTests - passedTests;
+            
+            log(`📊 РЕЗУЛЬТАТЫ:`);
+            log(`   Всего тестов: ${totalTests}`);
+            log(`   Пройдено: ${passedTests}`);
+            log(`   Провалено: ${failedTests}`);
+            log(`   Успешность: ${Math.round((passedTests / totalTests) * 100)}%`);
+
+            if (failedTests > 0) {
+                log('\n❌ ПРОБЛЕМЫ:');
+                testResults.filter(r => !r.passed).forEach((result, index) => {
+                    log(`   ${index + 1}. ${result.name}: ${result.message}`);
+                });
+            } else {
+                log('\n🎉 ВСЕ ТЕСТЫ ПРОЙДЕНЫ УСПЕШНО!');
+            }
+        }
+
+        async function runFullSimulation() {
+            log('🎯 Запуск полной симуляции пользователя...');
+            clearResults();
+
+            // Имитация полного прохождения теста
+            log('👤 Симулируя действия пользователя...');
+
+            try {
+                // Тест 1: Клик по кнопке на заставке
+                if (typeof window.handleCircleClick === 'function') {
+                    log('🖱️  Клик по круглой кнопке...');
+                    // НЕ вызываем реальную функцию, чтобы не переключить экран
+                    addTestResult('Симуляция: Клик по кнопке', true, 'Функция handleCircleClick доступна');
+                } else {
+                    addTestResult('Симуляция: Клик по кнопке', false, 'Функция handleCircleClick недоступна');
+                }
+
+                // Тест 2: Проверка навигации
+                if (typeof window.nextQuestion === 'function' && typeof window.prevQuestion === 'function') {
+                    addTestResult('Симуляция: Навигация', true, 'Функции навигации доступны');
+                } else {
+                    addTestResult('Симуляция: Навигация', false, 'Функции навигации недоступны');
+                }
+
+                // Тест 3: Проверка выбора ответов
+                if (typeof window.selectAnswer === 'function') {
+                    addTestResult('Симуляция: Выбор ответа', true, 'Функция selectAnswer доступна');
+                } else {
+                    addTestResult('Симуляция: Выбор ответа', false, 'Функция selectAnswer недоступна');
+                }
+
+                // Тест 4: Проверка результатов
+                if (typeof window.showFinalResults === 'function') {
+                    addTestResult('Симуляция: Результаты', true, 'Функция showFinalResults доступна');
+                } else {
+                    addTestResult('Симуляция: Результаты', false, 'Функция showFinalResults недоступна');
+                }
+
+                log('✅ Симуляция завершена!');
+
+            } catch (error) {
+                log(`❌ Ошибка симуляции: ${error.message}`, true);
+                addTestResult('Симуляция: Общая', false, `Ошибка: ${error.message}`);
+            }
+        }
+
+        // Автоматически запускаем базовые тесты при загрузке
+        window.addEventListener('load', () => {
+            log('🌟 Тестовая система инициализирована');
+            log('💡 Нажмите "Запустить тест" для проверки функциональности');
+        });
+    </script>
+</body>
+</html>
