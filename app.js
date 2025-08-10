@@ -38,7 +38,8 @@ const QUESTIONS = [
 let currentState = {
   currentQuestionIndex: 0,
   answers: {},
-  blockResults: { 0: null, 1: null, 2: null, 3: null }
+  blockResults: { 0: null, 1: null, 2: null, 3: null },
+  userName: ''
 };
 
 // Init
@@ -60,6 +61,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Anonymous id (from cursor branch)
   try { userId = getOrCreateUserId(); } catch (_) {}
 
+  // Инициализация приложения
+  initializeApp();
+  
   // Свайп-навигация (влево — далее, вправо — назад) на экране вопросов
   initSwipeNavigation();
 
@@ -80,7 +84,72 @@ window.addEventListener('DOMContentLoaded', () => {
   if (currentState.currentQuestionIndex > 0) {
     showQuestion(currentState.currentQuestionIndex);
   }
+  
+  // Запускаем анимированную загрузку с небольшой задержкой
+  console.log('Запуск анимации загрузки через 500мс...');
+  setTimeout(() => {
+    startLoadingAnimation();
+  }, 500);
 });
+
+// Инициализация поля имени пользователя
+function initUserNameInput() {
+  console.log('Инициализация поля имени...');
+  
+  const userNameInput = document.getElementById('userName');
+  const startButton = document.getElementById('startTestBtn');
+  
+  console.log('Элементы формы:', { userNameInput, startButton });
+  
+  if (!userNameInput || !startButton) {
+    console.error('Элементы формы имени не найдены');
+    return;
+  }
+  
+  // Загружаем сохраненное имя
+  userNameInput.value = currentState.userName || '';
+  console.log('Имя загружено:', currentState.userName);
+  
+  updateStartButtonState();
+  
+  // Обработчик ввода
+  userNameInput.addEventListener('input', (e) => {
+    currentState.userName = e.target.value.trim();
+    console.log('Имя обновлено:', currentState.userName);
+    updateStartButtonState();
+    saveState();
+  });
+  
+  // Обработчик Enter
+  userNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && currentState.userName) {
+      startTest();
+    }
+  });
+  
+  console.log('Поле имени инициализировано');
+}
+
+// Обновление состояния кнопки старта
+function updateStartButtonState() {
+  const startButton = document.getElementById('startTestBtn');
+  if (!startButton) {
+    console.error('Кнопка старта не найдена');
+    return;
+  }
+  
+  const hasName = currentState.userName && currentState.userName.trim().length > 0;
+  startButton.disabled = !hasName;
+  
+  // Визуальная индикация
+  if (hasName) {
+    startButton.classList.remove('disabled');
+    startButton.classList.add('enabled');
+  } else {
+    startButton.classList.add('disabled');
+    startButton.classList.remove('enabled');
+  }
+}
 
 function initSwipeNavigation() {
   let touchStartX = null;
@@ -146,24 +215,30 @@ function clearState() {
 
 // UI controls
 function startTest() {
-  clearState(); // Очищаем состояние перед началом
-  
-  // Скрываем заставку
-  const loadingScreen = document.getElementById('loadingScreen');
-  if (loadingScreen) {
-    loadingScreen.style.opacity = '0';
-    loadingScreen.style.transition = 'opacity 0.8s ease';
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-    }, 800);
+  // Сохраняем имя пользователя
+  const userNameInput = document.getElementById('userName');
+  if (userNameInput) {
+    currentState.userName = userNameInput.value.trim();
+    saveState();
   }
   
-  // Скрываем все остальные экраны и показываем вопросы
+  // Скрываем введение и показываем первый вопрос
   document.getElementById('intro').style.display = 'none';
-  document.getElementById('question-container').style.display = 'block';
+  document.querySelector('.progress-container').style.display = 'block';
+  
+  // Сбрасываем состояние теста
+  currentState.currentQuestionIndex = 0;
+  currentState.answers = {};
+  currentState.blockResults = { 0: null, 1: null, 2: null, 3: null };
   
   // Показываем первый вопрос
   showQuestion(0);
+  
+  // Обновляем прогресс
+  updateProgress();
+  
+  // Плавно прокручиваем к верху
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showQuestion(index) {
@@ -252,9 +327,8 @@ function showQuestion(index) {
       const input = optionElement.querySelector('input[type="radio"]');
       if (input) input.checked = true;
 
-      currentState.answers[index] = option.value;
-      saveState();
-      updateButtonStates();
+      // Используем функцию selectOptionWithUpdate для автоматического сохранения
+      selectOptionWithUpdate(index, option.value);
 
       // Автопереход к следующему вопросу для touch-friendly UX
       if (AUTO_ADVANCE) {
@@ -552,6 +626,9 @@ function showFinalResults() {
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   
+  // Автоматически сохраняем финальные результаты
+  autoSaveFinalResults();
+  
   // Плавный переход к результатам
   finalResults.style.opacity = '0';
   finalResults.style.transform = 'translateY(30px)';
@@ -563,6 +640,59 @@ function showFinalResults() {
   }, 100);
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Автоматическое сохранение финальных результатов
+async function autoSaveFinalResults() {
+  try {
+    // Рассчитываем общий результат
+    calculateOverallResult();
+    
+    const overall = document.getElementById('overallStatus')?.textContent || '';
+    const priority = document.getElementById('priorityBlock')?.textContent || '';
+    
+    const payload = {
+      token: SHARED_TOKEN || undefined,
+      userName: currentState.userName || '',
+      userId,
+      invitedBy: getInvitedBy() || null,
+      tag: 'final-results',
+      ref: 'final-results',
+      senderName: (currentState.userName || ''),
+      recipientName: getInviterNameFromUrl() ? '' : '',
+      utmSource: getUtmSource(),
+      url: location.href,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      // YYYY-MM-DD HH:mm:ss в часовом поясе Москвы
+      timestamp: (function(){
+        const now = new Date();
+        const moscowTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+        const y = moscowTime.getFullYear();
+        const m = String(moscowTime.getMonth()+1).padStart(2,'0');
+        const d = String(moscowTime.getDate()).padStart(2,'0');
+        const hh = String(moscowTime.getHours()).padStart(2,'0');
+        const mm = String(moscowTime.getMinutes()).padStart(2,'0');
+        const ss = String(moscowTime.getSeconds()).padStart(2,'0');
+        return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+      })(),
+      answersDetailed: buildDetailedAnswers(),
+      blockResultsDetailed: buildBlockResultsDetailed(),
+      overall,
+      priorityBlock: priority,
+      status: 'completed'
+    };
+    
+    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify(payload) 
+    });
+    
+    console.log('Финальные результаты автоматически сохранены');
+  } catch (e) { 
+    console.warn('Не удалось автоматически сохранить финальные результаты:', e); 
+  }
 }
 
 function calculateOverallResult() {
@@ -707,21 +837,53 @@ function initCompactBlocks() {
 
 // Инициализация приложения
 function initializeApp() {
+    console.log('Инициализация приложения...');
+    
     // Инициализация состояния
     currentState.currentQuestionIndex = 0;
     currentState.answers = {};
     currentState.blockResults = { 0: null, 1: null, 2: null, 3: null };
     
-    // Скрыть все элементы (включая intro) - покажем intro только после заставки
-    document.getElementById('intro').style.display = 'none';
-    document.getElementById('questionCard').style.display = 'none';
-    document.getElementById('finalResults').style.display = 'none';
+    // Скрыть все элементы, кроме заставки
+    const intro = document.getElementById('intro');
+    const questionCard = document.getElementById('questionCard');
+    const finalResults = document.getElementById('finalResults');
+    const progressContainer = document.querySelector('.progress-container');
+    
+    console.log('Элементы для скрытия:', { intro, questionCard, finalResults, progressContainer });
+    
+    if (intro) {
+        intro.style.display = 'none';
+        console.log('Intro скрыт');
+    }
+    if (questionCard) {
+        questionCard.style.display = 'none';
+        console.log('QuestionCard скрыт');
+    }
+    if (finalResults) {
+        finalResults.style.display = 'none';
+        console.log('FinalResults скрыт');
+    }
+    if (progressContainer) {
+        progressContainer.style.display = 'none';
+        console.log('ProgressContainer скрыт');
+    }
+    
+    // Скрыть компактные блоки результатов
     document.querySelectorAll('.block-result-compact').forEach(el => el.style.display = 'none');
     
-    // Скрыть прогресс-бар на главной
-    document.querySelector('.progress-container').style.display = 'none';
+    // Показываем заставку
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        // Показываем заставку как flex, чтобы сработало центрирование по CSS
+        loadingScreen.style.display = 'flex';
+        console.log('Заставка показана');
+    } else {
+        console.error('Заставка не найдена!');
+    }
     
     initCompactBlocks();
+    console.log('Приложение инициализировано');
 }
 
 // Анимированная заставка
@@ -734,19 +896,19 @@ let loadingState = {
 // Массив сообщений для смены
 const MESSAGES = [
     {
-        text: '“Безопасность — это когда вы можете быть собой без страха осуждения”',
+        text: '“Безопасность — это когда вы можете быть собой без страха осуждения"',
         attribution: '— Основа здоровых отношений'
     },
     {
-        text: '“Отношения становятся надёжными, когда оба партнёра держат слово”',
+        text: '“Отношения становятся надёжными, когда оба партнёра держат слово"',
         attribution: '— Основа доверия'
     },
     {
-        text: '“Эмоциональная связь — это сердце любых зрелых отношений”',
+        text: '“Эмоциональная связь — это сердце любых зрелых отношений"',
         attribution: '— Глубина связи'
     },
     {
-        text: '“Лучшие отношения те, в которых оба растут и становятся лучше”',
+        text: '“Лучшие отношения те, в которых оба растут и становятся лучше"',
         attribution: '— Перспективы роста'
     }
 ];
@@ -769,6 +931,8 @@ function rotateMessage() {
 }
 
 function startLoadingAnimation() {
+    console.log('Запуск анимации загрузки...');
+    
     const loadingSteps = [
         'Подготовка вопросов...',
         'Настройка теста...',
@@ -780,11 +944,27 @@ function startLoadingAnimation() {
     const loadingProgressBar = document.getElementById('loadingProgressBar');
     const loadingText = document.getElementById('loadingText');
     
+    console.log('Элементы загрузки:', { loadingProgressBar, loadingText });
+    
+    // Проверяем, что элементы существуют
+    if (!loadingProgressBar || !loadingText) {
+        console.error('Элементы загрузки не найдены');
+        // Если элементы не найдены, сразу показываем форму с именем
+        setTimeout(() => {
+            console.log('Показываем форму с именем (элементы загрузки не найдены)');
+            showStartButton();
+        }, 1000);
+        return;
+    }
+    
     let currentStep = 0;
     
     function animateStep() {
+        console.log(`Анимация шага ${currentStep + 1}/${loadingSteps.length}`);
+        
         if (currentStep >= loadingSteps.length) {
             // Завершаем анимацию
+            console.log('Завершение анимации загрузки');
             setTimeout(() => {
                 showStartButton();
             }, 500);
@@ -810,21 +990,25 @@ function startLoadingAnimation() {
     }
 
     // Начинаем анимацию через небольшую задержку
+    console.log('Запуск анимации через 1 секунду...');
     setTimeout(() => {
         animateStep();
     }, 1000);
 }
 
 function showStartButton() {
+    console.log('Показываем кнопку старта...');
+    
     const loadingProgressBar = document.getElementById('loadingProgressBar');
     const loadingText = document.getElementById('loadingText');
-    const startButton = document.getElementById('startButton');
-    const testInfo = document.getElementById('testInfo');
 
     // Скрываем прогресс бар
     if (loadingProgressBar) {
-        loadingProgressBar.parentElement.style.opacity = '0';
-        loadingProgressBar.parentElement.style.transition = 'opacity 0.5s ease';
+        const progressContainer = loadingProgressBar.parentElement;
+        if (progressContainer) {
+            progressContainer.style.opacity = '0';
+            progressContainer.style.transition = 'opacity 0.5s ease';
+        }
     }
     
     // Скрываем текст загрузки
@@ -833,39 +1017,38 @@ function showStartButton() {
         loadingText.style.transition = 'opacity 0.5s ease';
     }
 
-    // Показываем кнопку старта и информацию
+    // Показываем форму с именем пользователя
     setTimeout(() => {
-        if (startButton) {
-            startButton.classList.remove('hidden');
+        console.log('Переход к форме с именем...');
+        
+        // Скрываем заставку
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+            console.log('Заставка скрыта');
         }
         
-        if (testInfo) {
-            testInfo.classList.remove('hidden');
+        // Показываем форму с именем
+        const intro = document.getElementById('intro');
+        if (intro) {
+            intro.style.display = 'block';
+            console.log('Форма с именем показана');
+        } else {
+            console.error('Форма с именем не найдена!');
         }
+        
+        // Инициализируем поле имени
+        initUserNameInput();
         
         loadingState.isLoading = false;
+        console.log('Загрузка завершена');
     }, 600);
 }
 
 // Обновленные экспорты функций (кнопка теперь вызывает startTest напрямую)
 // window.handleCircleClick больше не нужен
 
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация приложения
-    initializeApp();
-    
-    // Настраиваем прогресс-кольцо и запускаем анимированную загрузку
-    const progressRing = document.getElementById('progressRing');
-    if (progressRing) {
-        const circumference = 2 * Math.PI * 80;
-        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
-        progressRing.style.strokeDashoffset = circumference;
-    }
-    
-    // Запускаем анимированную загрузку
-    startLoadingAnimation();
-});
+// Убираем дублирующий обработчик - он уже есть выше
 
 // Функции для модального окна
 function showErrorModal(message) {
@@ -915,9 +1098,72 @@ function updateButtonStates() {
 // Обновляем состояние кнопок при выборе ответа
 // Примечание: Логика выбора опции находится в showQuestion() функции
 function selectOptionWithUpdate(questionIndex, value) {
-  // Эта функция зарезервирована для будущего использования
-  console.warn('Функция selectOptionWithUpdate не реализована');
+  // Сохраняем ответ
+  currentState.answers[questionIndex] = value;
+  saveState();
+  
+  // Автоматически сохраняем результаты в Google Sheets
+  autoSaveResults();
+  
+  // Обновляем состояние кнопок
   updateButtonStates();
+}
+
+// Автоматическое сохранение результатов
+async function autoSaveResults() {
+  try {
+    // Рассчитываем результаты блоков, если возможно
+    Object.keys(currentState.answers).forEach(questionIndex => {
+      const blockIndex = Math.floor(questionIndex / 5);
+      if (Object.keys(currentState.answers).filter(idx => Math.floor(idx / 5) === blockIndex).length === 5) {
+        calculateBlockResult(blockIndex);
+      }
+    });
+    
+    // Собираем данные для отправки
+    const payload = {
+      token: SHARED_TOKEN || undefined,
+      userName: currentState.userName || '',
+      userId,
+      invitedBy: getInvitedBy() || null,
+      tag: 'auto-save',
+      ref: 'auto-save',
+      senderName: (currentState.userName || ''),
+      recipientName: getInviterNameFromUrl() ? '' : '',
+      utmSource: getUtmSource(),
+      url: location.href,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      // YYYY-MM-DD HH:mm:ss в часовом поясе Москвы
+      timestamp: (function(){
+        const now = new Date();
+        const moscowTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+        const y = moscowTime.getFullYear();
+        const m = String(moscowTime.getMonth()+1).padStart(2,'0');
+        const d = String(moscowTime.getDate()).padStart(2,'0');
+        const hh = String(moscowTime.getHours()).padStart(2,'0');
+        const mm = String(moscowTime.getMinutes()).padStart(2,'0');
+        const ss = String(moscowTime.getSeconds()).padStart(2,'0');
+        return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+      })(),
+      answersDetailed: buildDetailedAnswers(),
+      blockResultsDetailed: buildBlockResultsDetailed(),
+      overall: '', // Будет рассчитано позже
+      priorityBlock: '', // Будет рассчитано позже
+      status: 'auto' // Статус автосохранения
+    };
+    
+    // Отправляем данные
+    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify(payload) 
+    });
+    
+    console.log('Результаты автоматически сохранены');
+  } catch (e) { 
+    console.warn('Не удалось автоматически сохранить результаты:', e); 
+  }
 }
 
 window.continueToBlock = continueToBlock;
@@ -945,7 +1191,7 @@ window.closeInviteModal = closeInviteModal;
 window.copyInviteLink = copyInviteLink;
 
 // ===== Plan generation functions =====
-window.generatePlanICS = generatePlanICS;
+
 window.generatePlanPDF = generatePlanPDF;
 window.renderPlanPreview = renderPlanPreview;
 window.getPlanActions = getPlanActions;
@@ -970,7 +1216,26 @@ function getOrCreateUserId() {
   } catch { return generateUUID(); }
 }
 function getInvitedBy() { try { return new URLSearchParams(location.search).get('invited_by'); } catch { return null; } }
-function getShareLinkForInvite() { try { const url = new URL(location.href); url.searchParams.set('invited_by', userId || ''); return url.toString(); } catch { return location.href; } }
+function getShareLinkForInvite() {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('invited_by', userId || '');
+    const inviterName = (currentState.userName || '').trim();
+    if (inviterName) url.searchParams.set('inviter_name', inviterName);
+    return url.toString();
+  } catch {
+    return location.href;
+  }
+}
+
+function getUtmSource() { try { return new URLSearchParams(location.search).get('utm_source') || ''; } catch { return ''; } }
+function getInviterNameFromUrl() {
+  try {
+    const raw = new URLSearchParams(location.search).get('inviter_name');
+    if (!raw) return '';
+    try { return decodeURIComponent(raw); } catch { return raw; }
+  } catch { return ''; }
+}
 
 function withUtm(urlString, source) {
   try { const url = new URL(urlString); if (source) url.searchParams.set('utm_source', source); return url.toString(); } catch { return urlString; }
@@ -982,8 +1247,20 @@ function buildShareText(opts) {
   const src = options.source || '';
   const linkBase = shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL;
   const link = src ? withUtm(linkBase, src) : linkBase;
+  
   if (shareMode === 'invite') {
-    const lines = ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.'];
+    // Персонализируем приглашение именем пользователя
+    const userName = currentState.userName || '';
+    let invitationText = '🧭 Тест «Зрелые отношения»';
+    
+    if (userName) {
+      invitationText += `\nПривет! Меня зовут ${userName}.`;
+      invitationText += '\nДавай пройдём этот тест вместе — это быстро и полезно.';
+    } else {
+      invitationText += '\nДавай пройдём его вместе — это быстро и полезно.';
+    }
+    
+    const lines = [invitationText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   }
@@ -996,12 +1273,28 @@ function buildShareText(opts) {
     // Если результаты уже есть, используем их
     const overall = overallElement.textContent || '';
     const priority = priorityElement.textContent || '';
-    const lines = ['📊 Результаты теста «Зрелые отношения»', `• Общее состояние: ${overall}`, `• Приоритетный блок: ${priority}`];
+    const userName = currentState.userName || '';
+    
+    let resultText = '📊 Результаты теста «Зрелые отношения»';
+    if (userName) {
+      resultText += `\nТест прошёл: ${userName}`;
+    }
+    resultText += `\n• Общее состояние: ${overall}`;
+    resultText += `\n• Приоритетный блок: ${priority}`;
+    
+    const lines = [resultText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   } else {
     // Если результатов нет, возвращаем базовый текст
-    const lines = ['🧭 Тест «Зрелые отношения»', 'Пройти тест можно по ссылке ниже'];
+    const userName = currentState.userName || '';
+    let baseText = '🧭 Тест «Зрелые отношения»';
+    if (userName) {
+      baseText += `\nРекомендую ${userName}`;
+    }
+    baseText += '\nПройти тест можно по ссылке ниже';
+    
+    const lines = [baseText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   }
@@ -1009,7 +1302,14 @@ function buildShareText(opts) {
 
 function shareToTelegram() { const src='telegram'; const linkBase = shareMode==='invite'?getShareLinkForInvite():TEST_URL; const link=withUtm(linkBase, src); const text=buildShareText({ source: src, includeLink: false }); const url=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`; safeOpen(url); }
 function shareToWhatsApp() { const src='whatsapp'; const text=buildShareText({ source: src, includeLink: true }); const url=`https://wa.me/?text=${encodeURIComponent(text)}`; safeOpen(url); }
-function shareToEmail() { const src='email'; const subject='Мои результаты теста «Зрелые отношения»'; const body=buildShareText({ source: src, includeLink: true }); location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; }
+function shareToEmail() { 
+  const src='email'; 
+  const subject = shareMode === 'invite' 
+    ? 'Приглашение пройти тест «Зрелые отношения»' 
+    : 'Мои результаты теста «Зрелые отношения»'; 
+  const body=buildShareText({ source: src, includeLink: true }); 
+  location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; 
+}
 async function copyShareText() { const src='copy'; const text=buildShareText({ source: src, includeLink: true }); try { await navigator.clipboard.writeText(text); alert('Текст результата скопирован'); } catch { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Текст результата скопирован'); } }
 
 async function saveResults(tag) {
@@ -1022,14 +1322,30 @@ async function saveResults(tag) {
       userId,
       invitedBy: getInvitedBy() || null,
       tag: tag || null,
+      ref: tag || null,
+      senderName: (currentState.userName || ''),
+      recipientName: getInviterNameFromUrl() ? '' : '',
+      utmSource: getUtmSource(),
       url: location.href,
       userAgent: navigator.userAgent,
       language: navigator.language,
-      timestamp: new Date().toISOString(),
+      // YYYY-MM-DD HH:mm:ss в часовом поясе Москвы
+      timestamp: (function(){
+        const now = new Date();
+        const moscowTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+        const y = moscowTime.getFullYear();
+        const m = String(moscowTime.getMonth()+1).padStart(2,'0');
+        const d = String(moscowTime.getDate()).padStart(2,'0');
+        const hh = String(moscowTime.getHours()).padStart(2,'0');
+        const mm = String(moscowTime.getMinutes()).padStart(2,'0');
+        const ss = String(moscowTime.getSeconds()).padStart(2,'0');
+        return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+      })(),
       answersDetailed: buildDetailedAnswers(),
       blockResultsDetailed: buildBlockResultsDetailed(),
       overall,
-      priorityBlock: priority
+      priorityBlock: priority,
+      status: tag === 'final' ? 'completed' : 'manual' // 'completed' for final save, 'manual' for other explicit saves
     };
     await fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
   } catch (e) { console.warn('Не удалось сохранить результаты:', e); }
@@ -1070,14 +1386,20 @@ function closeInviteModal() {
 
 async function copyInviteLink() {
   const inviteLink = document.getElementById('inviteLink');
+  const inviteText = buildShareText({ source: 'copy', includeLink: true });
+  
   try {
-    await navigator.clipboard.writeText(inviteLink.value);
-    alert('Ссылка скопирована!');
+    await navigator.clipboard.writeText(inviteText);
+    alert('Приглашение скопировано!');
   } catch {
     // Fallback для старых браузеров
-    inviteLink.select();
+    const textArea = document.createElement('textarea');
+    textArea.value = inviteText;
+    document.body.appendChild(textArea);
+    textArea.select();
     document.execCommand('copy');
-    alert('Ссылка скопирована!');
+    textArea.remove();
+    alert('Приглашение скопировано!');
   }
 }
 
@@ -1163,37 +1485,7 @@ function getPlanActions(priorityBlock) {
   return [...specific, ...baseActions.slice(1)];
 }
 
-function generatePlanICS() {
-  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
-  
-  // Создаем прямую ссылку на календарь устройства
-  const now = new Date();
-  const firstAction = plan[0];
-  if (firstAction) {
-    const startDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Через неделю
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Через час
-    
-    // Форматируем даты для URL календаря
-    const formatDate = (date) => {
-      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-    
-    // Создаем URL для добавления в календарь
-    const calendarUrl = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0D%0AVERSION:2.0%0D%0APRODID:-//Love Test//Plan Generator//RU%0D%0ACALSCALE:GREGORIAN%0D%0AMETHOD:PUBLISH%0D%0ABEGIN:VEVENT%0D%0AUID:${generateUUID()}%0D%0ADTSTAMP:${formatDate(now)}%0D%0ADTSTART:${formatDate(startDate)}%0D%0ADTEND:${formatDate(endDate)}%0D%0ASUMMARY:${encodeURIComponent(firstAction.title)}%0D%0ADESCRIPTION:${encodeURIComponent(firstAction.description)}%0D%0AEND:VEVENT%0D%0AEND:VCALENDAR`;
-    
-    // Открываем ссылку в новом окне
-    const link = document.createElement('a');
-    link.href = calendarUrl;
-    link.download = 'plan.ics';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Показываем уведомление
-    alert('Календарь добавлен! Файл .ics скачан. Откройте его, чтобы добавить событие в ваш календарь.');
-  }
-}
+
 
 function generatePlanPDF() {
   const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
@@ -1353,3 +1645,205 @@ function downloadFile(content, filename, mimeType) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+function addToCalendar() {
+  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
+  
+  if (!plan || plan.length === 0) {
+    showErrorModal('Не удалось загрузить план действий');
+    return;
+  }
+
+  const firstAction = plan[0];
+  const now = new Date();
+  
+  // Создаем событие на следующую неделю
+  const startDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Через неделю
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Через час
+  
+  // Форматируем даты для Google Calendar URL (формат YYYYMMDDTHHMMSSZ)
+  const formatDateForGoogle = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+  };
+  
+  // Создаем URL для Google Calendar
+  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(firstAction.title)}&dates=${formatDateForGoogle(startDate)}/${formatDateForGoogle(endDate)}&details=${encodeURIComponent(firstAction.description)}&location=Онлайн&sf=true&output=xml`;
+  
+  // Создаем URL для Outlook Calendar
+  const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(firstAction.title)}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}&body=${encodeURIComponent(firstAction.description)}&location=Онлайн`;
+  
+  // Создаем URL для Yahoo Calendar
+  const yahooCalendarUrl = `https://calendar.yahoo.com/?v=60&title=${encodeURIComponent(firstAction.title)}&st=${startDate.toISOString()}&et=${endDate.toISOString()}&desc=${encodeURIComponent(firstAction.description)}&in_loc=Онлайн`;
+  
+  // Определяем платформу пользователя
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroid = /android/.test(userAgent);
+  const isMobile = isIOS || isAndroid;
+  
+  // Создаем модальное окно с выбором календаря
+  const modalHtml = `
+    <div class="modal-overlay show" id="calendarModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-icon">📅</div>
+          <h3>Добавить в календарь</h3>
+          <button class="modal-close" onclick="closeCalendarModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="calendar-options">
+            <div class="calendar-option">
+              <h4>🌐 Google Календарь (рекомендуется)</h4>
+              <p>Откроется в браузере, работает на всех устройствах</p>
+              <button class="btn btn-primary" onclick="openGoogleCalendar()">
+                <span class="btn-icon">📅</span>
+                Открыть Google Calendar
+              </button>
+            </div>
+            
+            <div class="calendar-option">
+              <h4>📧 Outlook Календарь</h4>
+              <p>Для пользователей Microsoft 365 и Outlook</p>
+              <button class="btn btn-secondary" onclick="openOutlookCalendar()">
+                <span class="btn-icon">📧</span>
+                Открыть Outlook Calendar
+              </button>
+            </div>
+            
+            <div class="calendar-option">
+              <h4>🔍 Yahoo Календарь</h4>
+              <p>Альтернативный веб-календарь</p>
+              <button class="btn btn-secondary" onclick="openYahooCalendar()">
+                <span class="btn-icon">🔍</span>
+                Открыть Yahoo Calendar
+              </button>
+            </div>
+            
+            ${isIOS ? `
+            <div class="calendar-option">
+              <h4>🍎 Apple Календарь</h4>
+              <p>Для устройств Apple (может потребовать дополнительных действий)</p>
+              <button class="btn btn-secondary" onclick="downloadICSFile()">
+                <span class="btn-icon">📥</span>
+                Скачать .ics файл
+              </button>
+            </div>
+            ` : ''}
+            
+            ${isAndroid ? `
+            <div class="calendar-option">
+              <h4>🤖 Android Календарь</h4>
+              <p>Google Calendar откроется автоматически</p>
+              <button class="btn btn-secondary" onclick="openGoogleCalendar()">
+                <span class="btn-icon">📅</span>
+                Открыть Google Calendar
+              </button>
+            </div>
+            ` : ''}
+            
+            <div class="calendar-option">
+              <h4>💾 Альтернативный вариант</h4>
+              <p>Скачать файл .ics для импорта в любой календарь</p>
+              <button class="btn btn-outline" onclick="downloadICSFile()">
+                <span class="btn-icon">📥</span>
+                Скачать .ics файл
+              </button>
+            </div>
+          </div>
+          
+          <div class="calendar-help">
+            <h4>💡 Как это работает?</h4>
+            <ul>
+              <li><strong>Google Calendar:</strong> Событие откроется в браузере, нажмите "Сохранить"</li>
+              <li><strong>.ics файл:</strong> Скачайте и дважды кликните для добавления в календарь</li>
+              <li><strong>Мобильные устройства:</strong> Google Calendar автоматически откроется в приложении</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Добавляем модальное окно на страницу
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
+  // Сохраняем URL для использования в функциях
+  window.googleCalendarUrl = googleCalendarUrl;
+  window.outlookCalendarUrl = outlookCalendarUrl;
+  window.yahooCalendarUrl = yahooCalendarUrl;
+}
+
+// Функция для открытия Google Calendar
+function openGoogleCalendar() {
+  if (window.googleCalendarUrl) {
+    safeOpen(window.googleCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для открытия Outlook Calendar
+function openOutlookCalendar() {
+  if (window.outlookCalendarUrl) {
+    safeOpen(window.outlookCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для открытия Yahoo Calendar
+function openYahooCalendar() {
+  if (window.yahooCalendarUrl) {
+    safeOpen(window.yahooCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для скачивания .ics файла (fallback)
+function downloadICSFile() {
+  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
+  const icsContent = generateICSContent(plan);
+  
+  // Создаем и скачиваем файл
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'plan.ics';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  URL.revokeObjectURL(url);
+  closeCalendarModal();
+  
+  // Показываем уведомление
+  alert('Файл .ics скачан! Откройте его, чтобы добавить событие в ваш календарь.');
+}
+
+// Функция для закрытия модального окна календаря
+function closeCalendarModal() {
+  const modal = document.getElementById('calendarModal');
+  if (modal) {
+    modal.remove();
+  }
+  // Очищаем глобальные переменные
+  delete window.googleCalendarUrl;
+  delete window.outlookCalendarUrl;
+  delete window.yahooCalendarUrl;
+}
+
+// Обновляем экспорт функций
+window.addToCalendar = addToCalendar;
+window.openGoogleCalendar = openGoogleCalendar;
+window.openOutlookCalendar = openOutlookCalendar;
+window.openYahooCalendar = openYahooCalendar;
+window.downloadICSFile = downloadICSFile;
+window.closeCalendarModal = closeCalendarModal;
