@@ -265,6 +265,10 @@ function nextQuestion() {
   
   // Проверяем, завершили ли мы блок (5 вопросов)
   if ((currentIndex + 1) % 5 === 0) {
+    // ВАЖНО: Сначала обновляем индекс, потом показываем блок
+    currentState.currentQuestionIndex = currentIndex + 1;
+    saveState();
+    
     const blockIndex = Math.floor(currentIndex / 5);
     calculateBlockResult(blockIndex);
     showCompactBlockResult(blockIndex);
@@ -389,7 +393,7 @@ function continueToBlock(blockNumber) {
 
 function continueToNextBlock() {
   // Продолжаем к следующему вопросу после показа результатов блока
-  const nextQuestionIndex = currentState.currentQuestionIndex + 1;
+  const nextQuestionIndex = currentState.currentQuestionIndex;
   
   // Если достигли конца теста
   if (nextQuestionIndex >= 20) {
@@ -406,9 +410,7 @@ function continueToNextBlock() {
   // Скрываем контейнер с блоками результатов
   document.getElementById('question-container').style.display = 'none';
   
-  // Переходим к следующему вопросу
-  currentState.currentQuestionIndex = nextQuestionIndex;
-  saveState();
+  // Переходим к следующему вопросу (currentQuestionIndex уже правильный)
   showQuestion(nextQuestionIndex);
   
   // Показываем прогресс-бар
