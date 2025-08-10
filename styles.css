@@ -832,8 +832,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(248, 244, 255, 0.8) 0%, rgba(255, 240, 245, 0.8) 50%, rgba(240, 248, 255, 0.8) 100%);
   z-index: -1;
 }
 
@@ -2967,5 +2967,138 @@ kbd {
   
   .modal-header, .modal-body {
     padding: 1rem;
+  }
+}
+
+/* Стили для модального окна календаря */
+.calendar-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Анимация появления модального окна календаря */
+#calendarModal .modal-content {
+  animation: calendarModalSlideIn 0.3s ease-out;
+}
+
+@keyframes calendarModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.calendar-option {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.calendar-option:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-option h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-option p {
+  margin: 0 0 1rem 0;
+  color: var(--gray);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.calendar-option .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.calendar-help {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.calendar-help h4 {
+  margin: 0 0 1rem 0;
+  color: #0369a1;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.calendar-help ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #0c4a6e;
+}
+
+.calendar-help li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.calendar-help strong {
+  color: #0369a1;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .calendar-options {
+    gap: 1rem;
+  }
+  
+  .calendar-option {
+    padding: 1.2rem;
+  }
+  
+  .calendar-option h4 {
+    font-size: 1rem;
+  }
+  
+  .calendar-option p {
+    font-size: 0.9rem;
+  }
+  
+  .calendar-help {
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-option {
+    padding: 1rem;
+  }
+  
+  .calendar-option .btn {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
+  
+  .calendar-help {
+    padding: 1rem;
+  }
+  
+  .calendar-help ul {
+    padding-left: 1.2rem;
   }
 }

@@ -734,19 +734,19 @@ let loadingState = {
 // Массив сообщений для смены
 const MESSAGES = [
     {
-        text: '“Безопасность — это когда вы можете быть собой без страха осуждения”',
+        text: '“Безопасность — это когда вы можете быть собой без страха осуждения"',
         attribution: '— Основа здоровых отношений'
     },
     {
-        text: '“Отношения становятся надёжными, когда оба партнёра держат слово”',
+        text: '“Отношения становятся надёжными, когда оба партнёра держат слово"',
         attribution: '— Основа доверия'
     },
     {
-        text: '“Эмоциональная связь — это сердце любых зрелых отношений”',
+        text: '“Эмоциональная связь — это сердце любых зрелых отношений"',
         attribution: '— Глубина связи'
     },
     {
-        text: '“Лучшие отношения те, в которых оба растут и становятся лучше”',
+        text: '“Лучшие отношения те, в которых оба растут и становятся лучше"',
         attribution: '— Перспективы роста'
     }
 ];
@@ -945,7 +945,7 @@ window.closeInviteModal = closeInviteModal;
 window.copyInviteLink = copyInviteLink;
 
 // ===== Plan generation functions =====
-window.generatePlanICS = generatePlanICS;
+
 window.generatePlanPDF = generatePlanPDF;
 window.renderPlanPreview = renderPlanPreview;
 window.getPlanActions = getPlanActions;
@@ -1163,37 +1163,7 @@ function getPlanActions(priorityBlock) {
   return [...specific, ...baseActions.slice(1)];
 }
 
-function generatePlanICS() {
-  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
-  
-  // Создаем прямую ссылку на календарь устройства
-  const now = new Date();
-  const firstAction = plan[0];
-  if (firstAction) {
-    const startDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Через неделю
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Через час
-    
-    // Форматируем даты для URL календаря
-    const formatDate = (date) => {
-      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-    
-    // Создаем URL для добавления в календарь
-    const calendarUrl = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0D%0AVERSION:2.0%0D%0APRODID:-//Love Test//Plan Generator//RU%0D%0ACALSCALE:GREGORIAN%0D%0AMETHOD:PUBLISH%0D%0ABEGIN:VEVENT%0D%0AUID:${generateUUID()}%0D%0ADTSTAMP:${formatDate(now)}%0D%0ADTSTART:${formatDate(startDate)}%0D%0ADTEND:${formatDate(endDate)}%0D%0ASUMMARY:${encodeURIComponent(firstAction.title)}%0D%0ADESCRIPTION:${encodeURIComponent(firstAction.description)}%0D%0AEND:VEVENT%0D%0AEND:VCALENDAR`;
-    
-    // Открываем ссылку в новом окне
-    const link = document.createElement('a');
-    link.href = calendarUrl;
-    link.download = 'plan.ics';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Показываем уведомление
-    alert('Календарь добавлен! Файл .ics скачан. Откройте его, чтобы добавить событие в ваш календарь.');
-  }
-}
+
 
 function generatePlanPDF() {
   const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
@@ -1353,3 +1323,205 @@ function downloadFile(content, filename, mimeType) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+function addToCalendar() {
+  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
+  
+  if (!plan || plan.length === 0) {
+    showErrorModal('Не удалось загрузить план действий');
+    return;
+  }
+
+  const firstAction = plan[0];
+  const now = new Date();
+  
+  // Создаем событие на следующую неделю
+  const startDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Через неделю
+  const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Через час
+  
+  // Форматируем даты для Google Calendar URL (формат YYYYMMDDTHHMMSSZ)
+  const formatDateForGoogle = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+  };
+  
+  // Создаем URL для Google Calendar
+  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(firstAction.title)}&dates=${formatDateForGoogle(startDate)}/${formatDateForGoogle(endDate)}&details=${encodeURIComponent(firstAction.description)}&location=Онлайн&sf=true&output=xml`;
+  
+  // Создаем URL для Outlook Calendar
+  const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(firstAction.title)}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}&body=${encodeURIComponent(firstAction.description)}&location=Онлайн`;
+  
+  // Создаем URL для Yahoo Calendar
+  const yahooCalendarUrl = `https://calendar.yahoo.com/?v=60&title=${encodeURIComponent(firstAction.title)}&st=${startDate.toISOString()}&et=${endDate.toISOString()}&desc=${encodeURIComponent(firstAction.description)}&in_loc=Онлайн`;
+  
+  // Определяем платформу пользователя
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroid = /android/.test(userAgent);
+  const isMobile = isIOS || isAndroid;
+  
+  // Создаем модальное окно с выбором календаря
+  const modalHtml = `
+    <div class="modal-overlay show" id="calendarModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-icon">📅</div>
+          <h3>Добавить в календарь</h3>
+          <button class="modal-close" onclick="closeCalendarModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="calendar-options">
+            <div class="calendar-option">
+              <h4>🌐 Google Календарь (рекомендуется)</h4>
+              <p>Откроется в браузере, работает на всех устройствах</p>
+              <button class="btn btn-primary" onclick="openGoogleCalendar()">
+                <span class="btn-icon">📅</span>
+                Открыть Google Calendar
+              </button>
+            </div>
+            
+            <div class="calendar-option">
+              <h4>📧 Outlook Календарь</h4>
+              <p>Для пользователей Microsoft 365 и Outlook</p>
+              <button class="btn btn-secondary" onclick="openOutlookCalendar()">
+                <span class="btn-icon">📧</span>
+                Открыть Outlook Calendar
+              </button>
+            </div>
+            
+            <div class="calendar-option">
+              <h4>🔍 Yahoo Календарь</h4>
+              <p>Альтернативный веб-календарь</p>
+              <button class="btn btn-secondary" onclick="openYahooCalendar()">
+                <span class="btn-icon">🔍</span>
+                Открыть Yahoo Calendar
+              </button>
+            </div>
+            
+            ${isIOS ? `
+            <div class="calendar-option">
+              <h4>🍎 Apple Календарь</h4>
+              <p>Для устройств Apple (может потребовать дополнительных действий)</p>
+              <button class="btn btn-secondary" onclick="downloadICSFile()">
+                <span class="btn-icon">📥</span>
+                Скачать .ics файл
+              </button>
+            </div>
+            ` : ''}
+            
+            ${isAndroid ? `
+            <div class="calendar-option">
+              <h4>🤖 Android Календарь</h4>
+              <p>Google Calendar откроется автоматически</p>
+              <button class="btn btn-secondary" onclick="openGoogleCalendar()">
+                <span class="btn-icon">📅</span>
+                Открыть Google Calendar
+              </button>
+            </div>
+            ` : ''}
+            
+            <div class="calendar-option">
+              <h4>💾 Альтернативный вариант</h4>
+              <p>Скачать файл .ics для импорта в любой календарь</p>
+              <button class="btn btn-outline" onclick="downloadICSFile()">
+                <span class="btn-icon">📥</span>
+                Скачать .ics файл
+              </button>
+            </div>
+          </div>
+          
+          <div class="calendar-help">
+            <h4>💡 Как это работает?</h4>
+            <ul>
+              <li><strong>Google Calendar:</strong> Событие откроется в браузере, нажмите "Сохранить"</li>
+              <li><strong>.ics файл:</strong> Скачайте и дважды кликните для добавления в календарь</li>
+              <li><strong>Мобильные устройства:</strong> Google Calendar автоматически откроется в приложении</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Добавляем модальное окно на страницу
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
+  // Сохраняем URL для использования в функциях
+  window.googleCalendarUrl = googleCalendarUrl;
+  window.outlookCalendarUrl = outlookCalendarUrl;
+  window.yahooCalendarUrl = yahooCalendarUrl;
+}
+
+// Функция для открытия Google Calendar
+function openGoogleCalendar() {
+  if (window.googleCalendarUrl) {
+    safeOpen(window.googleCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для открытия Outlook Calendar
+function openOutlookCalendar() {
+  if (window.outlookCalendarUrl) {
+    safeOpen(window.outlookCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для открытия Yahoo Calendar
+function openYahooCalendar() {
+  if (window.yahooCalendarUrl) {
+    safeOpen(window.yahooCalendarUrl);
+    closeCalendarModal();
+  }
+}
+
+// Функция для скачивания .ics файла (fallback)
+function downloadICSFile() {
+  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
+  const icsContent = generateICSContent(plan);
+  
+  // Создаем и скачиваем файл
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'plan.ics';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  URL.revokeObjectURL(url);
+  closeCalendarModal();
+  
+  // Показываем уведомление
+  alert('Файл .ics скачан! Откройте его, чтобы добавить событие в ваш календарь.');
+}
+
+// Функция для закрытия модального окна календаря
+function closeCalendarModal() {
+  const modal = document.getElementById('calendarModal');
+  if (modal) {
+    modal.remove();
+  }
+  // Очищаем глобальные переменные
+  delete window.googleCalendarUrl;
+  delete window.outlookCalendarUrl;
+  delete window.yahooCalendarUrl;
+}
+
+// Обновляем экспорт функций
+window.addToCalendar = addToCalendar;
+window.openGoogleCalendar = openGoogleCalendar;
+window.openOutlookCalendar = openOutlookCalendar;
+window.openYahooCalendar = openYahooCalendar;
+window.downloadICSFile = downloadICSFile;
+window.closeCalendarModal = closeCalendarModal;
