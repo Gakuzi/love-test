@@ -213,9 +213,12 @@ function showQuestion(index) {
 }
 
 function toggleHint() {
+  console.log('toggleHint called'); // Отладка
   const hintContent = document.getElementById('hintContent');
   const toggleButton = document.querySelector('.hint-toggle');
   const hintLabel = toggleButton?.querySelector('.hint-label');
+  
+  console.log('Elements found:', { hintContent, toggleButton, hintLabel }); // Отладка
   
   if (hintContent) {
     hintContent.classList.toggle('show');
@@ -231,6 +234,8 @@ function toggleHint() {
         hintLabel.textContent = 'Пояснение 📖';
       }
     }
+  } else {
+    console.error('hintContent not found!'); // Отладка
   }
 }
 

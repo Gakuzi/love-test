@@ -2808,3 +2808,137 @@ kbd {
     font-size: 0.75rem;
   }
 }
+
+/* Модальное окно помощи */
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+.help-modal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+.help-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f0f4f8;
+  color: var(--primary);
+}
+
+.help-content {
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+.help-content h4 {
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.help-content h4:first-child {
+  margin-top: 0;
+}
+
+.help-content p {
+  color: var(--gray);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.help-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.help-content li {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0;
+}
+
+.help-content strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.help-content em {
+  background: rgba(74, 107, 138, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-style: normal;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Адаптивность модального окна */
+@media (max-width: 480px) {
+  .help-modal {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .help-header,
+  .help-content {
+    padding: 1rem;
+  }
+  
+  .help-header h3 {
+    font-size: 1.1rem;
+  }
+}
