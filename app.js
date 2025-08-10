@@ -266,10 +266,8 @@ function updateProgress() {
 
 function nextQuestion() {
   const answer = currentState.answers[currentState.currentQuestionIndex];
-  if (answer === undefined) {
-    showErrorModal('Пожалуйста, выберите один из вариантов ответа перед продолжением.');
-    return;
-  }
+  // Автонавигация: если ответ не выбран, просто ничего не делаем (без модалок)
+  if (answer === undefined) { return; }
 
   const currentIndex = currentState.currentQuestionIndex;
   
