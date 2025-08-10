@@ -479,6 +479,10 @@ function showFinalResults() {
     el.style.display = 'none';
   });
   
+  // Показываем контейнер результатов
+  const resultsContainer = document.getElementById('results');
+  if (resultsContainer) resultsContainer.style.display = 'block';
+
   // Показываем финальные результаты на всю страницу
   const finalResults = document.getElementById('finalResults');
   finalResults.style.display = 'block';
@@ -488,7 +492,7 @@ function showFinalResults() {
   finalResults.style.minHeight = '100vh';
   finalResults.style.paddingTop = '2rem';
   
-  calculateOverallResult();
+  try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   
   // Плавный переход к результатам
   finalResults.style.opacity = '0';
@@ -510,51 +514,59 @@ function calculateOverallResult() {
   let overall = 'зрелые';
   if (avg < 8) overall = 'разрушительные';
   else if (avg < 11) overall = 'шаткие';
-  document.getElementById('overallStatus').textContent = overall;
+  const overallStatusEl = document.getElementById('overallStatus');
+  if (overallStatusEl) overallStatusEl.textContent = overall;
 
   const lowestBlock = Object.entries(currentState.blockResults).reduce(
     (lowest, [index, block]) => {
       if (!block) return lowest;
       return block.sum < lowest.sum ? { index, sum: block.sum } : lowest;
     },
-    { index: null, sum: Infinity }
+    { index: 0, sum: Infinity }
   );
 
   const blockNames = ['Безопасность', 'Надёжность', 'Связь', 'Рост'];
-  document.getElementById('priorityBlock').textContent = blockNames[lowestBlock.index];
+  const priorityBlockEl = document.getElementById('priorityBlock');
+  if (priorityBlockEl && lowestBlock.index !== null) priorityBlockEl.textContent = blockNames[lowestBlock.index];
 
-  // PDF
-  document.getElementById('pdfDate').textContent = `Дата: ${new Date().toLocaleDateString('ru-RU')}`;
+  // PDF (если есть скрытый отчёт)
+  const pdfDate = document.getElementById('pdfDate');
+  if (pdfDate) pdfDate.textContent = `Дата: ${new Date().toLocaleDateString('ru-RU')}`;
   const pdfTableBody = document.getElementById('pdfTableBody');
-  pdfTableBody.innerHTML = '';
-
-  blockNames.forEach((name, index) => {
-    const block = currentState.blockResults[index];
-    if (!block) return;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${name}</td>
-      <td>${block.sum}/15</td>
-      <td>${{ success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone]}</td>
+  if (pdfTableBody) {
+    pdfTableBody.innerHTML = '';
+    blockNames.forEach((name, index) => {
+      const block = currentState.blockResults[index];
+      if (!block) return;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${name}</td>
+        <td>${block.sum}/15</td>
+        <td>${{ success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[block.zone]}</td>
+      `;
+      pdfTableBody.appendChild(tr);
+    });
+  }
+  const pdfSummary = document.getElementById('pdfSummary');
+  if (pdfSummary) {
+    pdfSummary.innerHTML = `
+      <p><strong>Общее состояние:</strong> ${overall}</p>
+      <p><strong>Приоритетный блок:</strong> ${blockNames[lowestBlock.index]}</p>
     `;
-    pdfTableBody.appendChild(tr);
-  });
-
-  document.getElementById('pdfSummary').innerHTML = `
-    <p><strong>Общее состояние:</strong> ${overall}</p>
-    <p><strong>Приоритетный блок:</strong> ${blockNames[lowestBlock.index]}</p>
-  `;
-
-  document.getElementById('pdfRecommendations').innerHTML = `
-    <h3>Приоритетные рекомендации</h3>
-    <p>1. <strong>Работа с границами:</strong> Начните с малого - установите одну четкую границу и обсудите её с партнером.</p>
-    <p>2. <strong>Укрепление связи:</strong> Внедрите ежедневный "ритуал конца дня" - 10 минут без телефонов и дел.</p>
-    <p>3. <strong>Личностный рост:</strong> На этой неделе обсудите, что каждый из вас хочет развивать в себе.</p>
-    <h3>Долгосрочные рекомендации</h3>
-    <p>1. <strong>Через месяц:</strong> Составьте список ваших ожиданий друг от друга и обсудите их.</p>
-    <p>2. <strong>Через три месяца:</strong> Создайте совместные цели на будущее и план их достижения.</p>
-    <p>3. <strong>Долгосрочно:</strong> Регулярно проводите "проверки состояния отношений" раз в месяц.</p>
-  `;
+  }
+  const pdfRecommendations = document.getElementById('pdfRecommendations');
+  if (pdfRecommendations) {
+    pdfRecommendations.innerHTML = `
+      <h3>Приоритетные рекомендации</h3>
+      <p>1. <strong>Работа с границами:</strong> Начните с малого - установите одну четкую границу и обсудите её с партнером.</p>
+      <p>2. <strong>Укрепление связи:</strong> Внедрите ежедневный "ритуал конца дня" - 10 минут без телефонов и дел.</p>
+      <p>3. <strong>Личностный рост:</strong> На этой неделе обсудите, что каждый из вас хочет развивать в себе.</p>
+      <h3>Долгосрочные рекомендации</h3>
+      <p>1. <strong>Через месяц:</strong> Составьте список ваших ожиданий друг от друга и обсудите их.</p>
+      <p>2. <strong>Через три месяца:</strong> Создайте совместные цели на будущее и план их достижения.</p>
+      <p>3. <strong>Долгосрочно:</strong> Регулярно проводите "проверки состояния отношений" раз в месяц.</p>
+    `;
+  }
 }
 
 function downloadPDF() {

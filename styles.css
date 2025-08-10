@@ -587,27 +587,27 @@ body {
 
 /* Legacy btn styles - Компактные размеры */
 .btn {
-  flex: 1;
-  background: var(--button-gradient);
-  color: white;
-  border: none;
-  padding: 0.7rem;
-  font-size: 0.9rem;
-  border-radius: var(--card-radius);
+  width: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.86));
+  color: var(--primary-dark);
+  border: 2px solid rgba(192, 180, 214, 0.45);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  box-shadow: var(--shadow);
+  gap: 0.5rem;
+  box-shadow: 0 8px 20px rgba(105, 90, 166, 0.18);
 }
 
-.btn:hover { 
-  background: var(--button-hover); 
-  transform: translateY(-1px); 
-  box-shadow: var(--shadow-hover);
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px rgba(105, 90, 166, 0.25);
 }
 
 .btn-secondary { 
@@ -623,25 +623,25 @@ body {
 
 /* Compact Block Results */
 .block-result-compact {
-  background: var(--card-bg-solid);
+  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.86));
   backdrop-filter: blur(10px);
-  border: var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border: 2px solid rgba(192, 180, 214, 0.35);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(105, 90, 166, 0.18);
   margin-bottom: 1rem;
   overflow: hidden;
   transition: var(--transition);
-  border-left: 4px solid var(--primary);
+  border-left: 6px solid var(--primary);
 }
 
 .result-header {
-  padding: 0.8rem 1.2rem;
+  padding: 1rem 1.2rem;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: var(--transition);
-  background: var(--duration-bg);
+  background: linear-gradient(135deg, rgba(248, 244, 255, 0.85), rgba(240, 248, 255, 0.8));
 }
 
 .result-header:hover {
