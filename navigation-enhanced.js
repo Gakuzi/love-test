@@ -79,7 +79,10 @@ function getCurrentView() {
     return 'intro';
   } else if (document.getElementById('questionCard').style.display === 'block') {
     return 'question';
-  } else if (document.querySelector('.block-result[style*="block"]')) {
+  } else if (
+    document.querySelector('.block-result[style*="block"]') ||
+    document.querySelector('.block-result-compact[style*="block"]')
+  ) {
     return 'blockResult';
   } else if (document.querySelector('.final-results[style*="block"]')) {
     return 'finalResults';

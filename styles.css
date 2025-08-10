@@ -40,6 +40,14 @@
   --progress-fill: linear-gradient(90deg, #b8a9cc 0%, #a694c4 100%);
 }
 
+/* Усиление контрастности для базового текста и фона */
+body {
+  color: var(--dark);
+}
+.question-text, .option-label, .progress-text, .help-content, .modal-body, .block-title, .stat-value {
+  color: var(--dark);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -903,12 +911,13 @@ body {
 /* Basic dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --light: #1f242b;
-    --dark: #e8eaed;
-    --gray: #b0b8c0;
-    --light-gray: #8a939b;
-    --border: 1px solid #2e3742;
-    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    /* Мягкий режим тёмной темы без потери контрастности */
+    --light: #121418;
+    --dark: #f1f3f5; /* Текст чуть светлее для читаемости */
+    --gray: #c2c8cf;
+    --light-gray: #98a1aa;
+    --border: 1px solid #2a3340;
+    --shadow: 0 4px 20px rgba(0,0,0,0.45);
   }
   body { background-color: #0f141a; color: var(--dark); }
   .intro, .question-card, .block-result, .final-results, .recommendation-item, .messenger-btn { background: #1b2129; }
@@ -917,6 +926,17 @@ body {
   .option:hover { background: #232b35; }
   .option.selected { background: #223142; }
   .results-summary { background: #111820; border-left-color: var(--primary); }
+}
+
+/* Глобальная страховка от чрезмерного затемнения: сохраняем хорошую читаемость всегда */
+@media (prefers-color-scheme: dark) {
+  body, .container, .question-text, .option-label, .progress-text,
+  .help-content, .modal-body, .block-title, .stat-value {
+    color: var(--dark) !important;
+  }
+  .progress-bar, .progress-fill, .modern-start-button, .nav-btn, .btn, .modal-btn {
+    filter: brightness(1.05) contrast(1.05);
+  }
 }
 
 /* ===========================================

@@ -372,20 +372,30 @@ function calculateBlockResult(blockIndex) {
     zone: sum >= 11 ? 'success' : sum >= 6 ? 'warning' : 'danger'
   };
 
+  // Безопасное обновление старого виджета круглого счётчика, если он присутствует в шаблоне
   const scoreElement = document.getElementById(`block${blockIndex + 1}Score`);
-  const percentage = (sum / 15) * 100;
-  const color = { success: 'var(--success)', warning: 'var(--warning)', danger: 'var(--danger)' }[
-    currentState.blockResults[blockIndex].zone
-  ];
+  if (scoreElement) {
+    const percentage = (sum / 15) * 100;
+    const color = {
+      success: 'var(--success)',
+      warning: 'var(--warning)',
+      danger: 'var(--danger)'
+    }[currentState.blockResults[blockIndex].zone];
 
-  scoreElement.style.background = `conic-gradient(${color} ${percentage}%, #e0e4e8 ${percentage}%)`;
-  scoreElement.querySelector('.score-text').textContent = `${sum}/15`;
+    scoreElement.style.background = `conic-gradient(${color} ${percentage}%, #e0e4e8 ${percentage}%)`;
+    const scoreText = scoreElement.querySelector('.score-text');
+    if (scoreText) scoreText.textContent = `${sum}/15`;
 
-  const zoneLabel = scoreElement.nextElementSibling;
-  zoneLabel.className = `zone-label zone-${currentState.blockResults[blockIndex].zone}`;
-  zoneLabel.textContent = { success: 'Зона силы', warning: 'Зона риска', danger: 'Зона тревоги' }[
-    currentState.blockResults[blockIndex].zone
-  ];
+    const zoneLabel = scoreElement.nextElementSibling;
+    if (zoneLabel) {
+      zoneLabel.className = `zone-label zone-${currentState.blockResults[blockIndex].zone}`;
+      zoneLabel.textContent = {
+        success: 'Зона силы',
+        warning: 'Зона риска',
+        danger: 'Зона тревоги'
+      }[currentState.blockResults[blockIndex].zone];
+    }
+  }
 }
 
 function continueToBlock(blockNumber) {
@@ -408,6 +418,10 @@ function continueToNextBlock() {
     const blockResult = document.getElementById(`blockResult${i}`);
     if (blockResult) blockResult.style.display = 'none';
   }
+  // Дополнительно скрываем любые блоки результатов из альтернативной разметки
+  document.querySelectorAll('.block-result-compact, .block-result').forEach(el => {
+    el.style.display = 'none';
+  });
   
   // Скрываем контейнер с блоками результатов
   document.getElementById('question-container').style.display = 'none';
@@ -427,11 +441,14 @@ function showFinalResults() {
   document.getElementById('questionCard').style.display = 'none';
   document.querySelector('.progress-container').style.display = 'none';
   
-  // Скрываем все компактные блоки результатов
+  // Скрываем все компактные блоки результатов (обе разметки: compact и legacy)
   for (let i = 1; i <= 4; i++) {
     const blockResult = document.getElementById(`blockResult${i}`);
     if (blockResult) blockResult.style.display = 'none';
   }
+  document.querySelectorAll('.block-result-compact, .block-result').forEach(el => {
+    el.style.display = 'none';
+  });
   
   // Показываем финальные результаты на всю страницу
   const finalResults = document.getElementById('finalResults');
