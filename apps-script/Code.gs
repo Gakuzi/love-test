@@ -14,12 +14,17 @@ const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 const HEADERS_RU = [
   'Дата/время',
   'Имя пользователя',
+  'Имя отправителя',
+  'Имя получателя',
   'Анонимный пользователь (UUID)',
   'Кем приглашён (UUID)',
   'Метка (utm/ref)',
+  'ref',
+  'Канал (utm_source)',
   'Страница',
   'Браузер',
   'Язык',
+  'Статус',
   'Общее состояние',
   'Приоритетный блок',
   'Ответы (подробно, JSON)',
@@ -64,8 +69,12 @@ function ensureRuSheetAndHeader_() {
   if (lastCol === 0) {
     sheet.getRange(1, 1, 1, HEADERS_RU.length).setValues([HEADERS_RU]);
   } else {
-    const current = sheet.getRange(1, 1, 1, HEADERS_RU.length).getValues()[0];
-    if (current.join('|') !== HEADERS_RU.join('|')) {
+    const current = sheet.getRange(1, 1, 1, Math.max(lastCol, HEADERS_RU.length)).getValues()[0];
+    var changed = false;
+    for (var i = 0; i < HEADERS_RU.length; i++) {
+      if ((current[i] || '') !== HEADERS_RU[i]) { changed = true; break; }
+    }
+    if (changed || lastCol !== HEADERS_RU.length) {
       sheet.getRange(1, 1, 1, HEADERS_RU.length).setValues([HEADERS_RU]);
     }
   }
@@ -135,21 +144,88 @@ function doPost(e) {
 
   // 1) Лист с русскими заголовками + JSON полями
   const sheetRu = ensureRuSheetAndHeader_();
+  const values = sheetRu.getDataRange().getValues();
+  const header = values[0] || [];
+  const colIndex = function(name){ return (header.indexOf(name) + 1) || -1; };
+
+  const uuidCol = colIndex('Анонимный пользователь (UUID)');
+  const refCol = colIndex('ref');
+  const tagCol = colIndex('Метка (utm/ref)');
+  const statusCol = colIndex('Статус');
+
+  // Ищем существующую строку по UUID и ref.
+  // Логика:
+  // - если пришёл ref='auto-save' → ищем строку UUID+ref='auto-save'
+  // - если пришёл ref='final-results' → 
+  //     сначала ищем UUID+ref='auto-save' (чтобы превратить её в финальную),
+  //     если не нашли — ищем UUID+ref='final-results'
+  // - иначе, если ref пуст → ищем UUID+tag='auto-save' (совместимость)
+  let targetRow = -1;
+  if (values.length > 1 && uuidCol > 0) {
+    const uuid = String(data.userId || '');
+    const incomingRef = String(data.ref || '');
+    const tag = String(data.tag || '');
+
+    function rowMatches(r, expectedRef) {
+      const row = values[r-1];
+      const rowUuid = String(row[uuidCol-1] || '');
+      const rowRef = refCol>0 ? String(row[refCol-1] || '') : '';
+      return rowUuid === uuid && rowRef === expectedRef;
+    }
+
+    if (incomingRef === 'auto-save') {
+      for (var r = 2; r <= values.length; r++) {
+        if (rowMatches(r, 'auto-save')) { targetRow = r; break; }
+      }
+    } else if (incomingRef === 'final-results') {
+      for (var r = 2; r <= values.length; r++) {
+        if (rowMatches(r, 'auto-save')) { targetRow = r; break; }
+      }
+      if (targetRow < 0) {
+        for (var r2 = 2; r2 <= values.length; r2++) {
+          if (rowMatches(r2, 'final-results')) { targetRow = r2; break; }
+        }
+      }
+    } else {
+      // Совместимость со старым форматом без ref
+      if (tagCol > 0) {
+        for (var r3 = 2; r3 <= values.length; r3++) {
+          const row = values[r3-1];
+          const rowUuid = String(row[uuidCol-1] || '');
+          const rowTag = String(row[tagCol-1] || '');
+          if (rowUuid === uuid && rowTag === 'auto-save') { targetRow = r3; break; }
+        }
+      }
+    }
+  }
+
   const rowRu = [
     moscowTimestamp,
     data.userName || '',
+    data.senderName || '',
+    data.recipientName || '',
     data.userId || '',
     data.invitedBy || '',
     data.tag || '',
+    data.ref || '',
+    data.utmSource || '',
     data.url || '',
     data.userAgent || '',
     data.language || '',
+    data.status || '',
     data.overall || '',
     data.priorityBlock || '',
     JSON.stringify(data.answersDetailed || data.answers || {}),
     JSON.stringify(data.blockResultsDetailed || data.blockResults || {})
   ];
-  sheetRu.appendRow(rowRu);
+
+  if (targetRow > 0) {
+    // Обновляем найденную строку (включая переход из auto-save в final-results)
+    sheetRu.getRange(targetRow, 1, 1, rowRu.length).setValues([rowRu]);
+  } else {
+    // Нет подходящей строки — создаём новую
+    sheetRu.appendRow(rowRu);
+  }
 
   // 2) Лист по вопросам (развёрнуто)
   const sheetWide = ensureWideSheetAndHeaders_(data.answersDetailed || []);

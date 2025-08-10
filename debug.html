@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отладка элементов загрузки</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .element { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .found { background-color: #d4edda; }
+        .not-found { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Отладка элементов загрузки</h1>
+    
+    <div id="loadingScreen" class="element">
+        <h3>Экран загрузки (loadingScreen)</h3>
+        <p>ID: loadingScreen</p>
+        <p>Найден: <span id="loadingScreenStatus">Проверяется...</span></p>
+    </div>
+    
+    <div id="loadingProgressBar" class="element">
+        <h3>Прогресс-бар (loadingProgressBar)</h3>
+        <p>ID: loadingProgressBar</p>
+        <p>Найден: <span id="loadingProgressBarStatus">Проверяется...</span></p>
+    </div>
+    
+    <div id="loadingText" class="element">
+        <h3>Текст загрузки (loadingText)</h3>
+        <p>ID: loadingText</p>
+        <p>Найден: <span id="loadingTextStatus">Проверяется...</span></p>
+    </div>
+    
+    <div id="intro" class="element">
+        <h3>Форма с именем (intro)</h3>
+        <p>ID: intro</p>
+        <p>Найден: <span id="introStatus">Проверяется...</span></p>
+    </div>
+    
+    <div id="userName" class="element">
+        <h3>Поле имени (userName)</h3>
+        <p>ID: userName</p>
+        <p>Найден: <span id="userNameStatus">Проверяется...</span></p>
+    </div>
+    
+    <div id="startTestBtn" class="element">
+        <h3>Кнопка старта (startTestBtn)</h3>
+        <p>ID: startTestBtn</p>
+        <p>Найден: <span id="startTestBtnStatus">Проверяется...</span></p>
+    </div>
+    
+    <script>
+        function checkElement(id) {
+            const element = document.getElementById(id);
+            const statusElement = document.getElementById(id + 'Status');
+            
+            if (element) {
+                statusElement.textContent = '✅ НАЙДЕН';
+                statusElement.parentElement.parentElement.classList.add('found');
+                statusElement.parentElement.parentElement.classList.remove('not-found');
+            } else {
+                statusElement.textContent = '❌ НЕ НАЙДЕН';
+                statusElement.parentElement.parentElement.classList.add('not-found');
+                statusElement.parentElement.parentElement.classList.remove('found');
+            }
+        }
+        
+        // Проверяем все элементы
+        window.addEventListener('DOMContentLoaded', () => {
+            const elementsToCheck = [
+                'loadingScreen',
+                'loadingProgressBar', 
+                'loadingText',
+                'intro',
+                'userName',
+                'startTestBtn'
+            ];
+            
+            elementsToCheck.forEach(checkElement);
+        });
+    </script>
+</body>
+</html> 
