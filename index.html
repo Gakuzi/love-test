@@ -104,24 +104,20 @@
   <noscript>Для прохождения теста требуется JavaScript.</noscript>
   <div class="container">
     <!-- Введение -->
-    <div id="intro" class="intro">
-      <h1>Диагностика зрелых отношений</h1>
-      <p><strong>Научно обоснованный тест</strong> на основе исследований ведущих психологов для комплексной оценки качества отношений. Получите подробную аналитику и персональные рекомендации.</p>
-      <div class="intro-stats">
-        <div class="stat">
-          <div class="stat-value">20</div>
-          <div>Вопросов</div>
+    <div id="intro" class="intro-modern">
+      <div class="intro-content">
+        <div class="test-duration">
+          <div class="duration-icon">⏱️</div>
+          <div class="duration-text">Время прохождения: 5-7 минут</div>
         </div>
-        <div class="stat">
-          <div class="stat-value">5-7</div>
-          <div>Минут</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">4</div>
-          <div>Блока</div>
-        </div>
+        
+        <button class="start-button" onclick="startTest()">
+          <div class="button-content">
+            <span class="button-text">Начать диагностику</span>
+            <div class="button-arrow">→</div>
+          </div>
+        </button>
       </div>
-      <button class="btn" onclick="startTest()">Начать тест</button>
     </div>
     
     <!-- Прогресс-бар -->
@@ -207,6 +203,93 @@
         </div>
         
         <button class="btn" id="continueBtn" onclick="continueToNextBlock()">Продолжить ✨</button>
+      </div>
+      
+      <div id="blockResult2" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="2">
+          <div class="block-info">
+            <h3>Блок 2: Надёжность</h3>
+            <div class="score-badge" id="score2">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone2">Зона силы</div>
+          <div class="toggle-icon" id="toggle-2">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-2">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> В ваших отношениях есть взаимная поддержка и надёжность.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Продолжайте держать слово и быть предсказуемыми</li>
+              <li>Развивайте совместное планирование</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(2)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+      </div>
+      
+      <div id="blockResult3" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="3">
+          <div class="block-info">
+            <h3>Блок 3: Связь</h3>
+            <div class="score-badge" id="score3">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone3">Зона силы</div>
+          <div class="toggle-icon" id="toggle-3">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-3">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> У вас есть эмоциональная близость и взаимопонимание.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Поддерживайте ежедневные ритуалы общения</li>
+              <li>Делитесь не только делами, но и чувствами</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(3)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+      </div>
+      
+      <div id="blockResult4" class="block-result-compact" style="display: none;">
+        <div class="result-header" data-block="4">
+          <div class="block-info">
+            <h3>Блок 4: Рост</h3>
+            <div class="score-badge" id="score4">10 баллов</div>
+          </div>
+          <div class="zone-mini zone-success" id="zone4">Зона силы</div>
+          <div class="toggle-icon" id="toggle-4">▼</div>
+        </div>
+        
+        <div class="result-details" id="details-4">
+          <div class="zone-description">
+            <p><strong>Зона силы:</strong> Вы развиваетесь вместе и поддерживаете рост друг друга.</p>
+          </div>
+          
+          <div class="recommendations">
+            <h4>💡 Рекомендации:</h4>
+            <ul>
+              <li>Обсуждайте свои цели и мечты</li>
+              <li>Поддерживайте развитие партнёра</li>
+            </ul>
+          </div>
+          
+          <button class="btn btn-secondary" onclick="reviewBlock(4)">Пересмотреть ответы</button>
+        </div>
+        
+        <button class="btn" onclick="continueToNextBlock()">Завершить тест ✨</button>
       </div>
     </div>
 

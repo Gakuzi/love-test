@@ -1,19 +1,26 @@
-/* Root variables */
+/* Root variables - Pastel palette */
 :root {
-  --primary: #4a6b8a;
-  --success: #418e73;
-  --warning: #d68a4e;
-  --danger: #c45252;
+  --primary: #8ba3c7; /* Soft blue */
+  --success: #7db3a6; /* Sage green */
+  --warning: #e6b894; /* Soft peach */
+  --danger: #db9b9b; /* Rose pink */
   --light: #f8f9fa;
-  --dark: #2b323a;
-  --gray: #6c757d;
-  --light-gray: #adb5bd;
+  --dark: #4a4a4a; /* Softer dark */
+  --gray: #7a7a7a; /* Softer gray */
+  --light-gray: #b8bcc2;
   --radius: 16px;
   --card-radius: 12px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow: 0 4px 20px rgba(0,0,0,0.06);
   --transition: all 0.3s ease;
-  --border: 1px solid #e0e4e8;
+  --border: 1px solid #e5e9ee;
   --progress-height: 8px;
+  
+  /* New intro variables */
+  --intro-bg: #fdfefe;
+  --intro-gradient: linear-gradient(135deg, #f0f5ff 0%, #fff4f0 100%);
+  --button-gradient: linear-gradient(135deg, #a8c4e0 0%, #9bb5d1 100%);
+  --button-hover: linear-gradient(135deg, #96b6d6 0%, #8aa8c7 100%);
+  --duration-bg: #f6f9fc;
 }
 
 * {
@@ -24,7 +31,7 @@
 }
 
 body {
-  background-color: #f5f7fa;
+  background: var(--intro-gradient);
   color: var(--dark);
   line-height: 1.6;
   font-size: 16px;
@@ -100,6 +107,118 @@ body {
 
 .stat { text-align: center; }
 .stat-value { font-weight: 600; color: var(--primary); }
+
+/* Modern Intro Screen */
+.intro-modern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem;
+}
+
+.intro-content {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.test-duration {
+  background: var(--duration-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.duration-icon {
+  font-size: 1.25rem;
+  opacity: 0.8;
+}
+
+.duration-text {
+  font-size: 1rem;
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.start-button {
+  background: var(--button-gradient);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.start-button:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+}
+
+.start-button:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 2rem;
+  gap: 1rem;
+  color: white;
+}
+
+.button-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.button-arrow {
+  font-size: 1.25rem;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.start-button:hover .button-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .intro-modern {
+    padding: 1.5rem;
+    min-height: 40vh;
+  }
+  
+  .test-duration {
+    padding: 0.875rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .duration-text {
+    font-size: 0.95rem;
+  }
+  
+  .button-content {
+    padding: 1.125rem 1.75rem;
+  }
+  
+  .button-text {
+    font-size: 1.05rem;
+  }
+}
 
 /* Improved Question Card */
 .question-card {
