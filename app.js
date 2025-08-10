@@ -52,6 +52,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.colorScheme = 'light';
   } catch (_) {}
 
+  // Свайп-навигация (влево — далее, вправо — назад) на экране вопросов
+  initSwipeNavigation();
+
   // Страховка: кнопка финала всегда переходит к результатам
   document.addEventListener('click', (e) => {
     const finalBtn = e.target.closest('.btn-final');
@@ -70,6 +73,43 @@ window.addEventListener('DOMContentLoaded', () => {
     showQuestion(currentState.currentQuestionIndex);
   }
 });
+
+function initSwipeNavigation() {
+  let touchStartX = null;
+  let touchStartY = null;
+  const threshold = 50; // минимальная горизонтальная дистанция свайпа
+
+  const isQuestionView = () => {
+    const card = document.getElementById('questionCard');
+    return card && card.style.display === 'block';
+  };
+
+  document.addEventListener('touchstart', (e) => {
+    if (!isQuestionView()) return;
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    if (!isQuestionView() || touchStartX === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = Math.abs(t.clientY - touchStartY);
+    // Игнорируем почти вертикальные жесты
+    if (Math.abs(dx) < threshold || dy > 80) {
+      touchStartX = null; touchStartY = null; return;
+    }
+    if (dx < 0) {
+      // влево — следующий вопрос (если ответ выбран, nextQuestion() выполнит переход)
+      nextQuestion();
+    } else {
+      // вправо — назад
+      prevQuestion();
+    }
+    touchStartX = null; touchStartY = null;
+  }, { passive: true });
+}
 
 // State helpers
 function saveState() {
