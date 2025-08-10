@@ -3102,3 +3102,79 @@ kbd {
     padding-left: 1.2rem;
   }
 }
+
+/* ===== Name Input Styles ===== */
+.name-input-section {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.name-input-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.name-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.name-icon {
+  font-size: 1.4rem;
+}
+
+.name-hint {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.name-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  border: 2px solid #e0e6ed;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  transform: translateY(-1px);
+}
+
+.name-input::placeholder {
+  color: #bdc3c7;
+}
+
+.name-input:valid {
+  border-color: #27ae60;
+}
+
+/* Disabled button state */
+.start-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.start-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.start-button:disabled .button-arrow {
+  opacity: 0.5;
+}

@@ -13,6 +13,7 @@ const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 // Заголовки (рус)
 const HEADERS_RU = [
   'Дата/время',
+  'Имя пользователя',
   'Анонимный пользователь (UUID)',
   'Кем приглашён (UUID)',
   'Метка (utm/ref)',
@@ -31,6 +32,24 @@ const HEADERS_RU = [
 
 function parseJsonSafe(str) {
   try { return JSON.parse(str); } catch (e) { return null; }
+}
+
+function getMoscowTime() {
+  // Получаем текущее время в московском часовом поясе
+  const now = new Date();
+  const moscowOffset = 3; // UTC+3 для московского времени
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const moscowTime = new Date(utc + (moscowOffset * 3600000));
+  
+  // Форматируем в строку, которую Google Sheets правильно распознает как дату
+  const year = moscowTime.getFullYear();
+  const month = String(moscowTime.getMonth() + 1).padStart(2, '0');
+  const day = String(moscowTime.getDate()).padStart(2, '0');
+  const hours = String(moscowTime.getHours()).padStart(2, '0');
+  const minutes = String(moscowTime.getMinutes()).padStart(2, '0');
+  const seconds = String(moscowTime.getSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function openSheet_() {
@@ -68,6 +87,7 @@ function ensureWideSheetAndHeaders_(answersDetailed) {
   // Метаданные + вопросы (только выбранные варианты в ячейках)
   const metaHeaders = [
     'Дата/время',
+    'Имя пользователя',
     'Анонимный пользователь (UUID)',
     'Кем приглашён (UUID)',
     'Метка (utm/ref)'
@@ -110,10 +130,14 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Используем московское время
+  const moscowTimestamp = getMoscowTime();
+
   // 1) Лист с русскими заголовками + JSON полями
   const sheetRu = ensureRuSheetAndHeader_();
   const rowRu = [
-    data.timestamp || new Date().toISOString(),
+    moscowTimestamp,
+    data.userName || '',
     data.userId || '',
     data.invitedBy || '',
     data.tag || '',
@@ -132,7 +156,8 @@ function doPost(e) {
 
   // Собираем строку: мета + ответы
   const meta = [
-    data.timestamp || new Date().toISOString(),
+    moscowTimestamp,
+    data.userName || '',
     data.userId || '',
     data.invitedBy || '',
     data.tag || ''

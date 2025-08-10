@@ -38,7 +38,8 @@ const QUESTIONS = [
 let currentState = {
   currentQuestionIndex: 0,
   answers: {},
-  blockResults: { 0: null, 1: null, 2: null, 3: null }
+  blockResults: { 0: null, 1: null, 2: null, 3: null },
+  userName: ''
 };
 
 // Init
@@ -59,6 +60,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Anonymous id (from cursor branch)
   try { userId = getOrCreateUserId(); } catch (_) {}
+
+  // Инициализация поля имени пользователя
+  initUserNameInput();
 
   // Свайп-навигация (влево — далее, вправо — назад) на экране вопросов
   initSwipeNavigation();
@@ -81,6 +85,40 @@ window.addEventListener('DOMContentLoaded', () => {
     showQuestion(currentState.currentQuestionIndex);
   }
 });
+
+// Инициализация поля имени пользователя
+function initUserNameInput() {
+  const userNameInput = document.getElementById('userName');
+  const startButton = document.getElementById('startTestBtn');
+  
+  if (userNameInput && startButton) {
+    // Загружаем сохраненное имя
+    userNameInput.value = currentState.userName || '';
+    updateStartButtonState();
+    
+    // Обработчик ввода
+    userNameInput.addEventListener('input', (e) => {
+      currentState.userName = e.target.value.trim();
+      updateStartButtonState();
+      saveState();
+    });
+    
+    // Обработчик Enter
+    userNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && currentState.userName) {
+        startTest();
+      }
+    });
+  }
+}
+
+// Обновление состояния кнопки старта
+function updateStartButtonState() {
+  const startButton = document.getElementById('startTestBtn');
+  if (startButton) {
+    startButton.disabled = !currentState.userName;
+  }
+}
 
 function initSwipeNavigation() {
   let touchStartX = null;
@@ -146,24 +184,30 @@ function clearState() {
 
 // UI controls
 function startTest() {
-  clearState(); // Очищаем состояние перед началом
-  
-  // Скрываем заставку
-  const loadingScreen = document.getElementById('loadingScreen');
-  if (loadingScreen) {
-    loadingScreen.style.opacity = '0';
-    loadingScreen.style.transition = 'opacity 0.8s ease';
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-    }, 800);
+  // Сохраняем имя пользователя
+  const userNameInput = document.getElementById('userName');
+  if (userNameInput) {
+    currentState.userName = userNameInput.value.trim();
+    saveState();
   }
   
-  // Скрываем все остальные экраны и показываем вопросы
+  // Скрываем введение и показываем первый вопрос
   document.getElementById('intro').style.display = 'none';
-  document.getElementById('question-container').style.display = 'block';
+  document.querySelector('.progress-container').style.display = 'block';
+  
+  // Сбрасываем состояние теста
+  currentState.currentQuestionIndex = 0;
+  currentState.answers = {};
+  currentState.blockResults = { 0: null, 1: null, 2: null, 3: null };
   
   // Показываем первый вопрос
   showQuestion(0);
+  
+  // Обновляем прогресс
+  updateProgress();
+  
+  // Плавно прокручиваем к верху
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showQuestion(index) {
@@ -252,9 +296,8 @@ function showQuestion(index) {
       const input = optionElement.querySelector('input[type="radio"]');
       if (input) input.checked = true;
 
-      currentState.answers[index] = option.value;
-      saveState();
-      updateButtonStates();
+      // Используем функцию selectOptionWithUpdate для автоматического сохранения
+      selectOptionWithUpdate(index, option.value);
 
       // Автопереход к следующему вопросу для touch-friendly UX
       if (AUTO_ADVANCE) {
@@ -552,6 +595,9 @@ function showFinalResults() {
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   
+  // Автоматически сохраняем финальные результаты
+  autoSaveFinalResults();
+  
   // Плавный переход к результатам
   finalResults.style.opacity = '0';
   finalResults.style.transform = 'translateY(30px)';
@@ -563,6 +609,42 @@ function showFinalResults() {
   }, 100);
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Автоматическое сохранение финальных результатов
+async function autoSaveFinalResults() {
+  try {
+    // Рассчитываем общий результат
+    calculateOverallResult();
+    
+    const overall = document.getElementById('overallStatus')?.textContent || '';
+    const priority = document.getElementById('priorityBlock')?.textContent || '';
+    
+    const payload = {
+      token: SHARED_TOKEN || undefined,
+      userName: currentState.userName || '',
+      userId,
+      invitedBy: getInvitedBy() || null,
+      tag: 'final-results',
+      url: location.href,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      answersDetailed: buildDetailedAnswers(),
+      blockResultsDetailed: buildBlockResultsDetailed(),
+      overall,
+      priorityBlock: priority
+    };
+    
+    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify(payload) 
+    });
+    
+    console.log('Финальные результаты автоматически сохранены');
+  } catch (e) { 
+    console.warn('Не удалось автоматически сохранить финальные результаты:', e); 
+  }
 }
 
 function calculateOverallResult() {
@@ -915,9 +997,55 @@ function updateButtonStates() {
 // Обновляем состояние кнопок при выборе ответа
 // Примечание: Логика выбора опции находится в showQuestion() функции
 function selectOptionWithUpdate(questionIndex, value) {
-  // Эта функция зарезервирована для будущего использования
-  console.warn('Функция selectOptionWithUpdate не реализована');
+  // Сохраняем ответ
+  currentState.answers[questionIndex] = value;
+  saveState();
+  
+  // Автоматически сохраняем результаты в Google Sheets
+  autoSaveResults();
+  
+  // Обновляем состояние кнопок
   updateButtonStates();
+}
+
+// Автоматическое сохранение результатов
+async function autoSaveResults() {
+  try {
+    // Рассчитываем результаты блоков, если возможно
+    Object.keys(currentState.answers).forEach(questionIndex => {
+      const blockIndex = Math.floor(questionIndex / 5);
+      if (Object.keys(currentState.answers).filter(idx => Math.floor(idx / 5) === blockIndex).length === 5) {
+        calculateBlockResult(blockIndex);
+      }
+    });
+    
+    // Собираем данные для отправки
+    const payload = {
+      token: SHARED_TOKEN || undefined,
+      userName: currentState.userName || '',
+      userId,
+      invitedBy: getInvitedBy() || null,
+      tag: 'auto-save',
+      url: location.href,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      answersDetailed: buildDetailedAnswers(),
+      blockResultsDetailed: buildBlockResultsDetailed(),
+      overall: '', // Будет рассчитано позже
+      priorityBlock: '' // Будет рассчитано позже
+    };
+    
+    // Отправляем данные
+    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify(payload) 
+    });
+    
+    console.log('Результаты автоматически сохранены');
+  } catch (e) { 
+    console.warn('Не удалось автоматически сохранить результаты:', e); 
+  }
 }
 
 window.continueToBlock = continueToBlock;
@@ -982,8 +1110,20 @@ function buildShareText(opts) {
   const src = options.source || '';
   const linkBase = shareMode === 'invite' ? getShareLinkForInvite() : TEST_URL;
   const link = src ? withUtm(linkBase, src) : linkBase;
+  
   if (shareMode === 'invite') {
-    const lines = ['🧭 Тест «Зрелые отношения»', 'Давай пройдём его вместе — это быстро и полезно.'];
+    // Персонализируем приглашение именем пользователя
+    const userName = currentState.userName || '';
+    let invitationText = '🧭 Тест «Зрелые отношения»';
+    
+    if (userName) {
+      invitationText += `\nПривет! Меня зовут ${userName}.`;
+      invitationText += '\nДавай пройдём этот тест вместе — это быстро и полезно.';
+    } else {
+      invitationText += '\nДавай пройдём его вместе — это быстро и полезно.';
+    }
+    
+    const lines = [invitationText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   }
@@ -996,12 +1136,28 @@ function buildShareText(opts) {
     // Если результаты уже есть, используем их
     const overall = overallElement.textContent || '';
     const priority = priorityElement.textContent || '';
-    const lines = ['📊 Результаты теста «Зрелые отношения»', `• Общее состояние: ${overall}`, `• Приоритетный блок: ${priority}`];
+    const userName = currentState.userName || '';
+    
+    let resultText = '📊 Результаты теста «Зрелые отношения»';
+    if (userName) {
+      resultText += `\nТест прошёл: ${userName}`;
+    }
+    resultText += `\n• Общее состояние: ${overall}`;
+    resultText += `\n• Приоритетный блок: ${priority}`;
+    
+    const lines = [resultText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   } else {
     // Если результатов нет, возвращаем базовый текст
-    const lines = ['🧭 Тест «Зрелые отношения»', 'Пройти тест можно по ссылке ниже'];
+    const userName = currentState.userName || '';
+    let baseText = '🧭 Тест «Зрелые отношения»';
+    if (userName) {
+      baseText += `\nРекомендую ${userName}`;
+    }
+    baseText += '\nПройти тест можно по ссылке ниже';
+    
+    const lines = [baseText];
     if (options.includeLink) lines.push('', link);
     return lines.join('\n');
   }
@@ -1009,7 +1165,14 @@ function buildShareText(opts) {
 
 function shareToTelegram() { const src='telegram'; const linkBase = shareMode==='invite'?getShareLinkForInvite():TEST_URL; const link=withUtm(linkBase, src); const text=buildShareText({ source: src, includeLink: false }); const url=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`; safeOpen(url); }
 function shareToWhatsApp() { const src='whatsapp'; const text=buildShareText({ source: src, includeLink: true }); const url=`https://wa.me/?text=${encodeURIComponent(text)}`; safeOpen(url); }
-function shareToEmail() { const src='email'; const subject='Мои результаты теста «Зрелые отношения»'; const body=buildShareText({ source: src, includeLink: true }); location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; }
+function shareToEmail() { 
+  const src='email'; 
+  const subject = shareMode === 'invite' 
+    ? 'Приглашение пройти тест «Зрелые отношения»' 
+    : 'Мои результаты теста «Зрелые отношения»'; 
+  const body=buildShareText({ source: src, includeLink: true }); 
+  location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; 
+}
 async function copyShareText() { const src='copy'; const text=buildShareText({ source: src, includeLink: true }); try { await navigator.clipboard.writeText(text); alert('Текст результата скопирован'); } catch { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Текст результата скопирован'); } }
 
 async function saveResults(tag) {
@@ -1070,14 +1233,20 @@ function closeInviteModal() {
 
 async function copyInviteLink() {
   const inviteLink = document.getElementById('inviteLink');
+  const inviteText = buildShareText({ source: 'copy', includeLink: true });
+  
   try {
-    await navigator.clipboard.writeText(inviteLink.value);
-    alert('Ссылка скопирована!');
+    await navigator.clipboard.writeText(inviteText);
+    alert('Приглашение скопировано!');
   } catch {
     // Fallback для старых браузеров
-    inviteLink.select();
+    const textArea = document.createElement('textarea');
+    textArea.value = inviteText;
+    document.body.appendChild(textArea);
+    textArea.select();
     document.execCommand('copy');
-    alert('Ссылка скопирована!');
+    textArea.remove();
+    alert('Приглашение скопировано!');
   }
 }
 

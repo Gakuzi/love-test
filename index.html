@@ -122,7 +122,28 @@
           <div class="duration-text">Время прохождения: 5-7 минут</div>
         </div>
         
-        <button class="start-button" onclick="startTest()">
+        <!-- Поле для ввода имени -->
+        <div class="name-input-section">
+          <div class="name-input-container">
+            <label for="userName" class="name-label">
+              <span class="name-icon">👤</span>
+              Как вас зовут?
+            </label>
+            <div class="name-hint">
+              Ваше имя поможет персонализировать результаты и рекомендации теста
+            </div>
+            <input 
+              type="text" 
+              id="userName" 
+              class="name-input" 
+              placeholder="Введите ваше имя"
+              maxlength="50"
+              autocomplete="name"
+            />
+          </div>
+        </div>
+        
+        <button class="start-button" onclick="startTest()" id="startTestBtn" disabled>
           <div class="button-content">
             <span class="button-text">Начать диагностику</span>
             <div class="button-arrow">→</div>
@@ -446,10 +467,7 @@
               <span class="btn-icon">📄</span>
               Скачать PDF отчёт
             </button>
-            <button class="btn btn-outline" onclick="saveResults('final')">
-              <span class="btn-icon">💾</span>
-              Сохранить результаты
-            </button>
+            <!-- Кнопка "Сохранить результаты" убрана - сохранение происходит автоматически -->
             <button class="btn btn-outline" onclick="restartTest()">
               <span class="btn-icon">🔄</span>
               Пройти тест заново
