@@ -1,4 +1,5 @@
 // Configuration
+const AUTO_ADVANCE = true; // Автопереход к следующему вопросу после выбора ответа
 const TEST_URL = window.location.href;
 
 const QUESTIONS = [
@@ -50,6 +51,17 @@ window.addEventListener('DOMContentLoaded', () => {
     document.documentElement.classList.add('force-light');
     document.documentElement.style.colorScheme = 'light';
   } catch (_) {}
+
+  // Страховка: кнопка финала всегда переходит к результатам
+  document.addEventListener('click', (e) => {
+    const finalBtn = e.target.closest('.btn-final');
+    if (finalBtn) {
+      e.preventDefault();
+      // Если ответ на последний вопрос выбран — показываем результаты,
+      // иначе стандартная логика nextQuestion покажет модалку об ошибке
+      nextQuestion();
+    }
+  });
 
   loadState();
   updateProgress();
@@ -193,6 +205,20 @@ function showQuestion(index) {
       currentState.answers[index] = option.value;
       saveState();
       updateButtonStates();
+
+      // Автопереход к следующему вопросу для touch-friendly UX
+      if (AUTO_ADVANCE) {
+        setTimeout(() => {
+          // Защита: не переходить, если мы уже на экране результатов блока
+          const isShowingBlock = ((index + 1) % 5 === 0);
+          if (!isShowingBlock) {
+            nextQuestion();
+          } else {
+            // Если завершили блок — используем стандартную логику nextQuestion
+            nextQuestion();
+          }
+        }, 120);
+      }
     };
 
     optionElement.addEventListener('click', selectThis);

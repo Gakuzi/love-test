@@ -1,12 +1,12 @@
 /* Root variables - Unified Pastel palette */
 :root {
-  /* Main pastel colors matching loading screen */
-  --primary: #b8a9cc; /* Soft lavender */
-  --primary-light: #c4b5d6; /* Lighter lavender */
-  --primary-dark: #a694c4; /* Darker lavender */
-  --success: #9db3a8; /* Soft sage green */
-  --warning: #d4b89e; /* Soft peach */
-  --danger: #d4a6a6; /* Soft rose */
+  /* Контрастная доступная палитра (WCAG‑friendly), сохраняя стиль */
+  --primary: #6b5ca5;       /* насыщенная лаванда */
+  --primary-light: #8a7ec0; /* светлее */
+  --primary-dark: #524788;  /* темнее */
+  --success: #2e7d32;       /* зелёный контрастный */
+  --warning: #d97800;       /* янтарный */
+  --danger:  #c62828;       /* красный контрастный */
   
   /* Background colors */
   --light: #fdfefe;
@@ -37,7 +37,7 @@
   /* Specialized backgrounds */
   --duration-bg: rgba(248, 244, 255, 0.8);
   --progress-bg: rgba(192, 180, 214, 0.2);
-  --progress-fill: linear-gradient(90deg, #b8a9cc 0%, #a694c4 100%);
+  --progress-fill: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
 }
 
 /* Усиление контрастности для базового текста и фона */
@@ -178,6 +178,7 @@ body {
 
 .start-button {
   background: var(--button-gradient);
+  color: #fff;
   border: none;
   border-radius: var(--radius);
   padding: 0;
@@ -535,13 +536,13 @@ body {
 
 /* Стили для финальной кнопки - Компактные размеры */
 .btn-final {
-  background: linear-gradient(135deg, var(--success), #28a745) !important;
+  background: linear-gradient(135deg, var(--success), #2fbf50) !important;
   font-weight: 600 !important;
   font-size: 1rem !important;
   padding: 0.8rem 1.5rem !important;
   animation: finalButtonPulse 2s ease-in-out infinite;
   border-radius: 8px !important;
-  box-shadow: 0 3px 12px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 3px 12px rgba(47, 191, 80, 0.35);
 }
 
 .btn-final:hover {
