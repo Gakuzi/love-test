@@ -57,47 +57,39 @@
 </head>
 
 <body>
-  <!-- Современная заставка в стиле приложения -->
-  <div id="loadingScreen" class="loading-screen">
-    <div class="loading-container">
-      <!-- Логотип/Иконка приложения -->
-      <div class="app-logo">
-        <div class="logo-icon">💡</div>
-      </div>
-      
-      <!-- Название приложения -->
-      <h1 class="app-title">Тест на зрелость отношений</h1>
-      <p class="app-subtitle">Определите качество ваших отношений</p>
-      
-      <!-- Прогресс загрузки -->
-      <div class="loading-progress">
-        <div class="progress-bar" id="loadingProgressBar"></div>
-      </div>
-      <div class="loading-text" id="loadingText">Подготовка вопросов...</div>
-      
-      <!-- Кнопка старта (скрыта до завершения загрузки) -->
-      <button class="start-button hidden" id="startButton" onclick="startTest()">
-        <span class="start-icon">▶</span>
-        <span>Начать тест</span>
-      </button>
-      
-      <!-- Краткая информация о тесте -->
-      <div class="test-info hidden" id="testInfo">
-        <div class="info-stats">
-          <div class="info-stat">
-            <span class="stat-number">20</span>
-            <span class="stat-label">вопросов</span>
+  <!-- Современный экран загрузки -->
+  <div id="loadingScreen" class="modern-loading-screen">
+    <div class="loading-content">
+      <!-- Минимальная информация о тесте -->
+      <div class="test-preview">
+        <div class="test-info">
+          <div class="info-item">
+            <span class="info-number">20</span>
+            <span class="info-text">вопросов</span>
           </div>
-          <div class="info-stat">
-            <span class="stat-number">5-7</span>
-            <span class="stat-label">минут</span>
-          </div>
-          <div class="info-stat">
-            <span class="stat-number">4</span>
-            <span class="stat-label">раздела</span>
+          <div class="info-separator">•</div>
+          <div class="info-item">
+            <span class="info-number">5-7</span>
+            <span class="info-text">минут</span>
           </div>
         </div>
       </div>
+      
+      <!-- Современный прогресс-бар -->
+      <div class="loading-progress-modern">
+        <div class="progress-track">
+          <div class="progress-fill" id="loadingProgressBar"></div>
+        </div>
+        <div class="loading-status" id="loadingText">Подготовка...</div>
+      </div>
+      
+      <!-- Кнопка старта (показывается после загрузки) -->
+      <button class="modern-start-button hidden" id="startButton" onclick="startTest()">
+        <div class="button-inner">
+          <span class="button-label">Начать</span>
+          <div class="button-icon">→</div>
+        </div>
+      </button>
     </div>
   </div>
 
