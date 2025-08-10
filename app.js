@@ -129,13 +129,9 @@ function showQuestion(index) {
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
   document.getElementById('questionText').textContent = question.text;
   
-  // Обновляем текст кнопки На последнем вопросе
-  if (index === 19) {
-    nextBtn.innerHTML = 'Получить результаты →';
-    nextBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
-  } else {
-    nextBtn.innerHTML = 'Далее →';
-    nextBtn.style.background = '';
+  // Кнопка "Далее" больше не используется при авто‑навигации — скрываем её
+  if (nextBtn) {
+    nextBtn.style.display = 'none';
   }
   
   // Обновляем хинт
@@ -231,14 +227,7 @@ function showQuestion(index) {
 
   document.getElementById('prevBtn').style.display = index > 0 ? 'flex' : 'none';
   
-  // Изменяем текст кнопки на последнем вопросе
-  if (index === 19) { // Последний вопрос (индекс 19 = 20-й вопрос)
-    nextBtn.innerHTML = 'Получить результаты →';
-    nextBtn.className = 'nav-btn nav-btn-forward btn-final';
-  } else {
-    nextBtn.innerHTML = 'Далее →';
-    nextBtn.className = 'nav-btn nav-btn-forward';
-  }
+  // Кнопка скрыта всегда, финал будет показан автоматически
 
   currentState.currentQuestionIndex = index;
   updateProgress();
