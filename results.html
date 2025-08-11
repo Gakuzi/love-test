@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Итоги — Диагностика зрелых отношений</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container" style="max-width: 860px; margin: 2rem auto;">
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <header style="margin-bottom: .75rem;">
+          <h2 style="margin:0;">Результаты анализа</h2>
+          <p class="results-subtitle">Сводка состояния и приоритеты для улучшения</p>
+        </header>
+
+        <div class="overall-score overall-textual" id="overallScore">
+          <div class="overall-text">
+            <div class="overall-line">
+              <span class="overall-label">Общее состояние:</span>
+              <span class="overall-value" id="overallStatus">—</span>
+            </div>
+            <div class="overall-line">
+              <span class="overall-label">Итоговый балл:</span>
+              <span class="overall-value" id="overallScoreNumber">—</span>
+            </div>
+            <p class="overall-description" id="overallDescription"></p>
+          </div>
+        </div>
+
+        <div class="results-mini-chart" id="miniChart" style="margin-top:1rem;">
+          <div class="bar"><div class="label">Безопасность</div><div class="track"><div class="fill" id="barFill1"></div></div><div class="val" id="barVal1">0/25</div></div>
+          <div class="bar"><div class="label">Надёжность</div><div class="track"><div class="fill" id="barFill2"></div></div><div class="val" id="barVal2">0/25</div></div>
+          <div class="bar"><div class="label">Связь</div><div class="track"><div class="fill" id="barFill3"></div></div><div class="val" id="barVal3">0/25</div></div>
+          <div class="bar"><div class="label">Рост</div><div class="track"><div class="fill" id="barFill4"></div></div><div class="val" id="barVal4">0/25</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Детальный анализ по сферам</h3>
+        <div class="blocks-grid-results" id="blocksGrid"></div>
+      </div>
+    </section>
+
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Приоритетная сфера</h3>
+        <div class="priority-info">
+          <h4 id="priorityBlock">—</h4>
+          <p id="priorityDescription"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Персональные рекомендации</h3>
+        <div class="recommendations-grid" id="recommendations"></div>
+      </div>
+    </section>
+
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Пошаговый гайд</h3>
+        <ul class="steps-list">
+          <li><label><input type="checkbox" data-step="1"> Спокойный разговор на 10 минут.</label></li>
+          <li><label><input type="checkbox" data-step="2"> Маленькая договорённость на неделю.</label></li>
+          <li><label><input type="checkbox" data-step="3"> План на месяц из 2–3 целей.</label></li>
+        </ul>
+        <div class="steps-actions">
+          <button class="btn btn-secondary" onclick="copySummaryText()">Скопировать краткий итог</button>
+          <button class="btn btn-secondary" onclick="copyFullText()">Скопировать полный текст</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -2528,6 +2528,9 @@ kbd {
   text-align: center;
 }
 
+/* Удаляем любые иконки приоритета по требованию дизайна */
+.priority-icon { display: none !important; }
+
 .priority-header h3 { font-size: 1.45rem; font-weight: 600; color: var(--primary); margin-bottom: 0.6rem; }
 
 .priority-header p {

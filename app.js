@@ -610,12 +610,48 @@ function updateCompactBlocks() {
 }
 
 function showBlockResult(blockNumber) {
-  document.getElementById('questionCard').style.display = 'none';
-  for (let i = 1; i <= 4; i++) {
-    const node = document.getElementById(`blockResult${i}`);
-    if (node) node.style.display = 'none';
+  // Рендерим единый шаблон промежуточной карточки в стиле вопроса
+  const container = document.getElementById('intermediateCard');
+  if (!container) {
+    // Фоллбек на старую схему
+    document.getElementById('questionCard').style.display = 'none';
+    for (let i = 1; i <= 4; i++) {
+      const node = document.getElementById(`blockResult${i}`);
+      if (node) node.style.display = 'none';
+    }
+    const node = document.getElementById(`blockResult${blockNumber}`);
+    if (node) node.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
   }
-  document.getElementById(`blockResult${blockNumber}`).style.display = 'block';
+  document.getElementById('questionCard').style.display = 'none';
+  const idx = blockNumber - 1;
+  const res = currentState.blockResults[idx];
+  const title = ['Безопасность','Надёжность','Связь','Рост'][idx] || `Блок ${blockNumber}`;
+  const zoneText = res?.zone==='success'?'Зона силы':res?.zone==='warning'?'Зона роста':'Зона тревоги';
+  const recos = getRecommendationsFor(idx, res?.zone||'') || [];
+  const items = recos.slice(0,3).map(r=>`<li>${(r&&r.text)||r?.title||'Рекомендация'}</li>`).join('');
+  container.innerHTML = `
+    <header style="margin-bottom:.5rem;">
+      <h3 style="margin:0;">${title}</h3>
+    </header>
+    <div class="overall-text">
+      <div class="overall-line"><span class="overall-label">Баллы:</span><span class="overall-value">${res?.sum||0}/15</span></div>
+      <div class="overall-line"><span class="overall-label">Статус:</span><span class="overall-value">${zoneText}</span></div>
+    </div>
+    <div class="recommendation-item" style="margin-top:.75rem;">
+      <div class="recommendation-content">
+        <h4 style="margin:0 0 .25rem 0;">Рекомендации</h4>
+        <ul class="recos-list" style="margin:.25rem 0 0 1rem;">${items}</ul>
+      </div>
+    </div>
+    <div class="result-actions" style="margin-top:.75rem; display:flex; gap:.5rem;">
+      <button class="btn btn-secondary" onclick="reviewBlock(${blockNumber})">Пересмотреть ответы</button>
+      <button class="btn" onclick="continueToNextBlock()">Продолжить</button>
+    </div>
+  `;
+  document.getElementById('question-container').style.display = 'none';
+  window.location.hash = '#intermediate';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -793,14 +829,71 @@ function showFinalResults() {
   const resultsContainer = document.getElementById('results');
   if (resultsContainer) resultsContainer.style.display = 'block';
 
-  // Показываем финальные результаты на всю страницу
+  // Показываем финальные результаты и рендерим новую чистую разметку
   const finalResults = document.getElementById('finalResults');
   finalResults.style.display = 'block';
   finalResults.style.position = 'relative';
   finalResults.style.zIndex = '10';
-  finalResults.style.background = '#f8f9fa';
-  finalResults.style.minHeight = '100vh';
-  finalResults.style.paddingTop = '2rem';
+  finalResults.style.background = 'transparent';
+  finalResults.style.minHeight = 'auto';
+  finalResults.style.paddingTop = '0';
+  finalResults.innerHTML = `
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <header style="margin-bottom: .75rem;">
+          <h2 style="margin:0;">Результаты анализа</h2>
+          <p class="results-subtitle">Сводка состояния и приоритеты для улучшения</p>
+        </header>
+        <div class="overall-score overall-textual" id="overallScore">
+          <div class="overall-text">
+            <div class="overall-line"><span class="overall-label">Общее состояние:</span><span class="overall-value" id="overallStatus"></span></div>
+            <div class="overall-line"><span class="overall-label">Итоговый балл:</span><span class="overall-value" id="overallScoreNumber"></span></div>
+            <p class="overall-description" id="overallDescription"></p>
+          </div>
+        </div>
+        <div class="results-mini-chart" id="miniChart">
+          <div class="bar"><div class="label">Безопасность</div><div class="track"><div class="fill" id="barFill1"></div></div><div class="val" id="barVal1">0/25</div></div>
+          <div class="bar"><div class="label">Надёжность</div><div class="track"><div class="fill" id="barFill2"></div></div><div class="val" id="barVal2">0/25</div></div>
+          <div class="bar"><div class="label">Связь</div><div class="track"><div class="fill" id="barFill3"></div></div><div class="val" id="barVal3">0/25</div></div>
+          <div class="bar"><div class="label">Рост</div><div class="track"><div class="fill" id="barFill4"></div></div><div class="val" id="barVal4">0/25</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Детальный анализ по сферам</h3>
+        <div class="blocks-grid-results" id="blocksGrid"></div>
+      </div>
+    </section>
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Приоритетная сфера</h3>
+        <div class="priority-info">
+          <h4 id="priorityBlock"></h4>
+          <p id="priorityDescription"></p>
+        </div>
+      </div>
+    </section>
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Персональные рекомендации</h3>
+        <div class="recommendations-grid" id="recommendations"></div>
+      </div>
+    </section>
+    <section class="question-card" style="display:block;">
+      <div class="question-card-content">
+        <h3 style="margin-top:0;">Пошаговый гайд</h3>
+        <ul class="steps-list">
+          <li><label><input type="checkbox" data-step="1" onchange="toggleStepDone(1)"> Спокойный разговор на 10 минут.</label></li>
+          <li><label><input type="checkbox" data-step="2" onchange="toggleStepDone(2)"> Маленькая договорённость на неделю.</label></li>
+          <li><label><input type="checkbox" data-step="3" onchange="toggleStepDone(3)"> План на месяц из 2–3 целей.</label></li>
+        </ul>
+        <div class="steps-actions">
+          <button class="btn btn-secondary" onclick="copySummaryText()">Скопировать краткий итог</button>
+          <button class="btn btn-secondary" onclick="copyFullText()">Скопировать полный текст</button>
+        </div>
+      </div>
+    </section>`;
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   try { renderFinalRecommendations(); } catch (e) { console.warn('renderFinalRecommendations failed:', e); }
@@ -812,15 +905,9 @@ function showFinalResults() {
   // Лог: завершение теста (показ итогов)
   try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'finish_test' }); } catch (_) {}
   
-  // Плавный переход к результатам
+  // Плавный переход
   finalResults.style.opacity = '0';
-  finalResults.style.transform = 'translateY(30px)';
-  
-  setTimeout(() => {
-    finalResults.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-    finalResults.style.opacity = '1';
-    finalResults.style.transform = 'translateY(0)';
-  }, 100);
+  setTimeout(() => { finalResults.style.transition = 'opacity .5s ease'; finalResults.style.opacity = '1'; }, 0);
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
