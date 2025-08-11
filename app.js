@@ -118,6 +118,7 @@ function initUserNameInput() {
     console.log('Имя обновлено:', currentState.userName);
     updateStartButtonState();
     saveState();
+    updatePersonalizationUI();
   });
   
   // Обработчик Enter
@@ -254,10 +255,10 @@ function showQuestion(index) {
   }
 
   card.style.display = 'block';
-  const userName = (currentState.userName || '').trim();
-  document.getElementById('blockTag').textContent = question.block + (userName ? ` • ${userName}` : '');
+  document.getElementById('blockTag').textContent = question.block;
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
-  document.getElementById('questionText').textContent = userName ? question.text.replaceAll(' партнёр', ` ${userName}`) : question.text;
+  document.getElementById('questionText').textContent = question.text;
+  updatePersonalizationUI();
   
   // Кнопка "Далее" больше не используется при авто‑навигации — скрываем её
   if (nextBtn) {
@@ -790,6 +791,21 @@ window.startTest = startTest;
 window.showHelp = showHelp;
 window.hideHelp = hideHelp;
 
+function updatePersonalizationUI() {
+  try {
+    const name = (currentState.userName || '').trim();
+    const el = document.getElementById('personalGreeting');
+    if (!el) return;
+    if (name) {
+      el.style.display = 'block';
+      el.textContent = `Хорошо, ${name}, давайте продолжим.`;
+    } else {
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+  } catch {}
+}
+
 window.toggleHint = toggleHint;
 window.nextQuestion = nextQuestion;
 window.prevQuestion = prevQuestion;
@@ -1018,6 +1034,7 @@ function showStartButton() {
         if (intro) {
             intro.style.display = 'block';
             console.log('Форма с именем показана');
+            updatePersonalizationUI();
         } else {
             console.error('Форма с именем не найдена!');
         }
