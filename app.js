@@ -554,6 +554,9 @@ function calculateBlockResult(blockIndex) {
     zone: sum >= 11 ? 'success' : sum >= 6 ? 'warning' : 'danger'
   };
 
+  // Обновляем карточку промежуточного результата
+  try { renderBlockSummary(blockIndex); } catch (e) { console.warn('renderBlockSummary failed', e); }
+
   // Безопасное обновление старого виджета круглого счётчика, если он присутствует в шаблоне
   const scoreElement = document.getElementById(`block${blockIndex + 1}Score`);
   if (scoreElement) {
@@ -576,6 +579,45 @@ function calculateBlockResult(blockIndex) {
         warning: 'Зона риска',
         danger: 'Зона тревоги'
       }[currentState.blockResults[blockIndex].zone];
+    }
+  }
+}
+
+function getRecommendationsFor(blockIndex, zone) {
+  try {
+    const raw = localStorage.getItem('testRecommendations');
+    if (!raw) return [];
+    const map = JSON.parse(raw);
+    const blockMap = map[String(blockIndex)] || map[blockIndex] || {};
+    const items = blockMap[zone] || [];
+    return Array.isArray(items) ? items : [];
+  } catch { return []; }
+}
+
+function renderBlockSummary(blockIndex) {
+  const humanIndex = blockIndex + 1;
+  const res = currentState.blockResults[blockIndex];
+  if (!res) return;
+  const scoreEl = document.getElementById(`score${humanIndex}`);
+  const zoneEl = document.getElementById(`zone${humanIndex}`);
+  if (scoreEl) scoreEl.textContent = `${res.sum} баллов`;
+  if (zoneEl) {
+    zoneEl.textContent = res.zone === 'success' ? 'Зона силы' : res.zone === 'warning' ? 'Зона роста' : 'Зона тревоги';
+    zoneEl.className = `zone-mini zone-${res.zone}`;
+  }
+  const details = document.getElementById(`details-${humanIndex}`);
+  if (details) {
+    const recos = getRecommendationsFor(blockIndex, res.zone);
+    const wrapper = details.querySelector('.recommendations');
+    if (wrapper) {
+      const ul = wrapper.querySelector('ul') || document.createElement('ul');
+      ul.innerHTML = '';
+      recos.slice(0, 3).forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
+        ul.appendChild(li);
+      });
+      if (!wrapper.contains(ul)) wrapper.appendChild(ul);
     }
   }
 }
