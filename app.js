@@ -136,6 +136,8 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     } catch (e) { console.warn('apply config failed', e); }
   }).finally(() => initializeApp());
+  // Первичный лог просмотра заставки/интро
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'intro', event: 'view_intro' }); } catch (_) {}
   
   // Свайп-навигация (влево — далее, вправо — назад) на экране вопросов
   initSwipeNavigation();
@@ -342,6 +344,8 @@ function showQuestion(index) {
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
   document.getElementById('questionText').textContent = question.text;
   updatePersonalizationUI();
+  // Лог: показ вопроса
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: `q-${index+1}`, event: 'view_question', eventPayload: { index, block: question.block } }); } catch (_) {}
   
   // Кнопка "Далее" больше не используется при авто‑навигации — скрываем её
   if (nextBtn) {
@@ -522,6 +526,8 @@ function prevQuestion() {
     currentState.currentQuestionIndex = currentState.currentQuestionIndex - 1;
     saveState();
     showQuestion(currentState.currentQuestionIndex);
+    // Лог: возврат к вопросу
+    try { safePostToServer({ token: SHARED_TOKEN, userId, ref: `q-${currentState.currentQuestionIndex+1}`, event: 'return_question', eventPayload: { index: currentState.currentQuestionIndex } }); } catch (_) {}
     
     // Обновляем компактные блоки результатов
     updateCompactBlocks();
@@ -718,6 +724,8 @@ function renderFinalRecommendations() {
 function continueToBlock(blockNumber) {
   const questionIndex = (blockNumber - 1) * 5;
   showQuestion(questionIndex);
+  // Лог: просмотр блока
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: `block-${blockNumber}`, event: 'view_block', eventPayload: { blockNumber } }); } catch (_) {}
 }
 
 function continueToNextBlock() {
@@ -1608,8 +1616,8 @@ function renderPlanPreview() {
       <p>Основан на результатах вашего теста</p>
     </div>
     <div class="plan-timeline">
-      ${plan.map(action => `
-        <div class="plan-action">
+      ${plan.map((action, idx) => `
+        <div class="plan-action" data-idx="${idx}">
           <div class="action-timeframe">${action.timeframe}</div>
           <div class="action-content">
             <h5>${action.title}</h5>
@@ -1619,6 +1627,16 @@ function renderPlanPreview() {
       `).join('')}
     </div>
   `;
+  // Логирование кликов по элементам плана
+  try {
+    document.querySelectorAll('.plan-action').forEach((el) => {
+      el.addEventListener('click', () => {
+        const idx = Number(el.getAttribute('data-idx') || '0');
+        const action = plan[idx];
+        try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'click_plan_action', eventPayload: { index: idx, title: action?.title || '', timeframe: action?.timeframe || '' } }); } catch (_) {}
+      });
+    });
+  } catch (_) {}
 }
 
 function getPlanActions(priorityBlock) {
