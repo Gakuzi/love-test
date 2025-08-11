@@ -12,6 +12,7 @@ const SHEET_NAME_QUESTIONS = 'Вопросы';
 const SHEET_NAME_RECO = 'Рекомендации';
 const SHEET_NAME_FORMULAS = 'Формулы';
 const SHEET_NAME_README = 'Инструкция';
+const SHEET_NAME_PLAN = 'План';
 
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 
@@ -200,6 +201,32 @@ function getRecommendationsFromSheet_() {
   return map;
 }
 
+function getPlanFromSheet_() {
+  const ss = openSheet_();
+  const sh = ss.getSheetByName(SHEET_NAME_PLAN);
+  if (!sh) return {};
+  const values = sh.getDataRange().getValues();
+  if (!values || values.length < 2) return {};
+  const header = values[0];
+  const idx = function(name){ return header.indexOf(name); };
+  const colBlockIndex = idx('blockIndex');
+  const colTimeframe = idx('timeframe');
+  const colTitle = idx('title');
+  const colDescription = idx('description');
+  if ([colBlockIndex,colTimeframe,colTitle,colDescription].some(function(v){return v<0;})) return {};
+  var map = {};
+  for (var r=1; r<values.length; r++) {
+    var row = values[r];
+    var bi = String(row[colBlockIndex]||'0');
+    var timeframe = String(row[colTimeframe]||'');
+    var title = String(row[colTitle]||'');
+    var description = String(row[colDescription]||'');
+    if (!map[bi]) map[bi] = [];
+    map[bi].push({ timeframe: timeframe, title: title, description: description });
+  }
+  return map;
+}
+
 // ============================
 // HTTP обработчики
 // ============================
@@ -343,7 +370,8 @@ function doGet(e) {
     // Читаем конфигурацию из листа «Вопросы»
     const cfg = getConfigFromSheet_() || { version: 1, questions: [] };
     const reco = getRecommendationsFromSheet_();
-    return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg, recommendations: reco }))
+    const plan = getPlanFromSheet_();
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg, recommendations: reco, plan: plan }))
       .setMimeType(ContentService.MimeType.JSON);
   }
   if (action === 'init') {
@@ -472,12 +500,27 @@ function initSheets_() {
   const qHeaders = ['id','block','blockIndex','text','hint','options'];
   const rHeaders = ['blockIndex','zone','title','text'];
   const fHeaders = ['param','value','comment'];
+  const pHeaders = ['blockIndex','timeframe','title','description'];
   const q = ensureSheetWithHeaders_(SHEET_NAME_QUESTIONS, qHeaders);
   const r = ensureSheetWithHeaders_(SHEET_NAME_RECO, rHeaders);
   const f = ensureSheetWithHeaders_(SHEET_NAME_FORMULAS, fHeaders);
+  const p = ensureSheetWithHeaders_(SHEET_NAME_PLAN, pHeaders);
   seedQuestionsWithDefaults_(q);
   seedRecommendationsWithDefaults_(r);
   seedFormulasWithDefaults_(f);
+  seedPlanWithDefaults_(p);
   ensureReadmeSheet_();
   return { ok: true };
+}
+
+function seedPlanWithDefaults_(sh) {
+  const frames = ['На этой неделе','В течение месяца','Долгосрочно'];
+  const rows = [];
+  for (var bi=0; bi<4; bi++) {
+    frames.forEach(function(tf){
+      rows.push([bi, tf, 'Действие', 'Опишите конкретный шаг для улучшения отношений в этом блоке']);
+    });
+  }
+  if (sh.getLastRow() > 1) return;
+  sh.getRange(2,1,rows.length,4).setValues(rows);
 }

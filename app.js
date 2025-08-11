@@ -11,6 +11,7 @@ async function fetchConfig() {
     if (data && data.ok) {
       if (data.config) localStorage.setItem('testConfig', JSON.stringify(data.config));
       if (data.recommendations) localStorage.setItem('testRecommendations', JSON.stringify(data.recommendations));
+      if (data.plan) localStorage.setItem('testPlan', JSON.stringify(data.plan));
       return data.config || null;
     }
   } catch (e) { console.warn('fetchConfig error', e); }
@@ -1552,6 +1553,19 @@ function renderPlanPreview() {
   const priority = document.getElementById('priorityBlock')?.textContent || 'Партнёрство';
   
   const plan = getPlanActions(priority);
+  // Подменяем план из таблицы, если есть
+  try {
+    const raw = localStorage.getItem('testPlan');
+    if (raw) {
+      const map = JSON.parse(raw);
+      const bi = ['Безопасность','Надёжность','Связь','Рост'].indexOf(priority);
+      if (map && map[String(bi)] && Array.isArray(map[String(bi)]) && map[String(bi)].length) {
+        // Преобразуем в формат getPlanActions
+        const converted = map[String(bi)].map(x => ({ timeframe: x.timeframe, title: x.title, description: x.description }));
+        if (converted.length) plan.splice(0, plan.length, ...converted);
+      }
+    }
+  } catch (_) {}
   planPreview.innerHTML = `
     <div class="plan-header">
       <h4>📋 Персональный план действий</h4>
