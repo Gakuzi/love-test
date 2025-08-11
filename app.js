@@ -68,7 +68,7 @@ async function seedSheets() {
 }
 // External integrations (from cursor branch)
 const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbztWCE72POOwC8pPx595xgS8aPVwvaU3btijvNFvwHE9mcccYMo3P6NfTXc-qaAcptWGA/exec';
-const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
+const SHARED_TOKEN = 'AKfycbztWCE72POOwC8pPx595xgS8aPVwvaU3btijvNFvwHE9mcccYMo3P6NfTXc-qaAcptWGA';
 
 
 

@@ -2,7 +2,7 @@
 // Конфигурация
 // ============================
 
-const SHEET_ID = '12PUk32kI3NmYPrjMh3BOc2RWsB070lQcfvsy0PCvNOs';
+const SHEET_ID = '1pDULtu_DvwWwnlv3BDGwFvmW9RmiOZ8kOsVMKtAK_XI';
 
 // Старый лист (англ. заголовки) оставляем на месте, новый — с русскими заголовками
 const SHEET_NAME_RU = 'Результаты';
@@ -14,7 +14,7 @@ const SHEET_NAME_FORMULAS = 'Формулы';
 const SHEET_NAME_README = 'Инструкция';
 const SHEET_NAME_PLAN = 'План';
 
-const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
+const SHARED_TOKEN = 'AKfycbztWCE72POOwC8pPx595xgS8aPVwvaU3btijvNFvwHE9mcccYMo3P6NfTXc-qaAcptWGA';
 
 // Заголовки (рус)
 const HEADERS_RU = [
