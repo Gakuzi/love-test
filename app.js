@@ -805,6 +805,7 @@ function showFinalResults() {
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   try { renderFinalRecommendations(); } catch (e) { console.warn('renderFinalRecommendations failed:', e); }
   try { restoreStepsState(); } catch (e) { console.warn('restoreStepsState failed:', e); }
+  try { attachBlockToggles(); } catch (e) { console.warn('attachBlockToggles failed:', e); }
   
   // Автоматически сохраняем финальные результаты
   autoSaveFinalResults();
@@ -822,6 +823,16 @@ function showFinalResults() {
   }, 100);
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function attachBlockToggles(){
+  const grid = document.getElementById('blocksGrid');
+  if(!grid) return;
+  grid.querySelectorAll('.block-summary').forEach((el)=>{
+    if (el.dataset.bound === '1') return;
+    el.dataset.bound = '1';
+    el.addEventListener('click',()=> el.classList.toggle('expanded'));
+  });
 }
 
 // Автоматическое сохранение финальных результатов

@@ -2376,13 +2376,7 @@ kbd {
   padding: 0 1.5rem;
 }
 
-.results-title h2 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 0.8rem;
-  line-height: 1.2;
-}
+.results-title h2 { font-size: 1.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.6rem; line-height: 1.25; }
 
 .results-subtitle {
   font-size: 1.1rem;
@@ -2451,13 +2445,7 @@ kbd {
   margin-bottom: 2rem;
 }
 
-.detailed-results h3 {
-  text-align: center;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 2rem;
-}
+.detailed-results h3 { text-align: center; font-size: 1.35rem; font-weight: 600; color: var(--primary); margin-bottom: 1.25rem; }
 
 .blocks-grid-results {
   display: grid;
@@ -2554,12 +2542,7 @@ kbd {
   text-align: center;
 }
 
-.priority-header h3 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 0.8rem;
-}
+.priority-header h3 { font-size: 1.45rem; font-weight: 600; color: var(--primary); margin-bottom: 0.6rem; }
 
 .priority-header p {
   color: var(--gray);
@@ -2606,13 +2589,7 @@ kbd {
   margin-bottom: 3rem;
 }
 
-.recommendations h3 {
-  text-align: center;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 2rem;
-}
+.recommendations h3 { text-align: center; font-size: 1.45rem; font-weight: 600; color: var(--primary); margin-bottom: 1.25rem; }
 
 .recommendations-grid {
   display: grid;
@@ -2648,12 +2625,7 @@ kbd {
   text-align: center;
 }
 
-.results-actions h3 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 2rem;
-}
+.results-actions h3 { font-size: 1.45rem; font-weight: 600; color: var(--primary); margin-bottom: 1.25rem; }
 
 .primary-actions {
   display: flex;
