@@ -668,7 +668,7 @@ body {
 /* Compact Block Results */
 .block-result-compact {
   background: var(--card-bg-solid);
-  border: var(--border);
+  border: 1.5px solid rgba(82, 71, 136, 0.18);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   margin-bottom: 1rem;
@@ -692,12 +692,13 @@ body {
   justify-content: space-between;
   align-items: center;
   transition: var(--transition);
-  background: var(--card-bg);
+  background: linear-gradient(135deg, rgba(248, 244, 255, 0.9) 0%, rgba(255, 240, 245, 0.9) 100%);
+  border-bottom: 1px solid rgba(82, 71, 136, 0.12);
 }
 
 .result-header:hover {
-  background: var(--card-bg);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(248, 244, 255, 1) 0%, rgba(240, 248, 255, 1) 100%);
+  box-shadow: var(--shadow-hover);
 }
 
 .result-title h3 {
@@ -714,12 +715,13 @@ body {
 }
 
 .score-badge {
-  background: var(--light-gray);
+  background: var(--primary);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
+  box-shadow: 0 4px 14px rgba(105, 90, 166, 0.25);
 }
 
 .score-badge.score-warning {
@@ -771,10 +773,11 @@ body {
   overflow: hidden;
   transition: max-height 0.3s ease;
   background: var(--card-bg);
+  border-top: 1px solid rgba(82, 71, 136, 0.1);
 }
 
 .result-details.expanded {
-  max-height: 300px;
+  max-height: 400px;
 }
 
 .result-details .result-description {
@@ -865,6 +868,8 @@ body {
   position: relative;
   width: 100%;
   animation: resultsAppear 1s ease-out;
+  border: 1.5px solid rgba(82, 71, 136, 0.18);
+  border-radius: var(--radius);
 }
 
 @keyframes resultsAppear {
@@ -881,6 +886,26 @@ body {
 .final-results::before { display: none; }
 
 .final-results h2 { color: var(--primary); text-shadow: none; }
+
+/* Mini chart for results */
+.results-mini-chart { display: grid; gap: 0.6rem; margin: 1rem 0 1.5rem 0; }
+.results-mini-chart .bar { display: grid; grid-template-columns: 110px 1fr 52px; align-items: center; gap: 0.6rem; }
+.results-mini-chart .label { color: var(--dark); font-size: 0.92rem; }
+.results-mini-chart .track { height: 10px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
+.results-mini-chart .fill { height: 100%; width: 0%; background: var(--progress-fill); transition: width .6s ease; }
+.results-mini-chart .val { color: var(--gray); font-weight: 600; font-size: 0.9rem; text-align: right; }
+
+/* Block summaries collapsible descriptions */
+.blocks-grid-results .block-summary { border: 1px solid rgba(82,71,136,.12); border-radius: var(--card-radius); background: var(--card-bg-solid); box-shadow: var(--shadow); padding: 1rem; transition: var(--transition); }
+.blocks-grid-results .block-summary:hover { box-shadow: var(--shadow-hover); }
+.blocks-grid-results .block-summary .block-description { display: none; color: var(--gray); margin-top: .5rem; }
+.blocks-grid-results .block-summary.expanded .block-description { display: block; }
+
+/* Buttons: stronger gradient borders on hover */
+.btn { border: 1.5px solid rgba(82,71,136,.2); }
+.btn:hover { border-color: var(--primary-dark); }
+.btn-secondary { border: 1.5px solid rgba(82,71,136,.2); }
+.btn-secondary:hover { border-color: var(--primary); }
 
 .results-overview { margin-bottom: 1.8rem; }
 .results-chart { height: 200px; margin-bottom: 1.5rem; }

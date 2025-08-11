@@ -908,6 +908,27 @@ function calculateOverallResult() {
   const priorityBlockEl = document.getElementById('priorityBlock');
   if (priorityBlockEl && lowestBlock.index !== null) priorityBlockEl.textContent = blockNames[lowestBlock.index];
 
+  // Обновляем мини‑график
+  try {
+    [1,2,3,4].forEach((n, i) => {
+      const block = currentState.blockResults[i] || { sum: 0 };
+      const fill = document.getElementById(`barFill${n}`);
+      const val = document.getElementById(`barVal${n}`);
+      if (fill) fill.style.width = `${Math.max(0, Math.min(100, (block.sum/25)*100))}%`;
+      if (val) val.textContent = `${block.sum||0}/25`;
+    });
+  } catch (_) {}
+
+  // Делаем блоки в сетке сворачиваемыми
+  try {
+    const grid = document.getElementById('blocksGrid');
+    if (grid) {
+      grid.querySelectorAll('.block-summary').forEach((el) => {
+        el.addEventListener('click', () => el.classList.toggle('expanded'));
+      });
+    }
+  } catch (_) {}
+
   // PDF (если есть скрытый отчёт)
   const pdfDate = document.getElementById('pdfDate');
   if (pdfDate) pdfDate.textContent = `Дата: ${new Date().toLocaleDateString('ru-RU')}`;

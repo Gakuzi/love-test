@@ -350,12 +350,36 @@
               </div>
             </div>
           </div>
+
+          <!-- Мини-график по блокам -->
+          <div class="results-mini-chart" id="miniChart">
+            <div class="bar">
+              <div class="label">Безопасность</div>
+              <div class="track"><div class="fill" id="barFill1"></div></div>
+              <div class="val" id="barVal1">0/25</div>
+            </div>
+            <div class="bar">
+              <div class="label">Надёжность</div>
+              <div class="track"><div class="fill" id="barFill2"></div></div>
+              <div class="val" id="barVal2">0/25</div>
+            </div>
+            <div class="bar">
+              <div class="label">Связь</div>
+              <div class="track"><div class="fill" id="barFill3"></div></div>
+              <div class="val" id="barVal3">0/25</div>
+            </div>
+            <div class="bar">
+              <div class="label">Рост</div>
+              <div class="track"><div class="fill" id="barFill4"></div></div>
+              <div class="val" id="barVal4">0/25</div>
+            </div>
+          </div>
         </div>
 
         <!-- Детальные результаты по блокам -->
         <div class="detailed-results">
           <h3>📊 Детальный анализ по сферам</h3>
-          <div class="blocks-grid-results">
+            <div class="blocks-grid-results" id="blocksGrid">
             <div class="block-summary" data-block="1">
               <div class="block-header">
                 <div class="block-icon">🛡️</div>
@@ -519,7 +543,7 @@
               <div class="share-grid">
                 <button class="share-item" onclick="shareToTelegram()">
                   <div class="share-icon">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Telegram_2019_Logo.svg" alt="Telegram" width="24" height="24" />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" width="24" height="24" />
                   </div>
                   <span>Telegram</span>
                 </button>
