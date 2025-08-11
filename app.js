@@ -1442,7 +1442,9 @@ function buildShareText(opts) {
 }
 
 function shareToTelegram() { const src='telegram'; const linkBase = shareMode==='invite'?getShareLinkForInvite():TEST_URL; const link=withUtm(linkBase, src); const text=buildShareText({ source: src, includeLink: false }); const url=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`; safeOpen(url); }
+window.shareToTelegram = function() { try { shareToTelegram(); fetch(GOOGLE_SHEETS_WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:SHARED_TOKEN,userId,ref:'final-results',event:'share',eventPayload:{channel:'telegram'}})});} catch(_){} };
 function shareToWhatsApp() { const src='whatsapp'; const text=buildShareText({ source: src, includeLink: true }); const url=`https://wa.me/?text=${encodeURIComponent(text)}`; safeOpen(url); }
+window.shareToWhatsApp = function() { try { shareToWhatsApp(); fetch(GOOGLE_SHEETS_WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:SHARED_TOKEN,userId,ref:'final-results',event:'share',eventPayload:{channel:'whatsapp'}})});} catch(_){} };
 function shareToEmail() { 
   const src='email'; 
   const subject = shareMode === 'invite' 
@@ -1451,6 +1453,7 @@ function shareToEmail() {
   const body=buildShareText({ source: src, includeLink: true }); 
   location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; 
 }
+window.shareToEmail = function() { try { shareToEmail(); fetch(GOOGLE_SHEETS_WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:SHARED_TOKEN,userId,ref:'final-results',event:'share',eventPayload:{channel:'email'}})});} catch(_){} };
 async function copyShareText() { const src='copy'; const text=buildShareText({ source: src, includeLink: true }); try { await navigator.clipboard.writeText(text); alert('Текст результата скопирован'); } catch { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Текст результата скопирован'); } }
 
 async function saveResults(tag) {
