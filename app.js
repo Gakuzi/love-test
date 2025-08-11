@@ -1928,6 +1928,9 @@ function openGoogleCalendar() {
   if (window.googleCalendarUrl) {
     safeOpen(window.googleCalendarUrl);
     closeCalendarModal();
+    try {
+      fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'add_to_calendar', eventPayload: { provider: 'google' } }) });
+    } catch (_) {}
   }
 }
 
@@ -1969,6 +1972,9 @@ function downloadICSFile() {
   
   // Показываем уведомление
   alert('Файл .ics скачан! Откройте его, чтобы добавить событие в ваш календарь.');
+  try {
+    fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'download_ics' }) });
+  } catch (_) {}
 }
 
 // Функция для закрытия модального окна календаря
