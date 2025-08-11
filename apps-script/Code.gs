@@ -266,7 +266,17 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function doGet() {
+function doGet(e) {
+  const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
+  if (action === 'config') {
+    // Заготовка: отдаём статическую конфигурацию, позже — чтение из листа «Конфигурация»
+    const cfg = {
+      version: 1,
+      blocks: ['Безопасность','Надёжность','Связь','Рост'],
+      // TODO: загрузка вопросов/формул/рекомендаций из листа
+    };
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg })).setMimeType(ContentService.MimeType.JSON);
+  }
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true, service: 'relationship-test-sink' }))
     .setMimeType(ContentService.MimeType.JSON);

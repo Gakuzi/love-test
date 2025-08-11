@@ -1,6 +1,20 @@
 // Configuration
 const AUTO_ADVANCE = true; // Автопереход к следующему вопросу после выбора ответа
 const TEST_URL = window.location.href;
+// Загрузка конфигурации с сервера (Apps Script)
+async function fetchConfig() {
+  try {
+    const url = new URL(GOOGLE_SHEETS_WEBAPP_URL);
+    url.searchParams.set('action', 'config');
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    if (data && data.ok && data.config) {
+      localStorage.setItem('testConfig', JSON.stringify(data.config));
+      return data.config;
+    }
+  } catch (e) { console.warn('fetchConfig error', e); }
+  return null;
+}
 // External integrations (from cursor branch)
 const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbztWCE72POOwC8pPx595xgS8aPVwvaU3btijvNFvwHE9mcccYMo3P6NfTXc-qaAcptWGA/exec';
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
@@ -62,7 +76,7 @@ window.addEventListener('DOMContentLoaded', () => {
   try { userId = getOrCreateUserId(); } catch (_) {}
 
   // Инициализация приложения
-  initializeApp();
+  fetchConfig().finally(() => initializeApp());
   
   // Свайп-навигация (влево — далее, вправо — назад) на экране вопросов
   initSwipeNavigation();
