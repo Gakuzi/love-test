@@ -9,6 +9,9 @@ const SHEET_NAME_RU = 'Результаты';
 const SHEET_NAME_WIDE = 'Результаты по вопросам';
 const SHEET_NAME_EVENTS = 'События';
 const SHEET_NAME_QUESTIONS = 'Вопросы';
+const SHEET_NAME_RECO = 'Рекомендации';
+const SHEET_NAME_FORMULAS = 'Формулы';
+const SHEET_NAME_README = 'Инструкция';
 
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 
@@ -170,6 +173,33 @@ function getConfigFromSheet_() {
   return { version: 1, questions: questions };
 }
 
+function getRecommendationsFromSheet_() {
+  const ss = openSheet_();
+  const sh = ss.getSheetByName(SHEET_NAME_RECO);
+  if (!sh) return {};
+  const values = sh.getDataRange().getValues();
+  if (!values || values.length < 2) return {};
+  const header = values[0];
+  const idx = function(name){ return header.indexOf(name); };
+  const colBlockIndex = idx('blockIndex');
+  const colZone = idx('zone');
+  const colTitle = idx('title');
+  const colText = idx('text');
+  if ([colBlockIndex,colZone,colTitle,colText].some(function(v){return v<0;})) return {};
+  var map = {};
+  for (var r=1; r<values.length; r++) {
+    var row = values[r];
+    var bi = Number(row[colBlockIndex]||0);
+    var zone = String(row[colZone]||'');
+    var title = String(row[colTitle]||'');
+    var text = String(row[colText]||'');
+    if (!map[bi]) map[bi] = {};
+    if (!map[bi][zone]) map[bi][zone] = [];
+    map[bi][zone].push({ title: title, text: text });
+  }
+  return map;
+}
+
 // ============================
 // HTTP обработчики
 // ============================
@@ -312,7 +342,19 @@ function doGet(e) {
   if (action === 'config') {
     // Читаем конфигурацию из листа «Вопросы»
     const cfg = getConfigFromSheet_() || { version: 1, questions: [] };
-    return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg })).setMimeType(ContentService.MimeType.JSON);
+    const reco = getRecommendationsFromSheet_();
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg, recommendations: reco }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  if (action === 'init') {
+    // Безопасность: требуем токен
+    if (!(e && e.parameter && e.parameter.token === SHARED_TOKEN)) {
+      return ContentService.createTextOutput(JSON.stringify({ ok:false, error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    const seeded = initSheets_();
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, seeded: seeded }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true, service: 'relationship-test-sink' }))
@@ -336,4 +378,106 @@ function calculateAnalysis_(answersObj) {
   var blockNames = ['Безопасность','Надёжность','Связь','Рост'];
   var priorityBlock = blockNames[lowest.index];
   return { blockResults: blockResults, overall: overall, priorityBlock: priorityBlock };
+}
+
+function ensureSheetWithHeaders_(name, headers) {
+  const ss = openSheet_();
+  let sh = ss.getSheetByName(name);
+  if (!sh) sh = ss.insertSheet(name);
+  const lastCol = sh.getLastColumn();
+  if (lastCol === 0) {
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+  } else {
+    const current = sh.getRange(1, 1, 1, headers.length).getValues()[0];
+    if (current.join('|') !== headers.join('|')) {
+      sh.clear();
+      sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
+  }
+  return sh;
+}
+
+function seedQuestionsWithDefaults_(sh) {
+  const rows = [
+    // id, block, blockIndex, text, hint, options(JSON)
+    [1,'Безопасность',0,'Могу ли я спокойно сказать «нет» партнёру, не опасаясь последствий или конфликтов?','Речь идёт о том, чувствуете ли вы, что можете отказывать в чём-либо — в близости, в помощи, в совместных планах — и при этом не столкнётесь с обидой...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [2,'Безопасность',0,'Уважает ли партнёр моё личное пространство, когда я прошу об этом?','Личное пространство — это не только физическое...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [3,'Безопасность',0,'Чувствую ли я, что могу быть собой рядом с партнёром, без масок и напряжения?','Вы можете плакать, молчать...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [4,'Безопасность',0,'Испытываю ли я уважение к своим эмоциям со стороны партнёра?','Когда вы говорите: «Мне грустно»...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [5,'Безопасность',0,'Есть ли в наших отношениях признаки давления: крики, молчание «в наказание», шантаж, манипуляции?','Обратите внимание: крик, игнорирование...', JSON.stringify([{value:0,label:'Да'},{value:1,label:'Скорее да'},{value:2,label:'Скорее нет'},{value:3,label:'Нет'}])],
+    [6,'Надёжность',1,'Выполняет ли партнёр свои обещания, даже мелкие?','Речь не только о крупных обещаниях...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [7,'Надёжность',1,'Чувствую ли я, что мы в одной команде, особенно в сложные моменты?','В кризис вы чувствуете поддержку?', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [8,'Надёжность',1,'Разделены ли между нами бытовые и финансовые обязанности честно и понятно?','Деление обязанностей...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [9,'Надёжность',1,'Можем ли мы говорить о деньгах без скандалов и обвинений?','Тема денег — одна из самых острых...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [10,'Надёжность',1,'Является ли партнёр предсказуемым в вопросах времени, ресурсов, обязательств?','Предсказуемость — это когда вы знаете, чего ожидать...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [11,'Связь',2,'Есть ли в наших отношениях ежедневные ритуалы внимания (объятие, поцелуй, «как день прошёл?»)?','Ритуалы — маленькие проявления заботы...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [12,'Связь',2,'Можем ли мы делиться своими чувствами, а не только обсуждать дела и быт?','Разговоры о чувствах...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [13,'Связь',2,'Чувствую ли я, что партнёр меня слышит и понимает?','Слышать — это не просто слова...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [14,'Связь',2,'Умеем ли мы мириться и признавать свои ошибки после конфликта?','Конфликты бывают у всех...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [15,'Связь',2,'Комфортно ли нам быть вдвоём без отвлечений — телефонов, дел, посторонних?','Провести время вдвоём...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [16,'Рост',3,'Обсуждали ли мы взгляды друг друга на ключевые темы (деньги, верность, дети, работа)?','Глубокие ценности...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [17,'Рост',3,'Есть ли у нас общие цели на будущее, которые мы реально обсуждали?','Общие цели...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [18,'Рост',3,'Эти отношения помогают мне становиться лучшей версией себя?','Рост и развитие...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [19,'Рост',3,'Чувствую ли я, что могу развиваться, а не только адаптироваться?','Развитие vs адаптация...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])],
+    [20,'Рост',3,'Уважаю ли я партнёра, даже если мы не согласны или в конфликте?','Уважение в конфликте...', JSON.stringify([{value:3,label:'Да'},{value:2,label:'Скорее да'},{value:1,label:'Скорее нет'},{value:0,label:'Нет'}])]
+  ];
+  if (sh.getLastRow() > 1) return;
+  sh.getRange(2,1,rows.length,6).setValues(rows);
+}
+
+function seedRecommendationsWithDefaults_(sh) {
+  const rows = [];
+  const titles = {
+    success: 'Сохраняйте сильные стороны',
+    warning: 'Зона роста',
+    danger: 'Приоритетная зона внимания'
+  };
+  for (var bi=0; bi<4; bi++) {
+    ['success','warning','danger'].forEach(function(zone){
+      rows.push([bi, zone, titles[zone], 'Добавьте 2–3 конкретных шага для этого блока и зоны']);
+    });
+  }
+  if (sh.getLastRow() > 1) return;
+  sh.getRange(2,1,rows.length,4).setValues(rows);
+}
+
+function seedFormulasWithDefaults_(sh) {
+  const rows = [
+    ['threshold_success_min', 11, 'Сумма 5 вопросов в блоке ≥ 11 → зона силы'],
+    ['threshold_warning_min', 6, 'Сумма 5 вопросов в блоке ≥ 6 → зона роста'],
+    ['overall_avg_danger_max', 8, 'Средний балл по блокам < 8 → разрушительные'],
+    ['overall_avg_warning_max', 11, 'Средний балл по блокам < 11 → шаткие']
+  ];
+  if (sh.getLastRow() > 1) return;
+  sh.getRange(2,1,rows.length,3).setValues(rows);
+}
+
+function ensureReadmeSheet_() {
+  const ss = openSheet_();
+  let sh = ss.getSheetByName(SHEET_NAME_README);
+  if (!sh) sh = ss.insertSheet(SHEET_NAME_README);
+  sh.clear();
+  const notes = [
+    ['Инструкция по редактированию теста'],
+    ['— Лист «Вопросы»: id, block, blockIndex, text, hint, options(JSON)'],
+    ['— Лист «Рекомендации»: blockIndex (0..3), zone (success|warning|danger), title, text'],
+    ['— Лист «Формулы»: параметр, значение, комментарий (используйте для документирования логики)'],
+    ['— Лист «Результаты» и «Результаты по вопросам» — заполняются приложением автоматически'],
+    ['— Лист «События» — лог кликов, шэринга, добавлений в календарь и пр.']
+  ];
+  sh.getRange(1,1,notes.length,1).setValues(notes);
+}
+
+function initSheets_() {
+  const qHeaders = ['id','block','blockIndex','text','hint','options'];
+  const rHeaders = ['blockIndex','zone','title','text'];
+  const fHeaders = ['param','value','comment'];
+  const q = ensureSheetWithHeaders_(SHEET_NAME_QUESTIONS, qHeaders);
+  const r = ensureSheetWithHeaders_(SHEET_NAME_RECO, rHeaders);
+  const f = ensureSheetWithHeaders_(SHEET_NAME_FORMULAS, fHeaders);
+  seedQuestionsWithDefaults_(q);
+  seedRecommendationsWithDefaults_(r);
+  seedFormulasWithDefaults_(f);
+  ensureReadmeSheet_();
+  return { ok: true };
 }

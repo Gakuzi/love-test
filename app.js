@@ -8,9 +8,10 @@ async function fetchConfig() {
     url.searchParams.set('action', 'config');
     const res = await fetch(url.toString());
     const data = await res.json();
-    if (data && data.ok && data.config) {
-      localStorage.setItem('testConfig', JSON.stringify(data.config));
-      return data.config;
+    if (data && data.ok) {
+      if (data.config) localStorage.setItem('testConfig', JSON.stringify(data.config));
+      if (data.recommendations) localStorage.setItem('testRecommendations', JSON.stringify(data.recommendations));
+      return data.config || null;
     }
   } catch (e) { console.warn('fetchConfig error', e); }
   return null;
