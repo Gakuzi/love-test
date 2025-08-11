@@ -622,6 +622,35 @@ function renderBlockSummary(blockIndex) {
   }
 }
 
+function renderFinalRecommendations() {
+  for (let bi = 0; bi < 4; bi++) {
+    const res = currentState.blockResults[bi];
+    if (!res) continue;
+    const humanIndex = bi + 1;
+    const descEl = document.getElementById(`blockDescription${humanIndex}`);
+    if (!descEl) continue;
+    let recosWrap = descEl.parentElement && descEl.parentElement.querySelector ? descEl.parentElement.querySelector('.block-recos') : null;
+    if (!recosWrap) {
+      recosWrap = document.createElement('div');
+      recosWrap.className = 'block-recos';
+      if (descEl.parentElement) descEl.parentElement.appendChild(recosWrap);
+    }
+    const recos = getRecommendationsFor(bi, res.zone);
+    const ul = document.createElement('ul');
+    ul.className = 'recos-list';
+    recos.slice(0, 3).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
+      ul.appendChild(li);
+    });
+    recosWrap.innerHTML = '';
+    const title = document.createElement('h5');
+    title.textContent = 'Рекомендации:';
+    recosWrap.appendChild(title);
+    recosWrap.appendChild(ul);
+  }
+}
+
 function continueToBlock(blockNumber) {
   const questionIndex = (blockNumber - 1) * 5;
   showQuestion(questionIndex);
@@ -692,6 +721,7 @@ function showFinalResults() {
   finalResults.style.paddingTop = '2rem';
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
+  try { renderFinalRecommendations(); } catch (e) { console.warn('renderFinalRecommendations failed:', e); }
   
   // Автоматически сохраняем финальные результаты
   autoSaveFinalResults();
