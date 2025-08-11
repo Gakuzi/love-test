@@ -487,6 +487,35 @@
             <button class="btn btn-outline" onclick="restartTest()">Пройти тест заново</button>
           </div>
         </div>
+
+        <!-- Пошаговый гайд -->
+        <div class="steps-guide" id="stepsGuide">
+          <h3>Пошаговый гайд</h3>
+          <ul class="steps-list">
+            <li>
+              <label>
+                <input type="checkbox" data-step="1" onchange="toggleStepDone(1)">
+                Спокойный разговор на 10 минут без телефонов — обсудить одно важное для вас обоих.
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" data-step="2" onchange="toggleStepDone(2)">
+                Маленькая договорённость на неделю — одна конкретная договорённость, которую легко выполнить.
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" data-step="3" onchange="toggleStepDone(3)">
+                План на месяц — 2–3 простых общих цели и способ их проверить.
+              </label>
+            </li>
+          </ul>
+          <div class="steps-actions">
+            <button class="btn btn-secondary" onclick="copySummaryText()">Скопировать краткий итог</button>
+            <button class="btn btn-secondary" onclick="copyFullText()">Скопировать полный текст</button>
+          </div>
+        </div>
       </div>
     </div>
 

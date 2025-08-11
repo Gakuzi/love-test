@@ -1,3 +1,9 @@
+.steps-guide { padding: 0 1.5rem 2rem; }
+.steps-guide h3 { text-align: center; color: var(--primary); margin: 1rem 0 1rem; }
+.steps-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .75rem; }
+.steps-list li { background: linear-gradient(135deg, #f8fafc 0%, #e8f4fd 100%); border: 2px solid var(--primary); border-radius: 10px; padding: .9rem 1rem; box-shadow: 0 3px 15px rgba(74,107,138,.08); }
+.steps-list input[type="checkbox"] { margin-right: .6rem; transform: translateY(1px); }
+.steps-actions { display: flex; gap: .75rem; justify-content: center; }
 /* Root variables - Unified Pastel palette */
 :root {
   /* Контрастная доступная палитра (WCAG‑friendly), сохраняя стиль */

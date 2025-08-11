@@ -804,6 +804,7 @@ function showFinalResults() {
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
   try { renderFinalRecommendations(); } catch (e) { console.warn('renderFinalRecommendations failed:', e); }
+  try { restoreStepsState(); } catch (e) { console.warn('restoreStepsState failed:', e); }
   
   // Автоматически сохраняем финальные результаты
   autoSaveFinalResults();
@@ -1594,6 +1595,51 @@ async function saveResults(tag) {
 
 function buildDetailedAnswers() { const details=[]; Object.entries(currentState.answers).forEach(([idxStr,value])=>{ const idx=Number(idxStr); const q=QUESTIONS[idx]; if(!q) return; const opt=(q.options||[]).find(o=>o.value===value); details.push({ номерВопроса:(idx%5)+1, порядковыйИндекс:idx, id:q.id, блок:q.block, вопрос:q.text, выбранныйВариант: opt?opt.label:'', балл:value }); }); return details; }
 function buildBlockResultsDetailed() { const names=['Безопасность','Надёжность','Связь','Рост']; return Object.entries(currentState.blockResults).map(([i,block])=>{ if(!block) return null; const zoneText={ success:'Зона силы', warning:'Зона риска', danger:'Зона тревоги' }[block.zone]; return { блок:names[Number(i)], баллы:`${block.sum}/15`, зона:zoneText }; }).filter(Boolean); }
+
+// ===== Steps state =====
+function getStepsStateKey() { return `steps-state:${userId}`; }
+function restoreStepsState() {
+  try {
+    const raw = localStorage.getItem(getStepsStateKey());
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    [1,2,3].forEach((n)=>{
+      const cb = document.querySelector(`.steps-list input[data-step="${n}"]`);
+      if (cb) cb.checked = !!state[n];
+    });
+  } catch {}
+}
+function persistStepsState(state) {
+  try { localStorage.setItem(getStepsStateKey(), JSON.stringify(state)); } catch {}
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'step_check', eventPayload: state }); } catch(_){ }
+}
+window.toggleStepDone = function(step){
+  const state = {1:false,2:false,3:false};
+  [1,2,3].forEach((n)=>{ const cb=document.querySelector(`.steps-list input[data-step="${n}"]`); state[n]=!!(cb&&cb.checked); });
+  persistStepsState(state);
+};
+
+// ===== Copy helpers =====
+window.copySummaryText = function(){
+  const overall = document.getElementById('overallStatus')?.textContent || '';
+  const priority = document.getElementById('priorityBlock')?.textContent || '';
+  const text = `Результаты теста\nОбщее состояние: ${overall}\nПриоритет: ${priority}`;
+  navigator.clipboard.writeText(text).catch(()=>{});
+};
+window.copyFullText = function(){
+  const names=['Безопасность','Надёжность','Связь','Рост'];
+  const lines=[];
+  lines.push(document.querySelector('.results-title h2')?.textContent||'Результаты');
+  lines.push(`Общее состояние: ${document.getElementById('overallStatus')?.textContent||''}`);
+  lines.push(`Приоритет: ${document.getElementById('priorityBlock')?.textContent||''}`);
+  names.forEach((name, i)=>{
+    const score = document.getElementById(`blockScore${i+1}`)?.textContent||'';
+    const status = document.getElementById(`blockStatus${i+1}`)?.textContent||'';
+    lines.push(`${name}: ${score} — ${status}`);
+  });
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).catch(()=>{});
+};
 
 // ===== Modal functions =====
 function openPlanModal() {
