@@ -838,6 +838,7 @@ function showFinalResults() {
   finalResults.style.background = 'transparent';
   finalResults.style.minHeight = 'auto';
   finalResults.style.paddingTop = '0';
+  // Загружаем чистый шаблон из results.html, чтобы восстановить весь функционал и ID
   finalResults.innerHTML = `
     <section class="question-card" style="display:block;">
       <div class="question-card-content">
@@ -897,12 +898,15 @@ function showFinalResults() {
     </section>`;
   
   try { calculateOverallResult(); } catch (e) { console.warn('calculateOverallResult skipped:', e); }
+  try { buildBlocksGrid(); } catch (e) { console.warn('buildBlocksGrid failed:', e); }
   try { renderFinalRecommendations(); } catch (e) { console.warn('renderFinalRecommendations failed:', e); }
   try { restoreStepsState(); } catch (e) { console.warn('restoreStepsState failed:', e); }
   try { attachBlockToggles(); } catch (e) { console.warn('attachBlockToggles failed:', e); }
   
   // Автоматически сохраняем финальные результаты
   autoSaveFinalResults();
+  // Подменяем рекомендации из таблицы в блоках
+  try { renderFinalRecommendations(); } catch (_) {}
   // Лог: завершение теста (показ итогов)
   try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'finish_test' }); } catch (_) {}
   
@@ -921,6 +925,39 @@ function attachBlockToggles(){
     el.dataset.bound = '1';
     el.addEventListener('click',()=> el.classList.toggle('expanded'));
   });
+}
+
+function buildBlocksGrid(){
+  const grid = document.getElementById('blocksGrid');
+  if (!grid) return;
+  const names = ['Безопасность','Надёжность','Связь','Рост'];
+  grid.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const res = currentState.blockResults[i] || { sum: 0, zone: 'danger' };
+    const zoneText = res.zone==='success'?'Зона силы':res.zone==='warning'?'Зона риска':'Зона тревоги';
+    const recos = getRecommendationsFor(i, res.zone) || [];
+    const li = recos.slice(0,3).map(r=>`<li>${(r&&r.text)||r?.title||'Рекомендация'}</li>`).join('');
+    const item = document.createElement('div');
+    item.className = 'block-summary';
+    item.innerHTML = `
+      <div class="block-head">
+        <div class="block-title">${names[i]}</div>
+        <div class="block-score" id="blockScore${i+1}">${res.sum}/15</div>
+        <div class="block-status" id="blockStatus${i+1}">${zoneText}</div>
+      </div>
+      <div class="block-details">
+        <p id="blockDescription${i+1}"></p>
+        <div class="block-recos">
+          <h5>Рекомендации:</h5>
+          <ul class="recos-list">${li}</ul>
+        </div>
+        <div class="block-actions" style="margin-top:.5rem;display:flex;gap:.5rem;">
+          <button class="btn btn-secondary" onclick="continueToBlock(${i+1})">Посмотреть вопросы</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(item);
+  }
 }
 
 // Автоматическое сохранение финальных результатов
@@ -1014,7 +1051,7 @@ function calculateOverallResult() {
       const block = currentState.blockResults[i] || { sum: 0 };
       const fill = document.getElementById(`barFill${n}`);
       const val = document.getElementById(`barVal${n}`);
-      const pct = Math.max(0, Math.min(100, (block.sum/25)*100));
+      const pct = Math.max(0, Math.min(100, (block.sum/15)*100));
       if (fill) {
         fill.style.width = `${pct}%`;
         // динамический цвет: 0-40 красный, 40-70 жёлтый, 70-100 зелёный
@@ -1022,9 +1059,22 @@ function calculateOverallResult() {
         if (pct >= 70) color = '#66bb6a'; else if (pct >= 40) color = '#fbc02d';
         fill.style.background = `linear-gradient(90deg, ${color}, ${color})`;
       }
-      if (val) val.textContent = `${block.sum||0}/25`;
+      if (val) val.textContent = `${block.sum||0}/15`;
     });
   } catch (_) {}
+
+  // Итоговый балл и описание
+  const overallScoreEl = document.getElementById('overallScoreNumber');
+  if (overallScoreEl) overallScoreEl.textContent = `${total}/60`;
+  const overallDescEl = document.getElementById('overallDescription');
+  if (overallDescEl) {
+    const texts = {
+      'зрелые': 'Сильная основа отношений. Поддерживайте хорошие практики и развивайте их точечно.',
+      'шаткие': 'Есть зоны роста. Сфокусируйтесь на приоритетной сфере в ближайшее время.',
+      'разрушительные': 'Высокие риски. Начните с укрепления безопасности и границ, двигайтесь небольшими шагами.'
+    };
+    overallDescEl.textContent = texts[overall] || '';
+  }
 
   // Делаем блоки в сетке сворачиваемыми
   try {
