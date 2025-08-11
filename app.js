@@ -650,7 +650,7 @@ function showBlockResult(blockNumber) {
       <button class="btn" onclick="continueToNextBlock()">Продолжить</button>
     </div>
   `;
-  document.getElementById('question-container').style.display = 'none';
+  document.getElementById('question-container').style.display = 'block';
   window.location.hash = '#intermediate';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
