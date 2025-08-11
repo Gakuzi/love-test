@@ -940,43 +940,45 @@ function startLoadingAnimation() {
         return;
     }
     
-    let currentStep = 0;
-    
-    function animateStep() {
-        console.log(`Анимация шага ${currentStep + 1}/${loadingSteps.length}`);
-        
-        if (currentStep >= loadingSteps.length) {
-            // Завершаем анимацию
-            console.log('Завершение анимации загрузки');
-            setTimeout(() => {
-                showStartButton();
-            }, 500);
-            return;
-        }
+  let currentStep = 0;
+  let completed = false;
 
-        const progress = ((currentStep + 1) / loadingSteps.length) * 100;
-        
-        // Обновляем прогресс-бар
-        if (loadingProgressBar) {
-            loadingProgressBar.style.width = `${progress}%`;
-        }
-        
-        // Обновляем текст
-        if (loadingText) {
-            loadingText.textContent = loadingSteps[currentStep];
-        }
-        
-        currentStep++;
-        
-        // Переход к следующему шагу
-        setTimeout(animateStep, 1200);
+  function finishLoading() {
+    if (completed) return;
+    completed = true;
+    console.log('Завершение анимации загрузки (finishLoading)');
+    setTimeout(() => { try { showStartButton(); } catch (e) { console.error('showStartButton error', e); } }, 300);
+  }
+
+  function animateStep() {
+    try {
+      console.log(`Анимация шага ${currentStep + 1}/${loadingSteps.length}`);
+      if (currentStep >= loadingSteps.length) {
+        finishLoading();
+        return;
+      }
+      const progress = ((currentStep + 1) / loadingSteps.length) * 100;
+      if (loadingProgressBar) loadingProgressBar.style.width = `${progress}%`;
+      if (loadingText) loadingText.textContent = loadingSteps[currentStep];
+      currentStep++;
+      setTimeout(animateStep, 1200);
+    } catch (err) {
+      console.warn('animateStep error, завершаем с запасом:', err);
+      finishLoading();
     }
+  }
 
-    // Начинаем анимацию через небольшую задержку
-    console.log('Запуск анимации через 1 секунду...');
-    setTimeout(() => {
-        animateStep();
-    }, 1000);
+  // Watchdog: если что-то пошло не так — завершаем через 6 секунд
+  setTimeout(() => {
+    if (!completed) {
+      console.warn('Watchdog завершил заставку по таймауту');
+      finishLoading();
+    }
+  }, 6000);
+
+  // Начинаем анимацию через небольшую задержку
+  console.log('Запуск анимации через 1 секунду...');
+  setTimeout(() => { try { animateStep(); } catch (e) { finishLoading(); } }, 1000);
 }
 
 function showStartButton() {
