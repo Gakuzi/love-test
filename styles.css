@@ -636,11 +636,10 @@ body {
 
 /* Compact Block Results */
 .block-result-compact {
-  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.86));
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(192, 180, 214, 0.35);
-  border-radius: 14px;
-  box-shadow: 0 10px 26px rgba(105, 90, 166, 0.18);
+  background: var(--card-bg-solid);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   margin-bottom: 1rem;
   overflow: hidden;
   transition: var(--transition);
@@ -654,7 +653,7 @@ body {
   justify-content: space-between;
   align-items: center;
   transition: var(--transition);
-  background: linear-gradient(135deg, rgba(248, 244, 255, 0.85), rgba(240, 248, 255, 0.8));
+  background: var(--card-bg);
 }
 
 .result-header:hover {
@@ -732,6 +731,7 @@ body {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
+  background: var(--card-bg);
 }
 
 .result-details.expanded {

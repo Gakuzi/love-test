@@ -16,6 +16,27 @@ async function fetchConfig() {
   } catch (e) { console.warn('fetchConfig error', e); }
   return null;
 }
+
+async function seedSheets() {
+  try {
+    const url = new URL(GOOGLE_SHEETS_WEBAPP_URL);
+    url.searchParams.set('action', 'init');
+    url.searchParams.set('token', SHARED_TOKEN);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    console.log('Инициализация таблиц:', data);
+    if (data && data.ok) {
+      // После инициализации повторно грузим конфиг
+      await fetchConfig();
+      alert('Таблицы успешно инициализированы. Конфигурация обновлена.');
+    } else {
+      alert('Не удалось инициализировать таблицы: ' + (data && data.error ? data.error : 'ошибка'));
+    }
+  } catch (e) {
+    console.warn('seedSheets error', e);
+    alert('Ошибка инициализации таблиц. Подробности в консоли.');
+  }
+}
 // External integrations (from cursor branch)
 const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbztWCE72POOwC8pPx595xgS8aPVwvaU3btijvNFvwHE9mcccYMo3P6NfTXc-qaAcptWGA/exec';
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
@@ -113,6 +134,14 @@ window.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     startLoadingAnimation();
   }, 500);
+
+  // Админ-инициализация таблиц (по параметру seed=1 в URL)
+  try {
+    const seedFlag = new URLSearchParams(location.search).get('seed');
+    if (seedFlag === '1') {
+      seedSheets();
+    }
+  } catch (_) {}
 });
 
 // Инициализация поля имени пользователя
