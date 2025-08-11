@@ -538,6 +538,8 @@ function prevQuestion() {
 function showCompactBlockResult(blockIndex) {
   const blockNumber = blockIndex + 1;
   const compactBlock = document.getElementById(`blockResult${blockNumber}`);
+  // Лог: показ сводки блока
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: `block-${blockNumber}`, event: 'view_block_summary', eventPayload: { blockIndex, blockNumber } }); } catch (_) {}
   
   // Скрываем карточку вопроса
   document.getElementById('questionCard').style.display = 'none';
