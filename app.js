@@ -979,8 +979,17 @@ function calculateOverallResult() {
 function downloadPDF() { /* отключено */ }
 
 function safeOpen(url) {
-  const newWin = window.open(url, '_blank');
-  if (newWin) newWin.opener = null;
+  try {
+    const w = window.open(url, '_blank');
+    if (!w || w.closed || typeof w.closed === 'undefined') {
+      // Попробуем прямую навигацию (важно для мобильных мессенджеров)
+      location.href = url;
+    } else {
+      w.opener = null;
+    }
+  } catch {
+    location.href = url;
+  }
 }
 
 

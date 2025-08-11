@@ -2614,34 +2614,14 @@ kbd {
   gap: 1.5rem;
 }
 
-.recommendation-item {
-  background: var(--card-bg-solid);
-  border-radius: var(--card-radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  border: var(--border);
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  transition: var(--transition);
-}
+.recommendation-item { background: linear-gradient(135deg, #f8fafc 0%, #e8f4fd 100%); border: 2px solid var(--primary); border-radius: 10px; padding: 1.1rem; box-shadow: 0 3px 15px rgba(74,107,138,.1); transition: var(--transition); }
 
 .recommendation-item:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
 }
 
-.recommendation-icon {
-  font-size: 2rem;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(107, 92, 165, 0.1);
-  border-radius: 50%;
-  flex-shrink: 0;
-}
+.recommendation-icon { display: none; }
 
 .recommendation-content h4 {
   font-size: 1.1rem;
