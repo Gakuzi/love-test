@@ -206,7 +206,7 @@
 
     <!-- Остальной контент остается как есть -->
     <div id="question-container" style="display: none;">
-      <div id="blockResult1" class="block-result-compact" style="display: none;">
+      <div id="blockResult1" class="block-result-compact card-unified" style="display: none;">
         <div class="result-header" data-block="1">
           <div class="block-info">
             <h3>Блок 1: Безопасность</h3>
@@ -217,11 +217,11 @@
         </div>
         
         <div class="result-details" id="details-1">
-          <div class="zone-description">
+          <div class="result-description zone-description">
             <p><strong>Зона силы:</strong> В ваших отношениях есть базовое доверие и уважение границ.</p>
           </div>
           
-          <div class="recommendations">
+          <div class="result-actions recommendations">
             <h4>💡 Рекомендации:</h4>
             <ul>
               <li>Продолжайте поддерживать открытое общение</li>
@@ -229,13 +229,14 @@
             </ul>
           </div>
           
-          <button class="btn btn-secondary" onclick="reviewBlock(1)">Пересмотреть ответы</button>
+          <div class="result-actions">
+            <button class="btn btn-secondary" onclick="reviewBlock(1)">Пересмотреть ответы</button>
+            <button class="btn" id="continueBtn" onclick="continueToNextBlock()">Продолжить ✨</button>
+          </div>
         </div>
-        
-        <button class="btn" id="continueBtn" onclick="continueToNextBlock()">Продолжить ✨</button>
       </div>
       
-      <div id="blockResult2" class="block-result-compact" style="display: none;">
+      <div id="blockResult2" class="block-result-compact card-unified" style="display: none;">
         <div class="result-header" data-block="2">
           <div class="block-info">
             <h3>Блок 2: Надёжность</h3>
@@ -246,11 +247,11 @@
         </div>
         
         <div class="result-details" id="details-2">
-          <div class="zone-description">
+          <div class="result-description zone-description">
             <p><strong>Зона силы:</strong> В ваших отношениях есть взаимная поддержка и надёжность.</p>
           </div>
           
-          <div class="recommendations">
+          <div class="result-actions recommendations">
             <h4>💡 Рекомендации:</h4>
             <ul>
               <li>Продолжайте держать слово и быть предсказуемыми</li>
@@ -258,13 +259,14 @@
             </ul>
           </div>
           
-          <button class="btn btn-secondary" onclick="reviewBlock(2)">Пересмотреть ответы</button>
+          <div class="result-actions">
+            <button class="btn btn-secondary" onclick="reviewBlock(2)">Пересмотреть ответы</button>
+            <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+          </div>
         </div>
-        
-        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
       </div>
       
-      <div id="blockResult3" class="block-result-compact" style="display: none;">
+      <div id="blockResult3" class="block-result-compact card-unified" style="display: none;">
         <div class="result-header" data-block="3">
           <div class="block-info">
             <h3>Блок 3: Связь</h3>
@@ -275,11 +277,11 @@
         </div>
         
         <div class="result-details" id="details-3">
-          <div class="zone-description">
+          <div class="result-description zone-description">
             <p><strong>Зона силы:</strong> У вас есть эмоциональная близость и взаимопонимание.</p>
           </div>
           
-          <div class="recommendations">
+          <div class="result-actions recommendations">
             <h4>💡 Рекомендации:</h4>
             <ul>
               <li>Поддерживайте ежедневные ритуалы общения</li>
@@ -287,13 +289,14 @@
             </ul>
           </div>
           
-          <button class="btn btn-secondary" onclick="reviewBlock(3)">Пересмотреть ответы</button>
+          <div class="result-actions">
+            <button class="btn btn-secondary" onclick="reviewBlock(3)">Пересмотреть ответы</button>
+            <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
+          </div>
         </div>
-        
-        <button class="btn" onclick="continueToNextBlock()">Продолжить ✨</button>
       </div>
       
-      <div id="blockResult4" class="block-result-compact" style="display: none;">
+      <div id="blockResult4" class="block-result-compact card-unified" style="display: none;">
         <div class="result-header" data-block="4">
           <div class="block-info">
             <h3>Блок 4: Рост</h3>
@@ -304,11 +307,11 @@
         </div>
         
         <div class="result-details" id="details-4">
-          <div class="zone-description">
+          <div class="result-description zone-description">
             <p><strong>Зона силы:</strong> Вы развиваетесь вместе и поддерживаете рост друг друга.</p>
           </div>
           
-          <div class="recommendations">
+          <div class="result-actions recommendations">
             <h4>💡 Рекомендации:</h4>
             <ul>
               <li>Обсуждайте свои цели и мечты</li>
@@ -316,16 +319,17 @@
             </ul>
           </div>
           
-          <button class="btn btn-secondary" onclick="reviewBlock(4)">Пересмотреть ответы</button>
+          <div class="result-actions">
+            <button class="btn btn-secondary" onclick="reviewBlock(4)">Пересмотреть ответы</button>
+            <button class="btn" onclick="continueToNextBlock()">Завершить тест ✨</button>
+          </div>
         </div>
-        
-        <button class="btn" onclick="continueToNextBlock()">Завершить тест ✨</button>
       </div>
     </div>
 
     <!-- Результаты -->
     <div id="results" style="display: none;">
-      <div id="finalResults" class="final-results" style="display: none;">
+      <div id="finalResults" class="final-results card-unified" style="display: none;">
         <!-- Заголовок результатов -->
         <div class="results-header">
           <div class="results-title">

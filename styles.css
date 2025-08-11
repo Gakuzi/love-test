@@ -677,6 +677,14 @@ body {
   border-left: 6px solid var(--primary);
 }
 
+/* Unified card wrapper to match question cards */
+.card-unified {
+  background: var(--card-bg-solid);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
 .result-header {
   padding: 1rem 1.2rem;
   cursor: pointer;
@@ -850,7 +858,7 @@ body {
 /* Полноэкранные результаты */
 .final-results {
   display: none;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: var(--card-bg);
   min-height: 100vh;
   padding: 2rem;
   margin: 0;
@@ -870,26 +878,9 @@ body {
   }
 }
 
-.final-results::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(248, 244, 255, 0.8) 0%, rgba(255, 240, 245, 0.8) 50%, rgba(240, 248, 255, 0.8) 100%);
-  z-index: -1;
-}
+.final-results::before { display: none; }
 
-.final-results h2 {
-  color: white;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.5rem;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  position: relative;
-  z-index: 2;
-}
+.final-results h2 { color: var(--primary); text-shadow: none; }
 
 .results-overview { margin-bottom: 1.8rem; }
 .results-chart { height: 200px; margin-bottom: 1.5rem; }
