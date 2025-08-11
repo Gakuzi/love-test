@@ -254,9 +254,10 @@ function showQuestion(index) {
   }
 
   card.style.display = 'block';
-  document.getElementById('blockTag').textContent = question.block;
+  const userName = (currentState.userName || '').trim();
+  document.getElementById('blockTag').textContent = question.block + (userName ? ` • ${userName}` : '');
   document.getElementById('questionNumber').textContent = `Вопрос ${index % 5 + 1} из 5`;
-  document.getElementById('questionText').textContent = question.text;
+  document.getElementById('questionText').textContent = userName ? question.text.replaceAll(' партнёр', ` ${userName}`) : question.text;
   
   // Кнопка "Далее" больше не используется при авто‑навигации — скрываем её
   if (nextBtn) {
@@ -757,25 +758,7 @@ function calculateOverallResult() {
   }
 }
 
-function downloadPDF() {
-  const element = document.getElementById('pdfReport');
-  const opt = {
-    margin: 10,
-    filename: 'Результаты_теста_отношений.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf()
-    .set(opt)
-    .from(element)
-    .save()
-    .then(() => console.log('PDF успешно сохранен'))
-    .catch((error) => {
-      console.error('Ошибка при генерации PDF:', error);
-      alert('Произошла ошибка при создании PDF. Попробуйте еще раз.');
-    });
-}
+function downloadPDF() { /* отключено */ }
 
 function safeOpen(url) {
   const newWin = window.open(url, '_blank');
@@ -1487,18 +1470,7 @@ function getPlanActions(priorityBlock) {
 
 
 
-function generatePlanPDF() {
-  const plan = getPlanActions(document.getElementById('priorityBlock')?.textContent || 'Партнёрство');
-  const pdfContent = generatePDFContent(plan);
-  
-  if (pdfContent instanceof window.jsPDF?.jsPDF) {
-    // Если это jsPDF объект, сохраняем его
-    pdfContent.save('plan.pdf');
-  } else {
-    // Fallback - скачиваем HTML файл
-    downloadFile(pdfContent, 'plan.html', 'text/html');
-  }
-}
+function generatePlanPDF() { /* отключено */ }
 
 function generateICSContent(plan) {
   const now = new Date();

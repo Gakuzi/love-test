@@ -7,6 +7,7 @@ const SHEET_ID = '12PUk32kI3NmYPrjMh3BOc2RWsB070lQcfvsy0PCvNOs';
 // Старый лист (англ. заголовки) оставляем на месте, новый — с русскими заголовками
 const SHEET_NAME_RU = 'Результаты';
 const SHEET_NAME_WIDE = 'Результаты по вопросам';
+const SHEET_NAME_EVENTS = 'События';
 
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 
@@ -122,6 +123,16 @@ function ensureWideSheetAndHeaders_(answersDetailed) {
       }
     }
   }
+  return sheet;
+}
+
+function ensureEventsSheet_() {
+  const ss = openSheet_();
+  let sheet = ss.getSheetByName(SHEET_NAME_EVENTS);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME_EVENTS);
+  const headers = ['Дата/время','Анонимный пользователь (UUID)','ref','Событие','Детали'];
+  const lastCol = sheet.getLastColumn();
+  if (lastCol === 0) sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   return sheet;
 }
 
@@ -243,6 +254,12 @@ function doPost(e) {
 
   const rowWide = meta.concat(answers);
   sheetWide.appendRow(rowWide);
+
+  // 3) Лог событий по действиям (если передан event)
+  if (data.event) {
+    const ev = ensureEventsSheet_();
+    ev.appendRow([moscowTimestamp, data.userId || '', data.ref || '', String(data.event||''), JSON.stringify(data.eventPayload || {})]);
+  }
 
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true }))
