@@ -1,6 +1,27 @@
 // Configuration
 const AUTO_ADVANCE = true; // Автопереход к следующему вопросу после выбора ответа
 const TEST_URL = window.location.href;
+// Управление серверной синхронизацией (Apps Script)
+const ENABLE_SERVER_SYNC = true;
+
+function isServerSyncEnabled() {
+  try {
+    const params = new URLSearchParams(location.search);
+    if (params.get('noserver') === '1') return false;
+  } catch (_) {}
+  return ENABLE_SERVER_SYNC;
+}
+
+function safePostToServer(payload) {
+  if (!isServerSyncEnabled()) return;
+  try {
+    fetch(GOOGLE_SHEETS_WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  } catch (_) {}
+}
 // Загрузка конфигурации с сервера (Apps Script)
 async function fetchConfig() {
   try {
@@ -653,7 +674,7 @@ function renderBlockSummary(blockIndex) {
         const li = document.createElement('li');
         li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
         li.addEventListener('click', () => {
-          try { fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'block-summary', event: 'click_recommendation', eventPayload: { blockIndex, index: idx, title: r?.title || '', text: r?.text || '' } }) }); } catch (_) {}
+          try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'block-summary', event: 'click_recommendation', eventPayload: { blockIndex, index: idx, title: r?.title || '', text: r?.text || '' } }); } catch (_) {}
         });
         ul.appendChild(li);
       });
@@ -681,9 +702,7 @@ function renderFinalRecommendations() {
     recos.slice(0, 3).forEach((r, idx) => {
       const li = document.createElement('li');
       li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
-      li.addEventListener('click', () => {
-        try { fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'click_recommendation', eventPayload: { blockIndex: bi, index: idx, title: r?.title || '', text: r?.text || '' } }) }); } catch (_) {}
-      });
+      li.addEventListener('click', () => { try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'click_recommendation', eventPayload: { blockIndex: bi, index: idx, title: r?.title || '', text: r?.text || '' } }); } catch (_) {} });
       ul.appendChild(li);
     });
     recosWrap.innerHTML = '';
@@ -837,11 +856,7 @@ async function autoSaveFinalResults() {
       status: 'completed'
     };
     
-    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'text/plain' }, 
-      body: JSON.stringify(payload) 
-    });
+    safePostToServer(payload);
     
     console.log('Финальные результаты автоматически сохранены');
   } catch (e) { 
@@ -1504,7 +1519,7 @@ async function saveResults(tag) {
       priorityBlock: priority,
       status: tag === 'final' ? 'completed' : 'manual' // 'completed' for final save, 'manual' for other explicit saves
     };
-    await fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+    safePostToServer(payload);
   } catch (e) { console.warn('Не удалось сохранить результаты:', e); }
 }
 
