@@ -171,7 +171,26 @@ function getConfigFromSheet_() {
       hint: String(row[colHint]||'')
     });
   }
-  return { version: 1, questions: questions };
+  return { version: getConfigVersionFromSheet_(), questions: questions };
+}
+
+function getConfigVersionFromSheet_() {
+  const ss = openSheet_();
+  const sh = ss.getSheetByName(SHEET_NAME_FORMULAS);
+  if (!sh) return 1;
+  const values = sh.getDataRange().getValues();
+  if (!values || values.length < 2) return 1;
+  const header = values[0];
+  const idxParam = header.indexOf('param');
+  const idxValue = header.indexOf('value');
+  for (var r = 1; r < values.length; r++) {
+    var row = values[r];
+    if (String(row[idxParam]||'') === 'config_version') {
+      var v = Number(row[idxValue]||1);
+      return isNaN(v) ? 1 : v;
+    }
+  }
+  return 1;
 }
 
 function getRecommendationsFromSheet_() {
@@ -474,7 +493,8 @@ function seedFormulasWithDefaults_(sh) {
     ['threshold_success_min', 11, 'Сумма 5 вопросов в блоке ≥ 11 → зона силы'],
     ['threshold_warning_min', 6, 'Сумма 5 вопросов в блоке ≥ 6 → зона роста'],
     ['overall_avg_danger_max', 8, 'Средний балл по блокам < 8 → разрушительные'],
-    ['overall_avg_warning_max', 11, 'Средний балл по блокам < 11 → шаткие']
+    ['overall_avg_warning_max', 11, 'Средний балл по блокам < 11 → шаткие'],
+    ['config_version', 1, 'Версия конфигурации. Увеличивайте при изменениях структуры/контента']
   ];
   if (sh.getLastRow() > 1) return;
   sh.getRange(2,1,rows.length,3).setValues(rows);

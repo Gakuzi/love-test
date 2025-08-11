@@ -9,7 +9,14 @@ async function fetchConfig() {
     const res = await fetch(url.toString());
     const data = await res.json();
     if (data && data.ok) {
-      if (data.config) localStorage.setItem('testConfig', JSON.stringify(data.config));
+      if (data.config) {
+        const prev = JSON.parse(localStorage.getItem('testConfig') || 'null');
+        const prevVer = prev && prev.version ? Number(prev.version) : 0;
+        const newVer = data.config.version ? Number(data.config.version) : 0;
+        if (!prev || newVer >= prevVer) {
+          localStorage.setItem('testConfig', JSON.stringify(data.config));
+        }
+      }
       if (data.recommendations) localStorage.setItem('testRecommendations', JSON.stringify(data.recommendations));
       if (data.plan) localStorage.setItem('testPlan', JSON.stringify(data.plan));
       return data.config || null;
