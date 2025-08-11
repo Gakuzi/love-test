@@ -321,6 +321,8 @@ function startTest() {
   
   // Плавно прокручиваем к верху
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Лог: начало теста
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'start', event: 'start_test', eventPayload: { userName: (currentState.userName||'') } }); } catch (_) {}
 }
 
 function showQuestion(index) {
@@ -787,6 +789,8 @@ function showFinalResults() {
   
   // Автоматически сохраняем финальные результаты
   autoSaveFinalResults();
+  // Лог: завершение теста (показ итогов)
+  try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'finish_test' }); } catch (_) {}
   
   // Плавный переход к результатам
   finalResults.style.opacity = '0';
@@ -941,6 +945,7 @@ function restartTest() {
     document.getElementById('finalResults').style.display = 'none';
     document.getElementById('intro').style.display = 'block';
     updateProgress();
+    try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'restart', event: 'restart_test' }); } catch (_) {}
   }
 }
 
