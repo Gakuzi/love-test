@@ -263,6 +263,19 @@ body {
   overflow: hidden;
 }
 
+/* Единый стиль карточек для промежуточных и итогов */
+.result-card, .final-results .block-summary, .priority-block, .recommendations .recommendation-item {
+  background: var(--card-bg-solid);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.result-card .btn, .final-results .btn, .priority-block .btn {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
 .question-meta {
   display: flex;
   justify-content: space-between;
