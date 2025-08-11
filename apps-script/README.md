@@ -35,8 +35,9 @@ clasp logout && clasp login
 }
 ```
 3. Залить код:
+Важно: команда выполняется из КОРНЯ проекта. Правильный абсолютный путь:
 ```
-cd love-test/apps-script
+cd "/Users/evgeniy/Мой диск/Web application development/Тест на совместимость/love-test/apps-script"
 clasp push --force
 ```
 4. Деплой:

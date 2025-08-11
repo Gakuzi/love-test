@@ -109,6 +109,8 @@ let currentState = {
   userName: ''
 };
 
+// Глобальный флаг старта анимации загрузки (чтобы не запускать дважды)
+let loadingAnimationStarted = false;
 // Init
 window.addEventListener('DOMContentLoaded', () => {
   // Accessibility roles
@@ -1071,6 +1073,13 @@ function initializeApp() {
     
     initCompactBlocks();
     console.log('Приложение инициализировано');
+
+    // Запускаем анимацию загрузки с задержкой, если ещё не запущена
+    setTimeout(() => {
+        try {
+            if (!loadingAnimationStarted) startLoadingAnimation();
+        } catch (e) { console.warn('startLoadingAnimation error', e); try { showStartButton(); } catch(_) {} }
+    }, 500);
 }
 
 // Анимированная заставка
@@ -1118,6 +1127,8 @@ function rotateMessage() {
 }
 
 function startLoadingAnimation() {
+    if (loadingAnimationStarted) return;
+    loadingAnimationStarted = true;
     console.log('Запуск анимации загрузки...');
     
     const loadingSteps = [
