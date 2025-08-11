@@ -642,9 +642,12 @@ function renderBlockSummary(blockIndex) {
     if (wrapper) {
       const ul = wrapper.querySelector('ul') || document.createElement('ul');
       ul.innerHTML = '';
-      recos.slice(0, 3).forEach(r => {
+      recos.slice(0, 3).forEach((r, idx) => {
         const li = document.createElement('li');
         li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
+        li.addEventListener('click', () => {
+          try { fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'block-summary', event: 'click_recommendation', eventPayload: { blockIndex, index: idx, title: r?.title || '', text: r?.text || '' } }) }); } catch (_) {}
+        });
         ul.appendChild(li);
       });
       if (!wrapper.contains(ul)) wrapper.appendChild(ul);
@@ -668,9 +671,12 @@ function renderFinalRecommendations() {
     const recos = getRecommendationsFor(bi, res.zone);
     const ul = document.createElement('ul');
     ul.className = 'recos-list';
-    recos.slice(0, 3).forEach(r => {
+    recos.slice(0, 3).forEach((r, idx) => {
       const li = document.createElement('li');
       li.textContent = r && r.text ? r.text : (r && r.title ? r.title : 'Рекомендация');
+      li.addEventListener('click', () => {
+        try { fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: SHARED_TOKEN, userId, ref: 'final-results', event: 'click_recommendation', eventPayload: { blockIndex: bi, index: idx, title: r?.title || '', text: r?.text || '' } }) }); } catch (_) {}
+      });
       ul.appendChild(li);
     });
     recosWrap.innerHTML = '';
