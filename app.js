@@ -128,14 +128,20 @@ window.addEventListener('DOMContentLoaded', () => {
   // Anonymous id (from cursor branch)
   try { userId = getOrCreateUserId(); } catch (_) {}
 
-  // Инициализация приложения
+  // Инициализация приложения — сразу, без ожидания сети
+  initializeApp();
+  // Загрузка конфигурации — параллельно, без блокировки старта
   fetchConfig().then(cfg => {
     try {
       if (cfg && Array.isArray(cfg.questions) && cfg.questions.length) {
         QUESTIONS = cfg.questions;
+        // Если на экране вопросы — мягко обновим текущий вопрос
+        if (document.getElementById('questionCard')?.style.display === 'block') {
+          showQuestion(currentState.currentQuestionIndex || 0);
+        }
       }
     } catch (e) { console.warn('apply config failed', e); }
-  }).finally(() => initializeApp());
+  }).catch(() => {});
   // Первичный лог просмотра заставки/интро
   try { safePostToServer({ token: SHARED_TOKEN, userId, ref: 'intro', event: 'view_intro' }); } catch (_) {}
   

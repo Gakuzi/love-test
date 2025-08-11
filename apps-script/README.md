@@ -21,6 +21,8 @@
 ```
 npm i -g @google/clasp
 clasp login
+# Если уже залогинены, но push ругается на токен → выполните повторный логин:
+clasp logout && clasp login
 ```
 
 ### Привязка к существующему скрипту
@@ -34,8 +36,8 @@ clasp login
 ```
 3. Залить код:
 ```
-cd apps-script
-npx clasp push
+cd love-test/apps-script
+clasp push --force
 ```
 4. Деплой:
 ```
@@ -44,9 +46,9 @@ npx clasp deploy
 
 ### Создание нового скрипта из репозитория
 ```
-cd apps-script
-npx clasp create --title "Relationship Test Results" --type standalone
-npx clasp push
+cd love-test/apps-script
+clasp create --title "Relationship Test Results" --type standalone
+clasp push
 ```
 После этого задеплойте как Web App в UI и укажите доступ: Anyone.
 
