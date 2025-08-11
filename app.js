@@ -914,7 +914,14 @@ function calculateOverallResult() {
       const block = currentState.blockResults[i] || { sum: 0 };
       const fill = document.getElementById(`barFill${n}`);
       const val = document.getElementById(`barVal${n}`);
-      if (fill) fill.style.width = `${Math.max(0, Math.min(100, (block.sum/25)*100))}%`;
+      const pct = Math.max(0, Math.min(100, (block.sum/25)*100));
+      if (fill) {
+        fill.style.width = `${pct}%`;
+        // динамический цвет: 0-40 красный, 40-70 жёлтый, 70-100 зелёный
+        let color = '#e57373';
+        if (pct >= 70) color = '#66bb6a'; else if (pct >= 40) color = '#fbc02d';
+        fill.style.background = `linear-gradient(90deg, ${color}, ${color})`;
+      }
       if (val) val.textContent = `${block.sum||0}/25`;
     });
   } catch (_) {}
