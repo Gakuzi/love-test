@@ -276,6 +276,37 @@ body {
   border: 1px solid rgba(0,0,0,0.06);
 }
 
+.final-results .blocks-grid-results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.final-results .block-summary {
+  padding: 1rem;
+}
+
+.final-results .block-summary .block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.final-results .block-summary .block-score {
+  background: var(--duration-bg);
+  border: var(--border);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.priority-block { padding: 1rem; }
+.priority-block .priority-content { display: flex; align-items: center; gap: 0.75rem; }
+
+.recommendations .recommendation-item { padding: 0.75rem; }
+.block-recos { margin-top: 0.5rem; }
+.block-recos .recos-list { margin: 0.25rem 0 0 1rem; color: var(--gray); line-height: 1.5; }
+
 .question-meta {
   display: flex;
   justify-content: space-between;
