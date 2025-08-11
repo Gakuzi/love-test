@@ -271,10 +271,7 @@ body {
   box-shadow: var(--shadow);
 }
 
-.result-card .btn, .final-results .btn, .priority-block .btn {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-  border: 1px solid rgba(0,0,0,0.06);
-}
+.result-card .btn, .priority-block .btn { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.86)); border: 2px solid rgba(192, 180, 214, 0.45); color: var(--primary-dark); }
 
 .final-results .blocks-grid-results {
   display: grid;
