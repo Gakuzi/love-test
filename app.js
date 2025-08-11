@@ -517,7 +517,8 @@ function nextQuestion() {
     
     const blockIndex = Math.floor(currentIndex / 5);
     calculateBlockResult(blockIndex);
-    showCompactBlockResult(blockIndex);
+    // Показываем новую промежуточную карточку в едином стиле
+    showBlockResult(blockIndex + 1);
     // Останавливаемся на результатах блока - пользователь нажмёт "Продолжить"
     return;
   }
