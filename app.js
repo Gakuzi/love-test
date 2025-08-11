@@ -669,11 +669,25 @@ function showFinalResults() {
 // Автоматическое сохранение финальных результатов
 async function autoSaveFinalResults() {
   try {
-    // Рассчитываем общий результат
-    calculateOverallResult();
-    
-    const overall = document.getElementById('overallStatus')?.textContent || '';
-    const priority = document.getElementById('priorityBlock')?.textContent || '';
+    // В data-driven режиме попробуем получить анализ с сервера
+    let serverOverall = '';
+    let serverPriority = '';
+    try {
+      const payloadAnalyze = { action: 'analyze', answers: currentState.answers, token: SHARED_TOKEN };
+      await fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payloadAnalyze) })
+        .then(r=>r.json()).then(j=>{
+          if (j && j.ok && j.analysis) {
+            serverOverall = j.analysis.overall || '';
+            serverPriority = j.analysis.priorityBlock || '';
+          }
+        });
+    } catch (_) {}
+    // Локальная подстраховка
+    if (!serverOverall || !serverPriority) {
+      calculateOverallResult();
+    }
+    const overall = serverOverall || (document.getElementById('overallStatus')?.textContent || '');
+    const priority = serverPriority || (document.getElementById('priorityBlock')?.textContent || '');
     
     const payload = {
       token: SHARED_TOKEN || undefined,

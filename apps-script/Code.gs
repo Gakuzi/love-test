@@ -8,6 +8,7 @@ const SHEET_ID = '12PUk32kI3NmYPrjMh3BOc2RWsB070lQcfvsy0PCvNOs';
 const SHEET_NAME_RU = 'Результаты';
 const SHEET_NAME_WIDE = 'Результаты по вопросам';
 const SHEET_NAME_EVENTS = 'События';
+const SHEET_NAME_QUESTIONS = 'Вопросы';
 
 const SHARED_TOKEN = 'rk7GJ6QdZC3M5p9X2a8Vn0L4s1HfEwBt';
 
@@ -136,6 +137,39 @@ function ensureEventsSheet_() {
   return sheet;
 }
 
+function getConfigFromSheet_() {
+  const ss = openSheet_();
+  const sh = ss.getSheetByName(SHEET_NAME_QUESTIONS);
+  if (!sh) return null;
+  const values = sh.getDataRange().getValues();
+  if (!values || values.length < 2) return null;
+  const header = values[0];
+  const idx = function(name){ return header.indexOf(name); };
+  const colId = idx('id');
+  const colBlock = idx('block');
+  const colBlockIndex = idx('blockIndex');
+  const colText = idx('text');
+  const colHint = idx('hint');
+  const colOptions = idx('options'); // JSON: [{value,label}]
+  if ([colId,colBlock,colBlockIndex,colText,colHint,colOptions].some(function(v){return v<0;})) return null;
+  var questions = [];
+  for (var r=1; r<values.length; r++) {
+    var row = values[r];
+    if (!row[colId]) continue;
+    var opts = [];
+    try { opts = JSON.parse(String(row[colOptions]||'[]')); } catch(_) {}
+    questions.push({
+      id: Number(row[colId]),
+      block: String(row[colBlock]||''),
+      blockIndex: Number(row[colBlockIndex]||0),
+      text: String(row[colText]||''),
+      options: Array.isArray(opts)?opts:[],
+      hint: String(row[colHint]||'')
+    });
+  }
+  return { version: 1, questions: questions };
+}
+
 // ============================
 // HTTP обработчики
 // ============================
@@ -261,6 +295,13 @@ function doPost(e) {
     ev.appendRow([moscowTimestamp, data.userId || '', data.ref || '', String(data.event||''), JSON.stringify(data.eventPayload || {})]);
   }
 
+  // 4) Анализ по запросу из клиента (для data-driven режима)
+  if (data.action === 'analyze') {
+    var res = calculateAnalysis_(data.answers || {});
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, analysis: res }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true }))
     .setMimeType(ContentService.MimeType.JSON);
@@ -269,15 +310,30 @@ function doPost(e) {
 function doGet(e) {
   const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
   if (action === 'config') {
-    // Заготовка: отдаём статическую конфигурацию, позже — чтение из листа «Конфигурация»
-    const cfg = {
-      version: 1,
-      blocks: ['Безопасность','Надёжность','Связь','Рост'],
-      // TODO: загрузка вопросов/формул/рекомендаций из листа
-    };
+    // Читаем конфигурацию из листа «Вопросы»
+    const cfg = getConfigFromSheet_() || { version: 1, questions: [] };
     return ContentService.createTextOutput(JSON.stringify({ ok: true, config: cfg })).setMimeType(ContentService.MimeType.JSON);
   }
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true, service: 'relationship-test-sink' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function calculateAnalysis_(answersObj) {
+  // answersObj: { index:number -> value:number }
+  var blockResults = { 0:null, 1:null, 2:null, 3:null };
+  for (var bi=0; bi<4; bi++) {
+    var start = bi*5; var end = start+5; var sum = 0;
+    for (var i=start; i<end; i++) sum += Number(answersObj[i]||0);
+    var zone = sum>=11 ? 'success' : (sum>=6 ? 'warning' : 'danger');
+    blockResults[bi] = { sum: sum, zone: zone };
+  }
+  var total = 0; for (var k in blockResults) { var b = blockResults[k]; if (b) total += b.sum; }
+  var avg = total/4;
+  var overall = avg<8 ? 'разрушительные' : (avg<11 ? 'шаткие' : 'зрелые');
+  var lowest = { index: 0, sum: 9999 };
+  for (var j=0;j<4;j++){ var br=blockResults[j]; if (br && br.sum<lowest.sum) lowest={index:j,sum:br.sum}; }
+  var blockNames = ['Безопасность','Надёжность','Связь','Рост'];
+  var priorityBlock = blockNames[lowest.index];
+  return { blockResults: blockResults, overall: overall, priorityBlock: priorityBlock };
 }
